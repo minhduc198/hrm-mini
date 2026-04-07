@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
+/* ─── HRM Color Tokens ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary — Blue */
+  --primary:         #1B4F8A;
+  --primary-hover:   #2563B0;
+  --primary-tint:    #EAF1FB;
+  --primary-border:  #D0E2F5;
+  --primary-fg:      #FFFFFF;
+
+  /* Background */
+  --bg-page:         #F8F9FB;
+  --bg-surface:      #FFFFFF;
+  --bg-subtle:       #F1F5F9;
+
+  /* Text */
+  --tx-base:         #1A2740;
+  --tx-muted:        #6B7A8D;
+  --tx-subtle:       #9AAABB;
+
+  /* Border */
+  --border:          #E2E8F0;
+  --border-subtle:   #F1F5F9;
+
+  /* Semantic — Success */
+  --success:         #2D7A4F;
+  --success-bg:      #F0FBF4;
+  --success-border:  #B7DFC3;
+
+  /* Semantic — Warning */
+  --warning:         #B87C2A;
+  --warning-bg:      #FDF6EC;
+  --warning-border:  #F5D8A0;
+
+  /* Semantic — Danger */
+  --danger:          #9B2C2C;
+  --danger-bg:       #FDF2F2;
+  --danger-border:   #F5B8B8;
 }
 
+/* ─── Tailwind v4 Theme Mapping ─── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Background utilities: bg-page, bg-surface, bg-subtle, bg-primary, bg-primary-tint */
+  --color-page:           var(--bg-page);
+  --color-surface:        var(--bg-surface);
+  --color-subtle:         var(--bg-subtle);
+  --color-primary:        var(--primary);
+  --color-primary-hover:  var(--primary-hover);
+  --color-primary-tint:   var(--primary-tint);
+  --color-primary-border: var(--primary-border);
+  --color-primary-fg:     var(--primary-fg);
+
+  /* Text utilities: text-base, text-muted, text-subtle */
+  --color-base:           var(--tx-base);
+  --color-muted:          var(--tx-muted);
+  --color-subtle-text:    var(--tx-subtle);
+
+  /* Border utilities: border-line, border-subtle */
+  --color-line:           var(--border);
+  --color-line-subtle:    var(--border-subtle);
+
+  /* Semantic */
+  --color-success:        var(--success);
+  --color-success-bg:     var(--success-bg);
+  --color-success-bd:     var(--success-border);
+
+  --color-warning:        var(--warning);
+  --color-warning-bg:     var(--warning-bg);
+  --color-warning-bd:     var(--warning-border);
+
+  --color-danger:         var(--danger);
+  --color-danger-bg:      var(--danger-bg);
+  --color-danger-bd:      var(--danger-border);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--tx-base);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
