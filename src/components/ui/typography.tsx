@@ -25,6 +25,7 @@ const typographyVariants = cva("text-foreground", {
   },
   defaultVariants: {
     variant: "p",
+    
   },
 });
 
