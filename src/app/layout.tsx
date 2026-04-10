@@ -1,7 +1,6 @@
-import ReactQueryProvider from "@/components/ReactQueryProvider";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import ClientLayout from "@/components/ClientLayout";
+import ReactQueryProvider from "@/providers/react-query-provider";
 
 const fontSans = Inter({
   subsets: ["latin", "vietnamese"],
@@ -19,10 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html>
+    <html lang="vi">
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
         <ReactQueryProvider>
-          <ClientLayout>{children}</ClientLayout>
+          {children}
         </ReactQueryProvider>
       </body>
     </html>

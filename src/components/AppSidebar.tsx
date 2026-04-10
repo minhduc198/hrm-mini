@@ -46,23 +46,20 @@ export function AppSidebar() {
   const getNavItems = () => {
     if (role === "admin") {
       return [
-        { key: "dashboard", label: "Dashboard", url: "/", icon: LayoutDashboard },
-        { key: "employees", label: "Quản lý nhân viên", url: "/employees", icon: Users },
-        { key: "leave", label: "Quản lý đơn xin nghỉ", url: "/leave-management", icon: CalendarDays },
-        { key: "attendance", label: "Quản lý chấm công", url: "/attendance-management", icon: Clock },
-        { key: "roles", label: "Quản lý phân quyền", url: "/roles", icon: Shield },
+        { key: "employees", label: "Quản lý nhân viên", url: "/employee-management", icon: Users },
+        { key: "leave", label: "Quản lý đơn xin nghỉ", url: "/leave/manage", icon: CalendarDays },
+        { key: "attendance", label: "Quản lý chấm công", url: "/attendance/manage", icon: Clock },
+        { key: "roles", label: "Quản lý phân quyền", url: "/permission-management", icon: Shield },
       ];
     }
     if (role === "delegated_admin") {
       return [
-        { key: "dashboard", label: "Dashboard", url: "/", icon: LayoutDashboard },
         {
           key: "employees",
           label: "Quản lý nhân viên",
           icon: Users,
           subs: [
-            { key: "emp-manage", label: "Quản lý", url: "/employees/manage" },
-            { key: "emp-personal", label: "Cá nhân", url: "/employees/personal" },
+            { key: "emp-manage", label: "Quản lý", url: "/employee-management" },
           ],
         },
         {
@@ -86,9 +83,8 @@ export function AppSidebar() {
       ];
     }
     return [
-      { key: "dashboard", label: "Dashboard", url: "/", icon: LayoutDashboard },
-      { key: "attendance", label: "Chấm công", url: "/attendance", icon: Clock },
-      { key: "leave", label: "Xin nghỉ", url: "/leave", icon: CalendarDays },
+      { key: "attendance", label: "Chấm công", url: "/attendance/personal", icon: Clock },
+      { key: "leave", label: "Xin nghỉ", url: "/leave/personal", icon: CalendarDays },
     ];
   };
 
