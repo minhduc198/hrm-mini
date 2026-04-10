@@ -13,11 +13,13 @@ const typographyVariants = cva("text-foreground", {
       p: "font-sans text-base font-normal leading-relaxed",
       small:
         "font-sans text-sm font-normal leading-normal text-muted-foreground",
-      tiny: "font-sans text-[10px] font-normal leading-normal",
       muted:
         "font-sans text-sm font-normal leading-normal text-muted-foreground",
       label:
-        "font-sans text-[0.6875rem] font-medium uppercase tracking-[0.1em] text-muted-foreground",
+        "font-sans text-[0.875rem] font-semibold text-muted-foreground",
+      "label-xs":
+        "font-sans text-[0.6875rem] font-semibold text-muted-foreground",
+      tiny: "font-sans text-[0.625rem] font-normal leading-normal text-muted-foreground",
       code: "font-mono text-sm font-medium bg-muted text-foreground rounded px-[0.4em] py-[0.15em] border border-border/50",
       blockquote:
         "font-sans text-lg italic leading-relaxed text-muted-foreground border-l-2 border-border pl-6",
@@ -25,7 +27,6 @@ const typographyVariants = cva("text-foreground", {
   },
   defaultVariants: {
     variant: "p",
-    
   },
 });
 
@@ -37,12 +38,12 @@ const variantElementMap: Record<string, React.ElementType> = {
   lead: "p",
   p: "p",
   small: "small",
-  tiny: 'span',
   muted: "p",
   label: "span",
+  "label-xs": "span",
+  tiny: "span",
   code: "code",
   blockquote: "blockquote",
-  
 };
 
 interface TypographyProps
