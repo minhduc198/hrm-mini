@@ -1,17 +1,18 @@
 import { z } from "zod";
 import { loginSchema } from "@/features/auth/schemas/auth";
 
-export type UserRole = "admin" | "employee";
+export type Role = "admin" | "employee";
 
-export type AuthUser = {
+export interface User {
   id: number;
-  empCode: string;
-  email: string;
   name: string;
-  address: string;
-  phone: string;
-  role: UserRole;
-  created_by: number;
-};
+  email: string;
+  empCode: string;
+  phone: string | null;
+  address: string | null;
+  avatar: string | null;
+  role: Role;
+  is_active: number;
+}
 
 export type LoginFormValues = z.infer<typeof loginSchema>;

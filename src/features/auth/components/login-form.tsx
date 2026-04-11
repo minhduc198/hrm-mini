@@ -17,10 +17,11 @@ import {
 } from "@/components/ui/form";
 import { LoginFormValues } from "@/features/auth/types/auth";
 import { loginSchema } from "@/features/auth/schemas/auth";
-
+import { useLogin } from "@/features/auth/hooks/use-login";
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = React.useState(false);
+
   const form = useForm<LoginFormValues>({
     resolver: standardSchemaResolver(loginSchema),
     defaultValues: {
@@ -29,11 +30,10 @@ export function LoginForm() {
     },
   });
 
-  const isLoading = form.formState.isSubmitting;
+  const { mutate: login, isPending: isLoading } = useLogin();
 
-  const onSubmit = async (data: LoginFormValues) => {
-    console.log("Login with:", data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const onSubmit = (data: LoginFormValues) => {
+    login(data);
   };
 
   return (

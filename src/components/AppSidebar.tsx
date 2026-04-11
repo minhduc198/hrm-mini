@@ -1,16 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthStore } from "@/features/auth/stores/auth";
 import {
   Users,
   CalendarDays,
   Clock,
   Shield,
-  LayoutDashboard,
-  ChevronDown,
-  ChevronRight,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Typography } from "./ui/typography";
@@ -22,26 +18,19 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarFooter,
   useSidebar,
 } from "./ui/sidebar";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 
 export function AppSidebar() {
   const router = useRouter();
   const path = usePathname();
-  const { role, user } = useAuth();
-  const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const { role, user } = useAuthStore();
   const { setOpenMobile } = useSidebar()
 
   const isExactActive = (url: string) => path === url;
-
-  const toggleMenu = (key: string) => {
-    setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
 
   const getNavItems = () => {
     if (role === "admin") {
@@ -52,36 +41,7 @@ export function AppSidebar() {
         { key: "roles", label: "Quản lý phân quyền", url: "/permission-management", icon: Shield },
       ];
     }
-    if (role === "delegated_admin") {
-      return [
-        {
-          key: "employees",
-          label: "Quản lý nhân viên",
-          icon: Users,
-          subs: [
-            { key: "emp-manage", label: "Quản lý", url: "/employee-management" },
-          ],
-        },
-        {
-          key: "leave",
-          label: "Quản lý đơn xin nghỉ",
-          icon: CalendarDays,
-          subs: [
-            { key: "leave-manage", label: "Quản lý", url: "/leave/manage" },
-            { key: "leave-personal", label: "Cá nhân", url: "/leave/personal" },
-          ],
-        },
-        {
-          key: "attendance",
-          label: "Quản lý chấm công",
-          icon: Clock,
-          subs: [
-            { key: "att-manage", label: "Quản lý", url: "/attendance/manage" },
-            { key: "att-personal", label: "Cá nhân", url: "/attendance/personal" },
-          ],
-        },
-      ];
-    }
+    // Employee Role Default
     return [
       { key: "attendance", label: "Chấm công", url: "/attendance/personal", icon: Clock },
       { key: "leave", label: "Xin nghỉ", url: "/leave/personal", icon: CalendarDays },
@@ -113,20 +73,15 @@ export function AppSidebar() {
 
           <SidebarMenu className="gap-1">
             {navItems.map((item) => {
-              const hasSubs = "subs" in item;
-              const anySubActive = hasSubs && item.subs?.some((s) => isExactActive(s.url));
-              const currentActive = !hasSubs && "url" in item ? isExactActive(item.url) : anySubActive;
+              const currentActive = isExactActive(item.url);
               const Icon = item.icon;
 
               return (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton
                     onClick={() => {
-                      if (hasSubs) toggleMenu(item.key);
-                      else if ("url" in item) {
-                        router.push(item.url);
-                        setOpenMobile(false)
-                      }
+                      router.push(item.url);
+                      setOpenMobile(false);
                     }}
                     className={cn(
                       "flex items-center gap-2.5 px-3 py-[9px] rounded-lg text-[13px] w-full text-left transition-colors h-auto",
@@ -146,44 +101,7 @@ export function AppSidebar() {
                     >
                       {item.label}
                     </Typography>
-                    {hasSubs && (
-                      <span className="ml-auto flex-shrink-0 group-data-[collapsible=icon]:hidden">
-                        {openMenus[item.key] ? (
-                          <ChevronDown size={14} />
-                        ) : (
-                          <ChevronRight size={14} />
-                        )}
-                      </span>
-                    )}
                   </SidebarMenuButton>
-
-                  {hasSubs && openMenus[item.key] && (
-                    <SidebarMenuSub className="mt-1 border-white/20 pl-4 border-l ml-5 pr-0 gap-1">
-                      {item.subs?.map((sub) => {
-                        const subActive = isExactActive(sub.url);
-                        return (
-                          <SidebarMenuSubItem key={sub.key}>
-                            <SidebarMenuSubButton
-                              onClick={() => {
-                                router.push(sub.url);
-                                setOpenMobile(false)
-                              }}
-                              className={cn(
-                                "cursor-pointer transition-colors px-3 py-2 h-auto text-[12.5px] rounded-md text-white/55 hover:bg-white/[0.06] hover:text-white/85",
-                                subActive && "bg-white/[0.1] text-white font-medium"
-                              )}
-                            >
-                              <Typography variant="p" as="span" className={cn(' font-inherit leading-none text-white', {
-                        'text-white': subActive,
-                      })}>
-                                {sub.label}
-                              </Typography>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        );
-                      })}
-                    </SidebarMenuSub>
-                  )}
                 </SidebarMenuItem>
               );
             })}
@@ -193,17 +111,18 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-white/10 p-3 pb-4 !bg-primary gap-3 mt-auto group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:pb-3">
         <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.07] cursor-pointer transition-colors group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center">
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-[11px] font-semibold text-white shrink-0">
-            <Typography variant="p" as="span" className=" font-inherit leading-none">
-              {user.initials}
-            </Typography>
-          </div>
+          <Avatar className="h-8 w-8 rounded-full">
+            <AvatarImage src={user?.avatar || ""} />
+            <AvatarFallback className="bg-white/20 text-white text-[11px] font-semibold">
+              {user?.initials || "?"}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <Typography variant="p" className="text-[13px] text-white/90 font-medium leading-none mb-0.5  truncate">
-              {user.name}
+              {user?.name || "Loading..."}
             </Typography>
             <Typography variant="small" className="text-[11px] text-white/40 leading-none  truncate block">
-              {role === "admin" ? "Administrator" : role === "delegated_admin" ? "Delegated Admin" : "Employee"}
+              {role === "admin" ? "Administrator" : "Employee"}
             </Typography>
           </div>
         </div>
