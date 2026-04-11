@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useAuthStore } from "@/features/auth/stores/auth";
+import { useSession } from "next-auth/react";
 import {
   Users,
   CalendarDays,
@@ -27,7 +27,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export function AppSidebar() {
   const router = useRouter();
   const path = usePathname();
-  const { role, user } = useAuthStore();
+  const { data: session } = useSession();
+  const user = session?.user;
+  const role = user?.role;
   const { setOpenMobile } = useSidebar()
 
   const isExactActive = (url: string) => path === url;

@@ -4,14 +4,12 @@ import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import Header from "./Header";
 import { useSidebarControl } from "@/hooks/use-sidebar";
-import { useRoleGuard } from "@/hooks/use-role-guard";
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useRoleGuard();
   const { isPinned, setIsPinned } = useSidebarControl();
 
 
