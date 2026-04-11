@@ -6,7 +6,6 @@ import {
     Menu,
     Settings
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -20,22 +19,19 @@ import {
 import { useSidebar } from "./ui/sidebar";
 import { Typography } from "./ui/typography";
 import { useAuthStore } from "@/features/auth/stores/auth";
+import { useLogout } from "@/features/auth/hooks/use-logout";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
   
-  const router = useRouter();
-  const { role, user, logout } = useAuthStore();
+  const { role, user } = useAuthStore();
  
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  const handleSignOut = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    logout();
-    router.push("/");
-  };
+  const { mutate: handleSignOut } = useLogout();
+
 
 
   if (!mounted) return <header className="bg-surface border-b border-line h-14 shrink-0" />;
@@ -93,7 +89,7 @@ export default function Header() {
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-line my-1" />
           <DropdownMenuItem
-            onClick={handleSignOut}
+            onSelect={() => handleSignOut()}
             className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-danger hover:text-danger focus:bg-danger-bg focus:text-danger"
           >
             <LogOut size={15} /> Sign out
