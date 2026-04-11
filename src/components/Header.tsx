@@ -1,5 +1,4 @@
 "use client";
-import { useAuth } from "@/hooks/use-auth";
 import {
     ChevronDown,
     CircleUser,
@@ -20,21 +19,24 @@ import {
 } from "./ui/dropdown-menu";
 import { useSidebar } from "./ui/sidebar";
 import { Typography } from "./ui/typography";
+import { useAuthStore } from "@/features/auth/stores/auth";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
   
   const router = useRouter();
-  const { role, user } = useAuth();
+  const { role, user, logout } = useAuthStore();
+ 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  const handleSignOut = () => {
-    localStorage.removeItem("access_token");
-    document.cookie = "access_token=; path=/; max-age=0; SameSite=Lax";
-    router.push("/login");
+  const handleSignOut = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    logout();
+    router.push("/");
   };
+
 
   if (!mounted) return <header className="bg-surface border-b border-line h-14 shrink-0" />;
 
@@ -53,17 +55,17 @@ export default function Header() {
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity pl-1 ml-1 outline-none">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="" />
+              <AvatarImage src={user?.avatar || ""} />
               <AvatarFallback className="bg-primary-tint text-primary text-[11px] font-semibold">
-                {user.initials}
+                {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
               </AvatarFallback>
             </Avatar>
             <div className="hidden xl:block text-left">
               <Typography variant="p" className="text-xs font-semibold text-base leading-none">
-                {user.name}
+                {user?.name || "Loading..."}
               </Typography>
-              <Typography variant="small" className="text-[10px] text-muted mt-1 leading-none block">
-                {role === "admin" ? "Admin" : role === "delegated_admin" ? "Delegated" : "Employee"}
+              <Typography variant="small" className="text-[10px] text-muted mt-1 leading-none block capitalize">
+                {role || "Employee"}
               </Typography>
             </div>
             <ChevronDown size={13} className="text-muted hidden md:block ml-1" />
@@ -76,10 +78,10 @@ export default function Header() {
         >
           <div className="px-3 py-2.5 mb-1">
             <Typography variant="p" className="text-sm font-medium text-base">
-              {user.name}
+              {user?.name || "Loading..."}
             </Typography>
             <Typography variant="small" className="text-xs text-muted block mt-1">
-              {user.email}
+              {user?.email || "loading@..."}
             </Typography>
           </div>
           <DropdownMenuSeparator className="bg-line" />

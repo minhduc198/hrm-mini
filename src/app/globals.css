@@ -24,19 +24,19 @@
   --border-subtle:   #F1F5F9;
 
   /* Semantic — Success */
-  --success:         #2D7A4F;
-  --success-bg:      #F0FBF4;
-  --success-border:  #B7DFC3;
+  --success:         #059669;
+  --success-bg:      #F0FDF4;
+  --success-border:  #DCFCE7;
 
   /* Semantic — Warning */
-  --warning:         #B87C2A;
-  --warning-bg:      #FDF6EC;
-  --warning-border:  #F5D8A0;
+  --warning:         #D97706;
+  --warning-bg:      #FFFBEB;
+  --warning-border:  #FEF3C7;
 
   /* Semantic — Danger */
-  --danger:          #9B2C2C;
-  --danger-bg:       #FDF2F2;
-  --danger-border:   #F5B8B8;
+  --danger:          #DC2626;
+  --danger-bg:       #FEF2F2;
+  --danger-border:   #FEE2E2;
 }
 
 /* ─── Tailwind v4 Theme Mapping ─── */
@@ -75,6 +75,11 @@
   --color-danger:         var(--danger);
   --color-danger-bg:      var(--danger-bg);
   --color-danger-bd:      var(--danger-border);
+
+  --color-destructive:    var(--danger);
+  --color-destructive-fg: #FFFFFF;
+
+  --color-primary-foreground: var(--primary-fg);
 }
 
 body {
@@ -82,4 +87,10 @@ body {
   color: var(--tx-base);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
 }
