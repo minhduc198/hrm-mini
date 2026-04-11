@@ -1,120 +1,16 @@
-"use client";
-
-import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { Typography } from "@/components/ui/typography";
 import {
   Pencil,
-  ToggleLeft,
-  ToggleRight,
   ShieldCheck,
   User,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 import { DataTable } from "@/components/common/table/DataTable";
-import type { Employee } from "../types";
 import { ToggleButton } from "@/components/common/form/ToggleButton";
-export type { Employee };
-
-export const MOCK_EMPLOYEES: Employee[] = [
-  {
-    id: 1,
-    empCode: "EMP001",
-    name: "Nguyễn Văn An",
-    email: "an.nguyen@hrm.vn",
-    role: "admin",
-    address: "12 Lê Lợi, Q1, TP.HCM",
-    phone: "0901234567",
-    is_active: true,
-    created_by: 0,
-    created_at: "2023-01-10T08:00:00Z",
-  },
-  {
-    id: 2,
-    empCode: "EMP002",
-    name: "Trần Thị Bích",
-    email: "bich.tran@hrm.vn",
-    role: "employee",
-    address: "45 Nguyễn Huệ, Q1, TP.HCM",
-    phone: "0912345678",
-    is_active: true,
-    created_by: 1,
-    created_at: "2023-03-15T08:00:00Z",
-  },
-  {
-    id: 3,
-    empCode: "EMP003",
-    name: "Lê Hoàng Cường",
-    email: "cuong.le@hrm.vn",
-    role: "employee",
-    address: "78 Đinh Tiên Hoàng, Q.Bình Thạnh",
-    phone: "0923456789",
-    is_active: true,
-    created_by: 1,
-    created_at: "2023-05-20T08:00:00Z",
-  },
-  {
-    id: 4,
-    empCode: "EMP004",
-    name: "Phạm Thị Dung",
-    email: "dung.pham@hrm.vn",
-    role: "employee",
-    address: "33 Cách Mạng Tháng 8, Q3",
-    phone: "0934567890",
-    is_active: false,
-    created_by: 1,
-    created_at: "2023-06-01T08:00:00Z",
-  },
-  {
-    id: 5,
-    empCode: "EMP005",
-    name: "Hoàng Minh Đức",
-    email: "duc.hoang@hrm.vn",
-    role: "employee",
-    address: "90 Võ Văn Tần, Q3, TP.HCM",
-    phone: "0945678901",
-    is_active: true,
-    created_by: 1,
-    created_at: "2023-07-12T08:00:00Z",
-  },
-  {
-    id: 6,
-    empCode: "EMP006",
-    name: "Vũ Thị Hoa",
-    email: "hoa.vu@hrm.vn",
-    role: "employee",
-    address: "15 Pasteur, Q1, TP.HCM",
-    phone: "0956789012",
-    is_active: true,
-    created_by: 1,
-    created_at: "2023-08-05T08:00:00Z",
-  },
-  {
-    id: 7,
-    empCode: "EMP007",
-    name: "Đặng Quốc Hùng",
-    email: "hung.dang@hrm.vn",
-    role: "employee",
-    address: "22 Nguyễn Đình Chiểu, Q3",
-    phone: "0967890123",
-    is_active: false,
-    created_by: 1,
-    created_at: "2023-09-18T08:00:00Z",
-  },
-  {
-    id: 8,
-    empCode: "EMP008",
-    name: "Bùi Thị Lan",
-    email: "lan.bui@hrm.vn",
-    role: "employee",
-    address: "55 Trần Hưng Đạo, Q5, TP.HCM",
-    phone: "0978901234",
-    is_active: true,
-    created_by: 1,
-    created_at: "2023-10-22T08:00:00Z",
-  },
-];
+import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+import type { Employee } from "../types";
 
 const AVATAR_COLORS = [
   "bg-violet-500",

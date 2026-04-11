@@ -14,7 +14,6 @@ export const addEmployeeSchema = z
       .length(10, "Phải đúng 10 số")
       .regex(/^[0-9]+$/, "Chỉ được nhập số"),
     address: z.string().min(5, "Địa chỉ quá ngắn").max(255),
-    role: z.enum(["admin", "employee"]),
     password: z
       .string()
       .min(8, "Tối thiểu 8 ký tự")
@@ -37,7 +36,6 @@ export const editEmployeeSchema = z.object({
     .length(10, "Phải đúng 10 số")
     .regex(/^[0-9]+$/, "Chỉ được nhập số"),
   address: z.string().min(5, "Địa chỉ quá ngắn").max(255),
-  role: z.enum(["admin", "employee"]),
   is_active: z.boolean(),
 });
 

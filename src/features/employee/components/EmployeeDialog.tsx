@@ -78,7 +78,6 @@ export function EmployeeDialog({
           email: "",
           phone: "",
           address: "",
-          role: "employee",
           password: "",
           confirmPassword: "",
         }
@@ -87,7 +86,6 @@ export function EmployeeDialog({
           email: "",
           phone: "",
           address: "",
-          role: "employee",
           is_active: true,
         },
   });
@@ -101,7 +99,6 @@ export function EmployeeDialog({
           email: "",
           phone: "",
           address: "",
-          role: "employee",
           password: "",
           confirmPassword: "",
         } as AddEmployeeValues);
@@ -111,7 +108,6 @@ export function EmployeeDialog({
           email: employee.email,
           phone: employee.phone,
           address: employee.address,
-          role: employee.role,
           is_active: employee.is_active,
         } as EditEmployeeValues);
       }
@@ -175,12 +171,6 @@ export function EmployeeDialog({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-4 pt-1"
           >
-            {isAdd && (
-              <Typography variant="label" className="text-[10px]">
-                THÔNG TIN CƠ BẢN
-              </Typography>
-            )}
-
             <TextFieldInput
               name="name"
               label="Họ và tên"
@@ -213,10 +203,6 @@ export function EmployeeDialog({
 
             {isAdd && (
               <>
-                <Separator />
-                <Typography variant="label" className="text-[10px] mt-4 block">
-                  TÀI KHOẢN & MẬT KHẨU
-                </Typography>
                 <TextFieldInput
                   name="password"
                   label="Mật khẩu"
