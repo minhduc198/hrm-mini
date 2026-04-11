@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { Role, User } from "../types/auth";
 
 export interface AuthState {
@@ -9,10 +10,22 @@ export interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  role: null,
-  user: null, 
-  setRole: (role) => set({ role }),
-  setUser: (user) => set({ user, role: user?.role || null }),
-  logout: () => set({ user: null, role: null }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      role: null,
+      user: null,
+      setRole: (role) => set({ role }),
+      setUser: (user) => set({ user, role: user?.role || null }),
+      logout: () => set({ user: null, role: null }),
+    }),
+    {
+      name: "auth-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        user: state.user,
+        role: state.role,
+      }),
+    }
+  )
+);

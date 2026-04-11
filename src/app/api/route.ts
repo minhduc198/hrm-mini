@@ -17,15 +17,16 @@ export async function POST(request: Request) {
 
     const res = NextResponse.json(user);
 
-    res.cookies.set({
-      name: "accessToken",
-      value: accessToken,
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "lax" as const,
       path: "/",
       maxAge: expiresIn,
-    });
+    };
+
+    res.cookies.set({ name: "accessToken", value: accessToken, ...cookieOptions });
+    res.cookies.set({ name: "role", value: user.role, ...cookieOptions });
 
     return res;
   } catch (error: any) {

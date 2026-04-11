@@ -31,10 +31,12 @@ export default function Header() {
 
   useEffect(() => setMounted(true), []);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await fetch("/api/logout", { method: "POST" });
     logout();
     router.push("/");
   };
+
 
   if (!mounted) return <header className="bg-surface border-b border-line h-14 shrink-0" />;
 
