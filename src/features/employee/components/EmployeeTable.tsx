@@ -1,0 +1,316 @@
+"use client";
+
+import { useMemo } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
+import {
+  Pencil,
+  ToggleLeft,
+  ToggleRight,
+  ShieldCheck,
+  User,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { DataTable } from "@/components/common/table/DataTable";
+import type { Employee } from "../types";
+import { ToggleButton } from "@/components/common/form/ToggleButton";
+export type { Employee };
+
+export const MOCK_EMPLOYEES: Employee[] = [
+  {
+    id: 1,
+    empCode: "EMP001",
+    name: "Nguyễn Văn An",
+    email: "an.nguyen@hrm.vn",
+    role: "admin",
+    address: "12 Lê Lợi, Q1, TP.HCM",
+    phone: "0901234567",
+    is_active: true,
+    created_by: 0,
+    created_at: "2023-01-10T08:00:00Z",
+  },
+  {
+    id: 2,
+    empCode: "EMP002",
+    name: "Trần Thị Bích",
+    email: "bich.tran@hrm.vn",
+    role: "employee",
+    address: "45 Nguyễn Huệ, Q1, TP.HCM",
+    phone: "0912345678",
+    is_active: true,
+    created_by: 1,
+    created_at: "2023-03-15T08:00:00Z",
+  },
+  {
+    id: 3,
+    empCode: "EMP003",
+    name: "Lê Hoàng Cường",
+    email: "cuong.le@hrm.vn",
+    role: "employee",
+    address: "78 Đinh Tiên Hoàng, Q.Bình Thạnh",
+    phone: "0923456789",
+    is_active: true,
+    created_by: 1,
+    created_at: "2023-05-20T08:00:00Z",
+  },
+  {
+    id: 4,
+    empCode: "EMP004",
+    name: "Phạm Thị Dung",
+    email: "dung.pham@hrm.vn",
+    role: "employee",
+    address: "33 Cách Mạng Tháng 8, Q3",
+    phone: "0934567890",
+    is_active: false,
+    created_by: 1,
+    created_at: "2023-06-01T08:00:00Z",
+  },
+  {
+    id: 5,
+    empCode: "EMP005",
+    name: "Hoàng Minh Đức",
+    email: "duc.hoang@hrm.vn",
+    role: "employee",
+    address: "90 Võ Văn Tần, Q3, TP.HCM",
+    phone: "0945678901",
+    is_active: true,
+    created_by: 1,
+    created_at: "2023-07-12T08:00:00Z",
+  },
+  {
+    id: 6,
+    empCode: "EMP006",
+    name: "Vũ Thị Hoa",
+    email: "hoa.vu@hrm.vn",
+    role: "employee",
+    address: "15 Pasteur, Q1, TP.HCM",
+    phone: "0956789012",
+    is_active: true,
+    created_by: 1,
+    created_at: "2023-08-05T08:00:00Z",
+  },
+  {
+    id: 7,
+    empCode: "EMP007",
+    name: "Đặng Quốc Hùng",
+    email: "hung.dang@hrm.vn",
+    role: "employee",
+    address: "22 Nguyễn Đình Chiểu, Q3",
+    phone: "0967890123",
+    is_active: false,
+    created_by: 1,
+    created_at: "2023-09-18T08:00:00Z",
+  },
+  {
+    id: 8,
+    empCode: "EMP008",
+    name: "Bùi Thị Lan",
+    email: "lan.bui@hrm.vn",
+    role: "employee",
+    address: "55 Trần Hưng Đạo, Q5, TP.HCM",
+    phone: "0978901234",
+    is_active: true,
+    created_by: 1,
+    created_at: "2023-10-22T08:00:00Z",
+  },
+];
+
+const AVATAR_COLORS = [
+  "bg-violet-500",
+  "bg-sky-500",
+  "bg-emerald-500",
+  "bg-amber-500",
+  "bg-rose-500",
+  "bg-teal-500",
+  "bg-indigo-500",
+  "bg-pink-500",
+];
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .slice(-2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+}
+
+interface EmployeeTableProps {
+  employees: Employee[];
+  onEdit: (emp: Employee) => void;
+  onToggleActive: (emp: Employee) => void;
+}
+
+export function EmployeeTable({
+  employees,
+  onEdit,
+  onToggleActive,
+}: EmployeeTableProps) {
+  const columns = useMemo<ColumnDef<Employee>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Nhân viên",
+        cell: ({ row }) => {
+          const emp = row.original;
+          return (
+            <div className="flex items-center gap-2.5">
+              <div
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-semibold shrink-0",
+                  AVATAR_COLORS[emp.id % AVATAR_COLORS.length],
+                )}
+              >
+                {getInitials(emp.name)}
+              </div>
+              <div className="min-w-0 py-1">
+                <Typography
+                  variant="p"
+                  className="text-[13px] font-medium leading-tight mb-0.5 truncate"
+                >
+                  {emp.name}
+                </Typography>
+                <Typography
+                  variant="small"
+                  className="text-[11px] leading-tight truncate block text-muted-foreground"
+                >
+                  {emp.email}
+                </Typography>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "empCode",
+        header: "Mã NV",
+        cell: ({ row }) => (
+          <Typography
+            variant="small"
+            className="font-mono text-xs text-muted-foreground"
+          >
+            {row.original.empCode}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "phone",
+        header: "Số điện thoại",
+        cell: ({ row }) => (
+          <Typography variant="small" className="text-xs tabular-nums">
+            {row.original.phone}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "address",
+        header: "Địa chỉ",
+        cell: ({ row }) => (
+          <Typography
+            variant="small"
+            className="text-xs text-muted-foreground truncate block max-w-[180px]"
+            title={row.original.address}
+          >
+            {row.original.address}
+          </Typography>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: "Vai trò",
+        cell: ({ row }) => {
+          const emp = row.original;
+          return (
+            <span
+              className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-medium",
+                emp.role === "admin"
+                  ? "bg-violet-50 text-violet-700 border-violet-200"
+                  : "bg-slate-50 text-slate-600 border-slate-200",
+              )}
+            >
+              {emp.role === "admin" ? (
+                <>
+                  <ShieldCheck size={10} />
+                  Admin
+                </>
+              ) : (
+                <>
+                  <User size={10} />
+                  Nhân viên
+                </>
+              )}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "is_active",
+        header: "Trạng thái",
+        cell: ({ row }) => {
+          const emp = row.original;
+          return (
+            <span
+              className={cn(
+                "inline-flex items-center px-2 py-0.5 rounded-full border text-[11px] font-medium",
+                emp.is_active
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-slate-50 text-slate-400 border-slate-200",
+              )}
+            >
+              {emp.is_active ? "Hoạt động" : "Vô hiệu"}
+            </span>
+          );
+        },
+      },
+      {
+        accessorKey: "created_at",
+        header: "Ngày tạo",
+        cell: ({ row }) => (
+          <Typography
+            variant="small"
+            className="text-xs tabular-nums text-muted-foreground"
+          >
+            {new Date(row.original.created_at).toLocaleDateString("vi-VN")}
+          </Typography>
+        ),
+      },
+      {
+        id: "actions",
+        header: "",
+        cell: ({ row }) => {
+          const emp = row.original;
+          return (
+            <div className="flex items-center justify-end gap-3 pr-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 p-0 text-muted-foreground border-none hover:text-primary shadow-none transition-all"
+                onClick={() => onEdit(emp)}
+              >
+                <Pencil size={13} />
+              </Button>
+
+              <ToggleButton
+                checked={emp.is_active}
+                onCheckedChange={() => onToggleActive(emp)}
+                title={emp.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
+              />
+            </div>
+          );
+        },
+      },
+    ],
+    [onEdit, onToggleActive],
+  );
+
+  return (
+    <DataTable
+      columns={columns}
+      data={employees}
+      emptyStateText="Không tìm thấy nhân viên nào"
+      showPagination={false}
+    />
+  );
+}

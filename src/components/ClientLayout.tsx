@@ -37,10 +37,10 @@ export default function ClientLayout({
       }
     >
       <AppSidebar />
-      
-      <SidebarInset className="min-w-0 overflow-hidden flex flex-col min-h-screen bg-page text-base">
+
+      <SidebarInset className="min-w-0 flex flex-col h-screen overflow-y-auto bg-page text-base scroll-smooth">
         <Header />
-        <main className="w-full flex-1 min-w-0 p-4 md:p-6">{children}</main>
+        <main className="w-full flex-1 min-w-0">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

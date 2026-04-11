@@ -10,11 +10,11 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useSidebar } from "./ui/sidebar";
 import { useSession } from "next-auth/react";
@@ -39,7 +39,7 @@ export default function Header() {
   if (!mounted) return <header className="bg-surface border-b border-line h-14 shrink-0" />;
 
   return (
-    <header className="bg-surface border-b border-line h-14 flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-40 transition-[width]">
+    <header className="bg-surface/80 backdrop-blur-md border-b border-line h-14 flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-40 transition-all shadow-sm">
       <Button
         variant="ghost"
         size="icon"
@@ -66,7 +66,10 @@ export default function Header() {
                 {role || "Employee"}
               </Typography>
             </div>
-            <ChevronDown size={13} className="text-muted hidden md:block ml-1" />
+            <ChevronDown
+              size={13}
+              className="text-muted hidden md:block ml-1"
+            />
           </div>
         </DropdownMenuTrigger>
 
@@ -101,4 +104,3 @@ export default function Header() {
     </header>
   );
 }
-
