@@ -22,9 +22,8 @@ export function useLogin() {
       return res;
     },
     onSuccess: () => {
-      toast.success("Đăng nhập thành công!");
+      sessionStorage.setItem("showLoginSuccessToast", "true");
       router.replace("/employee-management");
-      router.refresh(); // Refresh to update session
     },
     onError: (error: Error) => {
       toast.error(error.message || "Đăng nhập thất bại");
