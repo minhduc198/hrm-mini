@@ -1,18 +1,28 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import Header from "./Header";
 import { useSidebarControl } from "@/hooks/use-sidebar";
-import { useRoleGuard } from "@/hooks/use-role-guard";
+import { toast } from "sonner";
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  useRoleGuard();
   const { isPinned, setIsPinned } = useSidebarControl();
+
+  useEffect(() => {
+    const showLoginToast = sessionStorage.getItem("showLoginSuccessToast");
+    if (showLoginToast === "true") {
+      sessionStorage.removeItem("showLoginSuccessToast");
+      // Small delay to ensure page is fully rendered
+      requestAnimationFrame(() => {
+        toast.success("Đăng nhập thành công!");
+      });
+    }
+  }, []);
 
 
   return (

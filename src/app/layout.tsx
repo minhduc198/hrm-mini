@@ -1,3 +1,5 @@
+import NextAuthProvider from "@/providers/session-provider";
+import { AuthErrorProvider } from "@/providers/auth-error-provider";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -21,9 +23,13 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
-        <ReactQueryProvider>
-          {children}
-        </ReactQueryProvider>
+        <NextAuthProvider>
+          <ReactQueryProvider>
+            <AuthErrorProvider>
+              {children}
+            </AuthErrorProvider>
+          </ReactQueryProvider>
+        </NextAuthProvider>
         <Toaster richColors position="bottom-right" />
       </body>
     </html>
