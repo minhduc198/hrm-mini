@@ -1,5 +1,5 @@
-import NextAuthProvider from "@/components/providers/session-provider";
-import { AuthErrorProvider } from "@/components/providers/auth-error-provider";
+import NextAuthProvider from "@/providers/session-provider";
+import { AuthErrorProvider } from "@/providers/auth-error-provider";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
