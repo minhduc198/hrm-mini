@@ -22,7 +22,7 @@ import {
   useSidebar,
 } from "./ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-
+import { routes } from "@/constants/routes";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -37,16 +37,16 @@ export function AppSidebar() {
   const getNavItems = () => {
     if (role === "admin") {
       return [
-        { key: "employees", label: "Quản lý nhân viên", url: "/employee-management", icon: Users },
-        { key: "leave", label: "Quản lý đơn xin nghỉ", url: "/leave/manage", icon: CalendarDays },
-        { key: "attendance", label: "Quản lý chấm công", url: "/attendance/manage", icon: Clock },
-        { key: "roles", label: "Quản lý phân quyền", url: "/permission-management", icon: Shield },
+        { key: "employees", label: "Quản lý nhân viên", url: routes.employeeManagement, icon: Users },
+        { key: "leave", label: "Quản lý đơn xin nghỉ", url: routes.leave.manage, icon: CalendarDays },
+        { key: "attendance", label: "Quản lý chấm công", url: routes.attendance.manage, icon: Clock },
+        { key: "roles", label: "Quản lý phân quyền", url: routes.permissionManagement, icon: Shield },
       ];
     }
     // Employee Role Default
     return [
-      { key: "attendance", label: "Chấm công", url: "/attendance/personal", icon: Clock },
-      { key: "leave", label: "Xin nghỉ", url: "/leave/personal", icon: CalendarDays },
+      { key: "attendance", label: "Chấm công", url: routes.attendance.personal, icon: Clock },
+      { key: "leave", label: "Xin nghỉ", url: routes.leave.personal, icon: CalendarDays },
     ];
   };
 

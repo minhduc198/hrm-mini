@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
 import { LoginFormValues } from "../types/auth";
+import { routes } from "@/constants/routes";
 
 export function useLogin() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export function useLogin() {
     },
     onSuccess: () => {
       sessionStorage.setItem("showLoginSuccessToast", "true");
-      router.replace("/employee-management");
+      router.replace(routes.employeeManagement);
     },
     onError: (error: Error) => {
       toast.error(error.message || "Đăng nhập thất bại");
