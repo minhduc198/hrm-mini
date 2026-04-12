@@ -15,6 +15,8 @@ if (!NEXTAUTH_SECRET && process.env.NODE_ENV === "development") {
   );
 }
 
+import { routes } from "@/constants/routes";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -86,7 +88,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/",
+    signIn: routes.auth.login,
   },
   session: {
     strategy: "jwt",
