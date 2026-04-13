@@ -1,11 +1,5 @@
 "use client";
-import {
-    ChevronDown,
-    CircleUser,
-    LogOut,
-    Menu,
-    Settings
-} from "lucide-react";
+import { ChevronDown, CircleUser, LogOut, Menu, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -20,23 +14,16 @@ import { useSidebar } from "./ui/sidebar";
 import { useSession } from "next-auth/react";
 import { Typography } from "./ui/typography";
 import { useLogout } from "@/features/auth/hooks/use-logout";
+import Link from "next/link";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
-  
+
   const { data: session } = useSession();
   const user = session?.user;
   const role = user?.role;
- 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   const { mutate: handleSignOut } = useLogout();
-
-
-
-  if (!mounted) return <header className="bg-surface border-b border-line h-14 shrink-0" />;
 
   return (
     <header className="bg-surface/80 backdrop-blur-md border-b border-line h-14 flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-40 transition-all shadow-sm">
@@ -59,10 +46,16 @@ export default function Header() {
               </AvatarFallback>
             </Avatar>
             <div className="hidden xl:block text-left">
-              <Typography variant="p" className="text-xs font-semibold text-base leading-none">
+              <Typography
+                variant="p"
+                className="text-xs font-semibold text-base leading-none"
+              >
                 {user?.name || "Loading..."}
               </Typography>
-              <Typography variant="small" className="text-[10px] text-muted mt-1 leading-none block capitalize">
+              <Typography
+                variant="small"
+                className="text-[10px] text-muted mt-1 leading-none block capitalize"
+              >
                 {role || "Employee"}
               </Typography>
             </div>
@@ -81,13 +74,21 @@ export default function Header() {
             <Typography variant="p" className="text-sm font-medium text-base">
               {user?.name || "Loading..."}
             </Typography>
-            <Typography variant="small" className="text-xs text-muted block mt-1">
+            <Typography
+              variant="small"
+              className="text-xs text-muted block mt-1"
+            >
               {user?.email || "loading@..."}
             </Typography>
           </div>
           <DropdownMenuSeparator className="bg-line" />
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-muted focus:bg-page focus:text-base">
-            <CircleUser size={15} /> Edit profile
+          <DropdownMenuItem asChild>
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm! text-muted! focus:bg-page focus:text-base!"
+            >
+              <CircleUser size={15} /> Edit profile
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-muted focus:bg-page focus:text-base">
             <Settings size={15} /> Settings

@@ -54,7 +54,7 @@ interface EmployeeDialogProps {
   employee?: Employee | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: AddEmployeeValues | EditEmployeeValues) => void;
 }
 
 export function EmployeeDialog({
@@ -111,7 +111,7 @@ export function EmployeeDialog({
     }
   }, [open, employee, isAdd, form]);
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: AddEmployeeValues | EditEmployeeValues) => {
     onSubmit(values);
     if (isAdd) {
       form.reset();
@@ -145,14 +145,11 @@ export function EmployeeDialog({
             ) : null}
             <div>
               <DialogTitle asChild>
-                <Typography variant="h4" className="text-[15px]">
+                <Typography variant="h3" className="text-[15px]">
                   {isAdd ? "Thêm nhân viên mới" : "Chỉnh sửa nhân viên"}
                 </Typography>
               </DialogTitle>
-              <Typography
-                variant="small"
-                className="text-xs mt-0.5 leading-none"
-              >
+              <Typography variant="small" className="text-xs leading-none">
                 {isAdd ? (
                   "Tạo tài khoản và cung cấp thông tin đăng nhập"
                 ) : (
