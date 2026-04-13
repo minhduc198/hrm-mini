@@ -2,36 +2,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-### 1. Environment Setup
-
-Before running the application, you need to set up your environment variables:
-
-1. Copy the example environment file:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-2. Generate a secure secret for NextAuth:
-   ```bash
-   # On Linux/Mac
-   openssl rand -base64 32
-   
-   # On Windows (PowerShell)
-   [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Minimum 0 -Maximum 256 }))
-   ```
-
-3. Update `.env.local` with your generated secret and configuration:
-   ```env
-   NEXTAUTH_SECRET=<your-generated-secret>
-   NEXTAUTH_URL=http://localhost:3000
-   NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
-   NODE_ENV=development
-   ```
-
-⚠️ **Important**: Never commit `.env.local` to version control. The application requires `NEXTAUTH_SECRET` to be set in production for security.
-
-### 2. Start Development Server
-
 First, run the development server:
 
 ```bash

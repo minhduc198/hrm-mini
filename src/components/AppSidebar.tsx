@@ -22,7 +22,6 @@ import {
   useSidebar,
 } from "./ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { routes } from "@/constants/routes";
 
 export function AppSidebar() {
   const router = useRouter();

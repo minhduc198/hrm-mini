@@ -1,20 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "../stores/auth";
+import { logoutApi } from "../api/logout";
 import { queryClient } from "@/lib/query-client";
-import api from "@/lib/axios";
 
 export function useLogout() {
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
   return useMutation({
-    mutationFn: async () => {
-      try {
-        await api.post("/logout");
-      } catch (e) {
-        console.warn("Backend logout failed", e);
-      }
-      await signOut({ callbackUrl: "/" });
+    mutationFn: logoutApi,
+    onMutate: () => {
+      logout();
     },
     onSettled: () => {
       queryClient.clear();
+      router.replace("/");
     },
   });
 }

@@ -17,8 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useSidebar } from "./ui/sidebar";
-import { useSession } from "next-auth/react";
 import { Typography } from "./ui/typography";
+import { useAuthStore } from "@/features/auth/stores/auth";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 
 export default function Header() {
