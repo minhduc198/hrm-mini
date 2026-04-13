@@ -82,12 +82,17 @@
   --color-primary-foreground: var(--primary-fg);
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background-color: var(--bg-page);
   color: var(--tx-base);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
 
 @layer base {
   button {
