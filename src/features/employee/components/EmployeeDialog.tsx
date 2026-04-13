@@ -26,17 +26,7 @@ import {
 } from "../schemas";
 
 import type { Employee } from "../types";
-
-const AVATAR_COLORS = [
-  "bg-violet-500",
-  "bg-sky-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-  "bg-rose-500",
-  "bg-teal-500",
-  "bg-indigo-500",
-  "bg-pink-500",
-];
+import { AVATAR_COLORS } from "../constants";
 
 function getInitials(name: string) {
   return name
@@ -54,7 +44,7 @@ interface EmployeeDialogProps {
   employee?: Employee | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (values: AddEmployeeValues | EditEmployeeValues) => void;
+  onSubmit: (values: any) => void;
 }
 
 export function EmployeeDialog({
