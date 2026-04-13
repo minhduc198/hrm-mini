@@ -1,24 +1,33 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { loginApi } from "../api/login";
-import { useAuthStore } from "../stores/auth";
-import { ApiError } from "@/types/api";
+import { signIn } from "next-auth/react";
+import { LoginFormValues } from "../types/auth";
+import { routes } from "@/constants/routes";
 
 export function useLogin() {
   const router = useRouter();
-  const { setUser, setRole } = useAuthStore();
 
   return useMutation({
-    mutationFn: loginApi,
-    onSuccess: (user) => {
-      toast.success("Đăng nhập thành công!");
-      setUser(user);
-      setRole(user.role || "employee");
-      router.replace("/employee-management");
+    mutationFn: async (data: LoginFormValues) => {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (res?.error) {
+        throw new Error(res.error);
+      }
+
+      return res;
     },
-    onError: (error: ApiError) => {
-      toast.error(error.message);
+    onSuccess: () => {
+      sessionStorage.setItem("showLoginSuccessToast", "true");
+      router.replace(routes.employeeManagement);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Đăng nhập thất bại");
     }
   });
 }
