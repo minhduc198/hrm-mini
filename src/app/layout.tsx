@@ -4,6 +4,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import ReactQueryProvider from "@/providers/react-query-provider";
+import ClientLayout from "@/components/ClientLayout";
 
 const fontSans = Inter({
   subsets: ["latin", "vietnamese"],

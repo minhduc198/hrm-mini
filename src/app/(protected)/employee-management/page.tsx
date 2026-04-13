@@ -1,5 +1,9 @@
+import EmployeeManagePage from "@/features/employee/page";
+
 export default function Page() {
-    return <div>
-        employees/manage Page
-    </div>;
+  return (
+    <div>
+      <EmployeeManagePage />
+    </div>
+  );
 }

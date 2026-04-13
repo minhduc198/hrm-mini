@@ -57,11 +57,18 @@ export function AppSidebar() {
       <SidebarHeader className="px-4 py-5 pb-5 !bg-primary">
         <div className="flex items-center group-data-[collapsible=icon]:justify-center gap-2.5 px-1">
           <div className="w-8 h-8 rounded-lg bg-white/95 flex items-center justify-center text-primary shrink-0 ">
-            <Typography variant="p" as="div" className="text-xs font-semibold leading-none  ">
+            <Typography
+              variant="p"
+              as="div"
+              className="text-xs font-semibold leading-none  "
+            >
               HR
             </Typography>
           </div>
-          <Typography variant="h4" className="text-white text-sm font-semibold tracking-tight shrink-0  group-data-[collapsible=icon]:hidden">
+          <Typography
+            variant="h4"
+            className="text-white text-sm font-semibold tracking-tight shrink-0  group-data-[collapsible=icon]:hidden"
+          >
             HRM
           </Typography>
         </div>
@@ -69,7 +76,10 @@ export function AppSidebar() {
 
       <SidebarContent className="px-3 gap-0 !bg-primary">
         <SidebarGroup className="p-0">
-          <Typography variant="label" className="text-[10px] text-white/30 px-3 pb-2 pt-1 font-semibold group-data-[collapsible=icon]:hidden">
+          <Typography
+            variant="label"
+            className="text-[10px] text-white/30 px-3 pb-2 pt-1 font-semibold group-data-[collapsible=icon]:hidden"
+          >
             MENU
           </Typography>
 
@@ -90,16 +100,23 @@ export function AppSidebar() {
                       "group-data-[collapsible=icon]:!w-9 group-data-[collapsible=icon]:!h-9 group-data-[collapsible=icon]: group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-auto",
                       currentActive
                         ? "bg-white text-primary font-medium hover:bg-white hover:text-primary"
-                        : "text-white hover:bg-white/[0.08] hover:text-white/85"
+                        : "text-white hover:bg-white/[0.08] hover:text-white/85",
                     )}
                   >
-                    <Icon size={16} strokeWidth={1.75} className="flex-shrink-0" />
+                    <Icon
+                      size={16}
+                      strokeWidth={1.75}
+                      className="flex-shrink-0"
+                    />
                     <Typography
                       variant="p"
                       as="span"
-                      className={cn('flex-1 font-inherit leading-none group-data-[collapsible=icon]:hidden truncate', {
-                        'text-white': !currentActive,
-                      })}
+                      className={cn(
+                        "flex-1 font-inherit leading-normal group-data-[collapsible=icon]:hidden truncate py-0.5",
+                        {
+                          "text-white": !currentActive,
+                        },
+                      )}
                     >
                       {item.label}
                     </Typography>

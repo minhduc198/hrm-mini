@@ -27,7 +27,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -48,7 +48,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject({ message, status } as ApiError);
-  }
+  },
 );
 
 export default api;
