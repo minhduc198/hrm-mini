@@ -1,13 +1,12 @@
 "use client";
 
-import { PermissionDefinition, SelectedEmployee } from "../types/permission";
+import { PermissionAPIResponse, UserAPIResponse } from "../types/permission";
 import { cn } from "@/lib/utils";
 import { EmployeeSelector } from "./employee-selector";
 
 interface PermissionRowProps {
-  permission: PermissionDefinition;
-  employees: SelectedEmployee[];
-  onAddEmployee: (employee: SelectedEmployee) => void;
+  permission: PermissionAPIResponse;
+  onAddEmployee: (employee: UserAPIResponse) => void;
   onRemoveEmployee: (employeeId: string) => void;
   depth?: number;
   className?: string;
@@ -15,14 +14,11 @@ interface PermissionRowProps {
 
 export function PermissionRow({
   permission,
-  employees,
   onAddEmployee,
   onRemoveEmployee,
   depth = 0,
   className,
 }: PermissionRowProps) {
-  const isDisabled = permission.alwaysGranted;
-
   return (
     <div
       className={cn(
@@ -36,7 +32,9 @@ export function PermissionRow({
         "w-1/2 py-4 px-6 border-r border-line flex flex-col justify-center",
         depth > 0 && "pl-12"
       )}>
-        <p className="text-[13px] font-semibold tracking-tight text-base">{permission.label}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-[13px] font-semibold tracking-tight text-base">{permission.name}</p>
+        </div>
         {permission.description && (
           <p className="text-[11.5px] text-muted mt-1 leading-relaxed opacity-80">{permission.description}</p>
         )}
@@ -45,7 +43,7 @@ export function PermissionRow({
       {/* Right Column - Employee selector */}
       <div className="w-1/2 relative px-6 py-2 flex items-center">
         <EmployeeSelector
-          selectedEmployees={employees}
+          selectedEmployees={permission.users}
           onAddEmployee={onAddEmployee}
           onRemoveEmployee={onRemoveEmployee}
         />

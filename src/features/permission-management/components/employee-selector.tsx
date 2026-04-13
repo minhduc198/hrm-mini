@@ -14,12 +14,12 @@ import {
   TooltipArrow,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { SelectedEmployee } from "../types/permission";
+import { UserAPIResponse } from "../types/permission";
 import { MOCK_EMPLOYEES, getInitials, getAvatarColor } from "../utils/employee";
 
 interface EmployeeSelectorProps {
-  selectedEmployees: SelectedEmployee[];
-  onAddEmployee: (employee: SelectedEmployee) => void;
+  selectedEmployees: UserAPIResponse[];
+  onAddEmployee: (employee: UserAPIResponse) => void;
   onRemoveEmployee: (employeeId: string) => void;
 }
 
@@ -36,7 +36,10 @@ export function EmployeeSelector({
 
   // Filter out employees who are already selected and match search query
   const availableEmployees = useMemo(() => {
-    return MOCK_EMPLOYEES.filter((emp) => {
+    return MOCK_EMPLOYEES.map(emp => ({
+      ...emp,
+      shortName: getInitials(emp.name)
+    })).filter((emp) => {
       const isAlreadySelected = selectedEmployees.some((s) => s.id === emp.id);
       if (isAlreadySelected) return false;
 
@@ -52,7 +55,7 @@ export function EmployeeSelector({
   const visibleSelected = selectedEmployees.slice(0, MAX_VISIBLE_AVATARS);
   const hiddenCount = selectedEmployees.length - MAX_VISIBLE_AVATARS;
 
-  const handleSelect = (employee: SelectedEmployee) => {
+  const handleSelect = (employee: UserAPIResponse) => {
     onAddEmployee(employee);
     setSearchQuery("");
   };
@@ -88,7 +91,7 @@ export function EmployeeSelector({
                         <AvatarImage src={employee.avatar} alt={employee.name} />
                       ) : (
                         <AvatarFallback className={cn("text-[10px] font-bold text-white", getAvatarColor(employee.id))}>
-                          {getInitials(employee.name)}
+                          {employee.shortName || getInitials(employee.name)}
                         </AvatarFallback>
                       )}
                     </Avatar>
@@ -187,7 +190,7 @@ export function EmployeeSelector({
                           <AvatarImage src={employee.avatar} alt={employee.name} />
                         ) : (
                           <AvatarFallback className={cn("text-[9px] font-bold text-white", getAvatarColor(employee.id))}>
-                            {getInitials(employee.name)}
+                            {employee.shortName || getInitials(employee.name)}
                           </AvatarFallback>
                         )}
                       </Avatar>

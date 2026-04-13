@@ -43,6 +43,30 @@ export interface SelectedEmployee {
   avatar?: string;
 }
 
+// --- API-ready Types ---
+
+export interface UserAPIResponse {
+  id: string;
+  name: string;
+  shortName: string;
+  avatar?: string;
+  email: string;
+}
+
+export interface PermissionAPIResponse {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  users: UserAPIResponse[];
+}
+
+export interface ModuleAPIResponse {
+  id: string;
+  name: string;
+  permissions: PermissionAPIResponse[];
+}
+
 export interface EmployeeSearchResult {
   id: string;
   name: string;

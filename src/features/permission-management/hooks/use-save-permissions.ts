@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface SavePermissionsInput {
-  employeeIds: string[];
-  permissions: string[];
+  user_ids: string[];
+  permission_ids: string[];
 }
 
 export function useSavePermissions() {
@@ -14,12 +14,12 @@ export function useSavePermissions() {
       // return response.data;
 
       // Mock implementation
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 800));
       return input;
     },
     onSuccess: (_, variables) => {
       toast.success(
-        `Đã lưu phân quyền cho ${variables.employeeIds.length} nhân viên`
+        `Đã lưu phân quyền cho ${variables.user_ids.length} nhân viên`
       );
     },
     onError: (error: { message?: string }) => {

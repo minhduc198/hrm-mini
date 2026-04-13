@@ -1,52 +1,18 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Permission, SelectedEmployee } from "../types/permission";
-import { PERMISSION_MODULES } from "../constants/permissions";
+import { usePermissionMatrix } from "../hooks/use-permission-matrix";
 import { ModuleSection } from "./module-section";
 import { Button } from "@/components/ui/button";
-import { Shield, Save } from "lucide-react";
-import { toast } from "sonner";
+import { Shield, Save, Loader2 } from "lucide-react";
 
 export function PermissionMatrix() {
-  const [employeesByPermission, setEmployeesByPermission] = useState<Map<Permission, SelectedEmployee[]>>(
-    new Map()
-  );
-
-  const handleAddEmployee = useCallback((permission: Permission, employee: SelectedEmployee) => {
-    setEmployeesByPermission((prev) => {
-      const next = new Map(prev);
-      const employees = next.get(permission) || [];
-      if (!employees.find((e) => e.id === employee.id)) {
-        next.set(permission, [...employees, employee]);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleRemoveEmployee = useCallback((permission: Permission, employeeId: string) => {
-    setEmployeesByPermission((prev) => {
-      const next = new Map(prev);
-      const employees = next.get(permission) || [];
-      next.set(permission, employees.filter((e) => e.id !== employeeId));
-      return next;
-    });
-  }, []);
-
-  const handleSavePermissions = () => {
-    const totalEmployees = Array.from(employeesByPermission.values()).reduce(
-      (sum, employees) => sum + employees.length,
-      0
-    );
-    if (totalEmployees === 0) {
-      toast.error("Vui lòng thêm ít nhất một nhân viên");
-      return;
-    }
-
-    // TODO: Replace with actual API call
-    toast.success(`Đã lưu phân quyền cho ${totalEmployees} nhân viên`);
-    console.log("Saving permissions:", Object.fromEntries(employeesByPermission));
-  };
+  const { 
+    modules, 
+    handleAddEmployee, 
+    handleRemoveEmployee, 
+    handleSave, 
+    isSaving 
+  } = usePermissionMatrix();
 
   return (
     <div className="flex flex-col gap-6 h-full text-base">
@@ -67,21 +33,25 @@ export function PermissionMatrix() {
         </div>
 
         <Button 
-          onClick={handleSavePermissions} 
-          className="gap-2 bg-primary hover:bg-primary-hover text-primary-fg transition-colors"
+          onClick={handleSave} 
+          disabled={isSaving}
+          className="gap-2 bg-primary hover:bg-primary-hover text-primary-fg transition-colors min-w-[140px]"
         >
-          <Save className="w-4 h-4" />
-          Lưu phân quyền
+          {isSaving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          {isSaving ? "Đang lưu..." : "Lưu phân quyền"}
         </Button>
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col gap-5 flex-1 min-h-0">
-        {PERMISSION_MODULES.map((module) => (
+      <div className="flex flex-col gap-5 flex-1 min-h-0 overflow-y-auto pr-1 no-scrollbar pb-10">
+        {modules.map((module) => (
           <ModuleSection
-            key={module.key}
+            key={module.id}
             module={module}
-            employeesByPermission={employeesByPermission}
             onAddEmployee={handleAddEmployee}
             onRemoveEmployee={handleRemoveEmployee}
           />

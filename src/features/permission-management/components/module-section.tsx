@@ -1,22 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { Permission, SelectedEmployee } from "../types/permission";
-import { ModuleDefinition } from "../types/permission";
+import { ModuleAPIResponse, UserAPIResponse } from "../types/permission";
 import { PermissionRow } from "./permission-row";
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
 
 interface ModuleSectionProps {
-  module: ModuleDefinition;
-  employeesByPermission: Map<Permission, SelectedEmployee[]>;
-  onAddEmployee: (permission: Permission, employee: SelectedEmployee) => void;
-  onRemoveEmployee: (permission: Permission, employeeId: string) => void;
+  module: ModuleAPIResponse;
+  onAddEmployee: (permissionId: string, employee: UserAPIResponse) => void;
+  onRemoveEmployee: (permissionId: string, employeeId: string) => void;
 }
 
 export function ModuleSection({
   module,
-  employeesByPermission,
   onAddEmployee,
   onRemoveEmployee,
 }: ModuleSectionProps) {
@@ -39,7 +36,7 @@ export function ModuleSection({
             <ChevronRight className="w-4 h-4 text-muted" />
           )}
           <span className="font-bold text-[11px] text-primary uppercase tracking-widest">
-            {module.label}
+            {module.name}
           </span>
         </div>
       </button>
@@ -58,21 +55,17 @@ export function ModuleSection({
             Nhân viên được phân quyền
           </div>
         </div>
-
       )}
-
-
 
       {/* Module Permissions */}
       {isExpanded && (
         <div className="rounded-b-xl overflow-visible">
           {module.permissions.map((permission, index) => (
             <PermissionRow
-              key={permission.key}
+              key={permission.id}
               permission={permission}
-              employees={employeesByPermission.get(permission.key) || []}
-              onAddEmployee={(employee) => onAddEmployee(permission.key, employee)}
-              onRemoveEmployee={(employeeId) => onRemoveEmployee(permission.key, employeeId)}
+              onAddEmployee={(employee) => onAddEmployee(permission.id, employee)}
+              onRemoveEmployee={(employeeId) => onRemoveEmployee(permission.id, employeeId)}
               depth={1}
               className={cn(index === module.permissions.length - 1 && "rounded-b-xl")}
             />
