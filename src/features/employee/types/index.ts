@@ -50,5 +50,18 @@ export type UpdateEmployeePayload = {
   is_active?: boolean;
 };
 
+export type UpdateProfilePayload = {
+  name?: string;
+  phone?: string;
+  address?: string;
+  avatar?: File;
+};
+
+export type ChangePasswordPayload = {
+  old_password: string;
+  new_password: string;
+  new_password_confirmation: string;
+};
+
 export type RoleFilter = "all" | "admin" | "employee";
 export type StatusFilter = "all" | "active" | "inactive";

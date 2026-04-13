@@ -27,5 +27,6 @@ declare module "next-auth/jwt" {
     accessToken?: string;
     role?: string;
     empCode?: string;
+    avatar?: string;
   }
 }
