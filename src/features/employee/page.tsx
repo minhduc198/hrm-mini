@@ -1,4 +1,4 @@
-
+"use client";
 import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

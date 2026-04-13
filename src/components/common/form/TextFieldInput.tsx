@@ -30,17 +30,18 @@ export function TextFieldInput({
       render={({ field, fieldState: { error } }) => (
         <div className={cn("space-y-1.5", className)}>
           <div className="flex items-center justify-between">
-            <Label 
-               htmlFor={name}
-               className={cn(
-                 "text-xs font-semibold tracking-wide text-muted-foreground",
-                 error && "text-red-500"
-               )}
+            <Label
+              htmlFor={name}
+              className={cn(
+                "text-[12px] font-semibold tracking-wide text-muted-foreground",
+                error && "text-red-500",
+              )}
             >
-              {label.toUpperCase()} {required && <span className="text-red-500 ml-0.5">*</span>}
+              {label}{" "}
+              {required && <span className="text-red-500 ml-0.5">*</span>}
             </Label>
           </div>
-          
+
           <div className="relative group">
             <Input
               {...field}
@@ -52,8 +53,9 @@ export function TextFieldInput({
               className={cn(
                 "h-10 rounded-lg border-black/40 bg-white px-3 py-2 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10",
                 isPassword && "pr-10",
-                error && "border-red-500 focus:border-red-500 focus:ring-red-500/10",
-                className
+                error &&
+                  "border-red-500 focus:border-red-500 focus:ring-red-500/10",
+                className,
               )}
             />
             {isPassword && field.value && (
@@ -66,7 +68,7 @@ export function TextFieldInput({
               </button>
             )}
           </div>
-          
+
           {error && (
             <div className="flex items-center gap-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
               <AlertCircle size={12} className="text-red-500" />
