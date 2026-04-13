@@ -44,11 +44,20 @@ export function EmployeeTable({
             <div className="flex items-center gap-2.5">
               <div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-semibold shrink-0",
-                  AVATAR_COLORS[emp.id % AVATAR_COLORS.length],
+                  "w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-white text-[11px] font-semibold shrink-0",
+                  !emp.avatar_url &&
+                    AVATAR_COLORS[emp.id % AVATAR_COLORS.length],
                 )}
               >
-                {getInitials(emp.name)}
+                {emp.avatar_url ? (
+                  <img
+                    src={emp.avatar_url}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  getInitials(emp.name)
+                )}
               </div>
               <div className="min-w-0 py-1">
                 <Typography
