@@ -19,6 +19,8 @@ const typographyVariants = cva("text-foreground", {
         "font-sans text-[0.875rem] font-semibold text-muted-foreground",
       "label-xs":
         "font-sans text-[0.6875rem] font-semibold text-muted-foreground",
+      "label-sm":
+        "font-sans text-[0.75rem] font-semibold text-muted-foreground",
       tiny: "font-sans text-[0.625rem] font-normal leading-normal text-muted-foreground",
       code: "font-mono text-sm font-medium bg-muted text-foreground rounded px-[0.4em] py-[0.15em] border border-border/50",
       blockquote:
@@ -41,6 +43,7 @@ const variantElementMap: Record<string, React.ElementType> = {
   muted: "p",
   label: "span",
   "label-xs": "span",
+  "label-sm": "span",
   tiny: "span",
   code: "code",
   blockquote: "blockquote",

@@ -1,5 +1,5 @@
+import { PermissionMatrix } from "@/features/permission-management/components/permission-matrix";
+
 export default function Page() {
-    return <div>
-        roles Page
-    </div>;
+  return <PermissionMatrix />;
 }
