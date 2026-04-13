@@ -3,6 +3,7 @@
 import { usePermissionMatrix } from "../hooks/use-permission-matrix";
 import { ModuleSection } from "./module-section";
 import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
 import { Shield, Save, Loader2 } from "lucide-react";
 
 export function PermissionMatrix() {
@@ -23,12 +24,12 @@ export function PermissionMatrix() {
             <Shield className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
+            <Typography variant="h4" className="text-lg font-bold">
               Quản lý phân quyền
-            </h1>
-            <p className="text-[13px] text-muted">
+            </Typography>
+            <Typography variant="small" className="text-muted leading-none text-xs">
               Cấu hình quyền truy cập cho nhân viên một cách trực quan
-            </p>
+            </Typography>
           </div>
         </div>
 

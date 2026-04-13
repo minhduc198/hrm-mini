@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ModuleAPIResponse, UserAPIResponse } from "../types/permission";
 import { PermissionRow } from "./permission-row";
 import { cn } from "@/lib/utils";
+import { Typography } from "@/components/ui/typography";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
 
 interface ModuleSectionProps {
@@ -35,24 +36,28 @@ export function ModuleSection({
           ) : (
             <ChevronRight className="w-4 h-4 text-muted" />
           )}
-          <span className="font-bold text-[11px] text-primary uppercase tracking-widest">
+          <Typography variant="label-sm" className="text-primary uppercase tracking-widest leading-none">
             {module.name}
-          </span>
+          </Typography>
         </div>
       </button>
 
       {/* Column Headers */}
       {isExpanded && (
-        <div className="flex items-stretch bg-page/50 border-t border-b border-line text-[11px] font-bold text-muted uppercase tracking-widest">
+        <div className="flex items-stretch bg-page/50 border-t border-b border-line">
           <div className="w-1/2 flex items-center gap-2 px-6 py-3 border-r border-line">
             <svg className="w-3.5 h-3.5 text-subtle-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
-            Nghiệp vụ
+            <Typography variant="label-xs" className="uppercase tracking-widest leading-none">
+              Nghiệp vụ
+            </Typography>
           </div>
           <div className="w-1/2 flex items-center gap-2 px-6 py-3">
             <Users className="w-3.5 h-3.5 text-subtle-text" />
-            Nhân viên được phân quyền
+            <Typography variant="label-xs" className="uppercase tracking-widest leading-none">
+              Nhân viên được phân quyền
+            </Typography>
           </div>
         </div>
       )}

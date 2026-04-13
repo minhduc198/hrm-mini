@@ -2,6 +2,7 @@
 
 import { PermissionAPIResponse, UserAPIResponse } from "../types/permission";
 import { cn } from "@/lib/utils";
+import { Typography } from "@/components/ui/typography";
 import { EmployeeSelector } from "./employee-selector";
 
 interface PermissionRowProps {
@@ -33,10 +34,14 @@ export function PermissionRow({
         depth > 0 && "pl-12"
       )}>
         <div className="flex items-center gap-2">
-          <p className="text-[13px] font-semibold tracking-tight text-base">{permission.name}</p>
+          <Typography variant="label-sm" className="text-base tracking-tight leading-none">
+            {permission.name}
+          </Typography>
         </div>
         {permission.description && (
-          <p className="text-[11.5px] text-muted mt-1 leading-relaxed opacity-80">{permission.description}</p>
+          <Typography variant="tiny" className="text-muted mt-1 leading-tight opacity-80">
+            {permission.description}
+          </Typography>
         )}
       </div>
 
