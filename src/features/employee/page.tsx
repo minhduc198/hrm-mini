@@ -12,6 +12,7 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
+import { PageHeader } from "@/components/common/layout/page-header";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
 import {
   AddEmployeeValues,
@@ -154,38 +155,27 @@ export default function EmployeeManagePage() {
   ];
 
   return (
-    <div className="flex flex-col gap-5 p-5 md:p-6 min-h-full bg-background">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-            <Users size={15} className="text-primary" />
-          </div>
-          <div>
-            <Typography
-              variant="h3"
-              className="text-lg font-semibold leading-none"
-            >
-              Quản lý nhân viên
-            </Typography>
-            <Typography variant="small" className="text-xs mt-0.5 leading-none">
-              Quản lý tài khoản và thông tin toàn bộ nhân viên
-            </Typography>
-          </div>
-        </div>
-        <Button
-          size="sm"
-          className="h-8 gap-1.5 text-xs self-start sm:self-auto"
-          onClick={() => setAddOpen(true)}
-          disabled={isCreating}
-        >
-          {isCreating ? (
-            <Loader2 size={13} className="animate-spin" />
-          ) : (
-            <UserPlus size={13} />
-          )}
-          Thêm nhân viên
-        </Button>
-      </div>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title="Quản lý nhân viên"
+        description="Quản lý tài khoản và thông tin toàn bộ nhân viên"
+        icon={Users}
+        actions={
+          <Button
+            size="sm"
+            className="h-9 gap-2 text-xs"
+            onClick={() => setAddOpen(true)}
+            disabled={isCreating}
+          >
+            {isCreating ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <UserPlus size={14} />
+            )}
+            Thêm nhân viên
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {statCards.map((s) => (
