@@ -50,7 +50,7 @@ export function TextFieldInput({
               placeholder={placeholder}
               autoComplete={isPassword ? "current-password" : "off"}
               className={cn(
-                "h-10 rounded-lg border-border/80 bg-white px-3 py-2 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10",
+                "h-10 rounded-lg border-black/40 bg-white px-3 py-2 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10",
                 isPassword && "pr-10",
                 error && "border-red-500 focus:border-red-500 focus:ring-red-500/10",
                 className

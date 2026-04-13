@@ -18,51 +18,24 @@ export interface Employee {
   updated_at: string;
 }
 
-export interface PaginationMeta {
-  current_page: number;
-  from: number;
-  last_page: number;
-  per_page: number;
-  to: number;
-  total: number;
-  links: {
-    url: string | null;
-    label: string;
-    active: boolean;
-    page: number | null;
-  }[];
-  path: string;
-}
-
-export interface PaginationLinks {
-  first: string;
-  last: string;
-  prev: string | null;
-  next: string | null;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  links: PaginationLinks;
-  meta: PaginationMeta;
-}
-
 export type GetListEmployeeParams = {
   page?: number;
   per_page?: number;
   email?: string;
   name?: string;
+  empCode?: string;
   role?: Role;
   is_active?: boolean;
 };
 
 export type CreateEmployeePayload = {
-  empCode: string;
   name: string;
   email: string;
-  role: Role;
-  address: string;
-  phone: string;
+  password?: string;
+  password_confirmation?: string;
+  role?: Role;
+  address?: string;
+  phone?: string;
   is_active?: boolean;
 };
 
@@ -76,3 +49,6 @@ export type UpdateEmployeePayload = {
   phone?: string;
   is_active?: boolean;
 };
+
+export type RoleFilter = "all" | "admin" | "employee";
+export type StatusFilter = "all" | "active" | "inactive";

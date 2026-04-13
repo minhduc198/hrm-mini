@@ -1,38 +1,122 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { employeeKeys } from "../query-key/employees.query-key";
 import {
   createEmployee,
   getListEmployee,
   updateEmployee,
+  updateEmployeeStatus,
 } from "../services";
-import { GetListEmployeeParams } from "../types";
+import { Employee, GetListEmployeeParams } from "../types";
 
-export const useEmployees = (params: GetListEmployeeParams) => {
-  return useQuery({
+export function useEmployees(params: GetListEmployeeParams) {
+  const queryClient = useQueryClient();
+
+  const statsQueryEmployee = useQuery({
+    queryKey: employeeKeys.stats(),
+    queryFn: () => getListEmployee({ per_page: 9999 }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const listQueryEmployee = useQuery({
     queryKey: employeeKeys.list(params),
     queryFn: () => getListEmployee(params),
+    placeholderData: keepPreviousData,
   });
-};
 
-export const useCreateEmployee = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+  const createEmployeeMutation = useMutation({
     mutationFn: createEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
+      toast.success("Thêm nhân viên thành công");
+      queryClient.invalidateQueries({ queryKey: employeeKeys.all });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Không thể thêm nhân viên");
     },
   });
-};
 
-export const useUpdateEmployee = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
+  const updateEmployeeMutation = useMutation({
     mutationFn: updateEmployee,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: employeeKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: employeeKeys.detail(data.id) });
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: employeeKeys.all });
+      const previousData = queryClient.getQueryData(employeeKeys.list(params));
+
+      if (previousData) {
+        queryClient.setQueryData(employeeKeys.list(params), (old: any) => {
+          if (!old || !old.data) return old;
+          return {
+            ...old,
+            data: old.data.map((emp: Employee) =>
+              emp.id === variables.id ? { ...emp, ...variables } : emp,
+            ),
+          };
+        });
+      }
+      return { previousData };
+    },
+    onError: (err: any, _, context: any) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          employeeKeys.list(params),
+          context.previousData,
+        );
+      }
+      toast.error(err.message || "Không thể cập nhật thông tin");
+    },
+    onSuccess: () => {
+      toast.success("Cập nhật thông tin thành công");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.list(params) });
     },
   });
-};
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: updateEmployeeStatus,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: employeeKeys.all });
+      const previousData = queryClient.getQueryData(employeeKeys.list(params));
+
+      if (previousData) {
+        queryClient.setQueryData(employeeKeys.list(params), (old: any) => {
+          if (!old || !old.data) return old;
+          return {
+            ...old,
+            data: old.data.map((emp: Employee) =>
+              emp.id === id ? { ...emp, is_active: !emp.is_active } : emp,
+            ),
+          };
+        });
+      }
+      return { previousData };
+    },
+    onError: (err: any, _, context: any) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          employeeKeys.list(params),
+          context.previousData,
+        );
+      }
+      toast.error(err.message || "Không thể cập nhật trạng thái");
+    },
+    onSuccess: () => {
+      toast.success("Cập nhật trạng thái thành công");
+      queryClient.invalidateQueries({ queryKey: employeeKeys.stats() });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: employeeKeys.list(params) });
+    },
+  });
+
+  return {
+    listQueryEmployee,
+    statsQueryEmployee,
+    createEmployee: createEmployeeMutation.mutate,
+    updateEmployee: updateEmployeeMutation.mutate,
+    toggleStatus: toggleStatusMutation.mutate,
+    isCreating: createEmployeeMutation.isPending,
+    isUpdating: updateEmployeeMutation.isPending,
+    isToggling: toggleStatusMutation.isPending,
+    isFetching: listQueryEmployee.isFetching,
+  };
+}

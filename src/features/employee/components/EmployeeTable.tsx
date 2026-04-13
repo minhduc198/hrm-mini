@@ -1,9 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  Pencil,
-  ShieldCheck,
-  User,
-} from "lucide-react";
+import { Pencil, ShieldCheck, User } from "lucide-react";
 import { useMemo } from "react";
 import { DataTable } from "@/components/common/table/DataTable";
 import { ToggleButton } from "@/components/common/form/ToggleButton";
@@ -11,17 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { Employee } from "../types";
-
-const AVATAR_COLORS = [
-  "bg-violet-500",
-  "bg-sky-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-  "bg-rose-500",
-  "bg-teal-500",
-  "bg-indigo-500",
-  "bg-pink-500",
-];
+import { AVATAR_COLORS } from "../constants";
 
 function getInitials(name: string) {
   return name
@@ -37,6 +23,10 @@ interface EmployeeTableProps {
   onEdit: (emp: Employee) => void;
   onToggleActive: (emp: Employee) => void;
 }
+
+const renderValue = (value: string | null | undefined) => {
+  return value && value.trim() !== "" ? value : "Chưa cập nhật";
+};
 
 export function EmployeeTable({
   employees,
@@ -65,13 +55,13 @@ export function EmployeeTable({
                   variant="p"
                   className="text-[13px] font-medium leading-tight mb-0.5 truncate"
                 >
-                  {emp.name}
+                  {renderValue(emp.name)}
                 </Typography>
                 <Typography
                   variant="small"
                   className="text-[11px] leading-tight truncate block text-muted-foreground"
                 >
-                  {emp.email}
+                  {renderValue(emp.email)}
                 </Typography>
               </div>
             </div>
@@ -86,7 +76,7 @@ export function EmployeeTable({
             variant="small"
             className="font-mono text-xs text-muted-foreground"
           >
-            {row.original.empCode}
+            {renderValue(row.original.empCode)}
           </Typography>
         ),
       },
@@ -95,7 +85,7 @@ export function EmployeeTable({
         header: "Số điện thoại",
         cell: ({ row }) => (
           <Typography variant="small" className="text-xs tabular-nums">
-            {row.original.phone}
+            {renderValue(row.original.phone)}
           </Typography>
         ),
       },
@@ -106,9 +96,8 @@ export function EmployeeTable({
           <Typography
             variant="small"
             className="text-xs text-muted-foreground truncate block max-w-[180px]"
-            title={row.original.address}
           >
-            {row.original.address}
+            {renderValue(row.original.address)}
           </Typography>
         ),
       },
@@ -163,14 +152,18 @@ export function EmployeeTable({
       {
         accessorKey: "created_at",
         header: "Ngày tạo",
-        cell: ({ row }) => (
-          <Typography
-            variant="small"
-            className="text-xs tabular-nums text-muted-foreground"
-          >
-            {new Date(row.original.created_at).toLocaleDateString("vi-VN")}
-          </Typography>
-        ),
+        cell: ({ row }) => {
+          const date = new Date(row.original.created_at);
+          const isValidDate = !isNaN(date.getTime());
+          return (
+            <Typography
+              variant="small"
+              className="text-xs tabular-nums text-muted-foreground"
+            >
+              {isValidDate ? date.toLocaleDateString("vi-VN") : "Chưa cập nhật"}
+            </Typography>
+          );
+        },
       },
       {
         id: "actions",

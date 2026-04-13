@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -73,13 +72,12 @@ export function EmployeeDialog({
     ) as any,
     defaultValues: isAdd
       ? {
-          empCode: "",
           name: "",
           email: "",
           phone: "",
           address: "",
           password: "",
-          confirmPassword: "",
+          password_confirmation: "",
         }
       : {
           name: "",
@@ -94,20 +92,19 @@ export function EmployeeDialog({
     if (open) {
       if (isAdd) {
         form.reset({
-          empCode: "",
           name: "",
           email: "",
           phone: "",
           address: "",
           password: "",
-          confirmPassword: "",
+          password_confirmation: "",
         } as AddEmployeeValues);
       } else if (employee) {
         form.reset({
-          name: employee.name,
-          email: employee.email,
-          phone: employee.phone,
-          address: employee.address,
+          name: employee.name || "",
+          email: employee.email || "",
+          phone: employee.phone || "",
+          address: employee.address || "",
           is_active: employee.is_active,
         } as EditEmployeeValues);
       }
@@ -164,6 +161,11 @@ export function EmployeeDialog({
               </Typography>
             </div>
           </div>
+          <Typography variant="small" className="sr-only">
+            {isAdd
+              ? "Biểu mẫu để thêm một nhân viên mới vào hệ thống."
+              : "Biểu mẫu để chỉnh sửa thông tin nhân viên hiện có."}
+          </Typography>
         </DialogHeader>
 
         <FormProvider {...form}>
@@ -188,7 +190,6 @@ export function EmployeeDialog({
               <TextFieldNumber
                 name="phone"
                 label="Số điện thoại"
-                required
                 placeholder="0901234567"
                 maxLength={10}
               />
@@ -197,7 +198,6 @@ export function EmployeeDialog({
             <TextFieldInput
               name="address"
               label="Địa chỉ"
-              required
               placeholder="123 Đường ABC, Quận 1, TP.HCM"
             />
 
@@ -208,10 +208,10 @@ export function EmployeeDialog({
                   label="Mật khẩu"
                   type="password"
                   required
-                  placeholder="Tối thiểu 8 ký tự, 1 chữ hoa, 1 số"
+                  placeholder="Tối thiểu 6 ký tự"
                 />
                 <TextFieldInput
-                  name="confirmPassword"
+                  name="password_confirmation"
                   label="Xác nhận mật khẩu"
                   type="password"
                   required

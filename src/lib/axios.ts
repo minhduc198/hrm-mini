@@ -21,7 +21,7 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 api.interceptors.response.use(
@@ -34,7 +34,7 @@ api.interceptors.response.use(
       "Đã có lỗi xảy ra, vui lòng thử lại sau.";
 
     return Promise.reject({ message, status } as ApiError);
-  }
+  },
 );
 
 export default api;

@@ -12,16 +12,13 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
-import {
-  useCreateEmployee,
-  useEmployees,
-  useUpdateEmployee,
-} from "@/features/employee/hooks/use-employees";
+import { useEmployees } from "@/features/employee/hooks/use-employees";
 import {
   AddEmployeeValues,
   EditEmployeeValues,
 } from "@/features/employee/schemas";
-import { Employee } from "@/features/employee/types";
+import { Employee, RoleFilter, StatusFilter } from "@/features/employee/types";
+import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import {
   Loader2,
@@ -34,13 +31,10 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
-
-type RoleFilter = "all" | "admin" | "employee";
-type StatusFilter = "all" | "active" | "inactive";
 
 export default function EmployeeManagePage() {
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [addOpen, setAddOpen] = useState(false);
@@ -48,33 +42,41 @@ export default function EmployeeManagePage() {
   const [confirmToggleTarget, setConfirmToggleTarget] =
     useState<Employee | null>(null);
 
-  // Queries & Mutations
-  const { data, isLoading } = useEmployees({
-    name: search || undefined,
-    role: roleFilter === "all" ? undefined : roleFilter,
-    is_active:
-      statusFilter === "all"
-        ? undefined
-        : statusFilter === "active"
-          ? true
-          : false,
+  const isCodeSearch = /\d/.test(debouncedSearch);
+
+  const {
+    listQueryEmployee,
+    statsQueryEmployee,
+    createEmployee,
+    updateEmployee,
+    toggleStatus,
+    isCreating,
+    isToggling,
+    isFetching,
+  } = useEmployees({
+    ...(debouncedSearch
+      ? isCodeSearch
+        ? { empCode: debouncedSearch }
+        : { name: debouncedSearch }
+      : {}),
+    ...(roleFilter !== "all" ? { role: roleFilter } : {}),
+    ...(statusFilter !== "all" ? { is_active: statusFilter === "active" } : {}),
   });
 
-  const createMutation = useCreateEmployee();
-  const updateMutation = useUpdateEmployee();
+  const isInitialLoading = listQueryEmployee.isLoading;
 
-  const employees = data?.data || [];
-  const totalEmployees = data?.meta?.total || 0;
+  const employees = listQueryEmployee.data?.data || [];
+  const totalEmployees = listQueryEmployee.data?.meta?.total || 0;
 
-  const stats = useMemo(
-    () => ({
-      total: totalEmployees,
-      admins: employees.filter((e) => e.role === "admin").length, // This is a rough estimation based on current page
-      active: employees.filter((e) => e.is_active).length,
-      inactive: employees.filter((e) => !e.is_active).length,
-    }),
-    [employees, totalEmployees],
-  );
+  const stats = useMemo(() => {
+    const allEmployees = statsQueryEmployee.data?.data || [];
+    return {
+      total: statsQueryEmployee.data?.meta?.total || totalEmployees,
+      admins: allEmployees.filter((e) => e.role === "admin").length,
+      active: allEmployees.filter((e) => e.is_active).length,
+      inactive: allEmployees.filter((e) => !e.is_active).length,
+    };
+  }, [statsQueryEmployee.data, totalEmployees]);
 
   const hasFilter =
     search.length > 0 || roleFilter !== "all" || statusFilter !== "all";
@@ -86,47 +88,34 @@ export default function EmployeeManagePage() {
   }
 
   async function handleAdd(values: AddEmployeeValues) {
-    try {
-      await createMutation.mutateAsync({
+    createEmployee(
+      {
         ...values,
-        role: "employee", // Default to employee
-      });
-      toast.success("Thêm nhân viên thành công");
-      setAddOpen(false);
-    } catch (error) {
-      toast.error("Không thể thêm nhân viên");
-    }
+        role: "employee",
+      },
+      {
+        onSuccess: () => setAddOpen(false),
+      },
+    );
   }
 
   async function handleEdit(id: number, values: EditEmployeeValues) {
-    try {
-      await updateMutation.mutateAsync({
+    updateEmployee(
+      {
         id,
         ...values,
-      });
-      toast.success("Cập nhật thông tin thành công");
-      setEditTarget(null);
-    } catch (error) {
-      toast.error("Không thể cập nhật thông tin");
-    }
+      },
+      {
+        onSuccess: () => setEditTarget(null),
+      },
+    );
   }
 
   async function handleToggleActive() {
     if (!confirmToggleTarget) return;
-    try {
-      await updateMutation.mutateAsync({
-        id: confirmToggleTarget.id,
-        is_active: !confirmToggleTarget.is_active,
-      });
-      toast.success(
-        confirmToggleTarget.is_active
-          ? "Đã vô hiệu hóa nhân viên"
-          : "Đã kích hoạt nhân viên",
-      );
-      setConfirmToggleTarget(null);
-    } catch (error) {
-      toast.error("Thao tác thất bại");
-    }
+    toggleStatus(confirmToggleTarget.id, {
+      onSuccess: () => setConfirmToggleTarget(null),
+    });
   }
 
   const statCards = [
@@ -187,8 +176,13 @@ export default function EmployeeManagePage() {
           size="sm"
           className="h-8 gap-1.5 text-xs self-start sm:self-auto"
           onClick={() => setAddOpen(true)}
+          disabled={isCreating}
         >
-          <UserPlus size={13} />
+          {isCreating ? (
+            <Loader2 size={13} className="animate-spin" />
+          ) : (
+            <UserPlus size={13} />
+          )}
           Thêm nhân viên
         </Button>
       </div>
@@ -225,10 +219,17 @@ export default function EmployeeManagePage() {
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative w-full md:max-w-md">
-          <Search
-            size={14}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-          />
+          {isFetching && debouncedSearch ? (
+            <Loader2
+              size={14}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary animate-spin pointer-events-none"
+            />
+          ) : (
+            <Search
+              size={14}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+          )}
           <Input
             placeholder="Tìm theo tên hoặc mã nhân viên..."
             className="pl-9 h-10 text-sm bg-white border-primary/20 rounded-xl focus:ring-4 focus:ring-primary/5 focus:border-primary/40 transition-all outline-none"
@@ -282,7 +283,7 @@ export default function EmployeeManagePage() {
             <div className="hidden lg:block h-4 w-px bg-border/60 mx-1" />
           )}
 
-          {hasFilter && !isLoading && (
+          {hasFilter && !listQueryEmployee.isLoading && (
             <div className="text-[11px] font-medium text-muted-foreground bg-gray-100/50 px-2 py-1 rounded-md">
               <span className="text-foreground">{employees.length}</span> /{" "}
               {totalEmployees}
@@ -291,7 +292,7 @@ export default function EmployeeManagePage() {
         </div>
       </div>
 
-      {isLoading ? (
+      {isInitialLoading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="h-8 w-8 text-primary animate-spin" />
           <Typography variant="small" className="text-muted-foreground">
@@ -299,11 +300,18 @@ export default function EmployeeManagePage() {
           </Typography>
         </div>
       ) : (
-        <EmployeeTable
-          employees={employees}
-          onEdit={(emp) => setEditTarget(emp)}
-          onToggleActive={(emp) => setConfirmToggleTarget(emp)}
-        />
+        <div
+          className={cn(
+            "transition-opacity duration-200",
+            isFetching ? "opacity-60 pointer-events-none" : "opacity-100",
+          )}
+        >
+          <EmployeeTable
+            employees={employees}
+            onEdit={(emp) => setEditTarget(emp)}
+            onToggleActive={(emp) => setConfirmToggleTarget(emp)}
+          />
+        </div>
       )}
 
       <EmployeeDialog
@@ -342,7 +350,7 @@ export default function EmployeeManagePage() {
           confirmToggleTarget?.is_active ? "Vô hiệu hóa" : "Kích hoạt"
         }
         onConfirm={handleToggleActive}
-        isLoading={updateMutation.isPending}
+        isLoading={isToggling}
       />
     </div>
   );
