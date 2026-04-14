@@ -52,12 +52,12 @@ export function EmployeeSelector({
           {visibleSelected.map((employee) => (
             <Tooltip key={employee.id}>
               <TooltipTrigger asChild>
-                <div className="group-avatar relative flex-shrink-0">
+                <div className="group/avatar relative flex-shrink-0">
                   <button
                     onClick={() => onRemoveEmployee(employee.id)}
                     className="relative block transition-transform active:scale-95"
                   >
-                    <Avatar className="w-8 h-8 border-2 border-surface shadow-sm ring-1 ring-line/50 cursor-pointer">
+                    <Avatar className="w-8 h-8 border-2 border-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.08)] ring-1 ring-line/30 cursor-pointer transition-all hover:ring-primary/20 hover:scale-105 active:scale-95 after:hidden">
                       {employee.avatar ? (
                         <AvatarImage src={employee.avatar} alt={employee.name} />
                       ) : (
@@ -69,7 +69,7 @@ export function EmployeeSelector({
                       )}
                     </Avatar>
                     {/* Remove overlay on hover */}
-                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-danger/70 opacity-0 group-hover/avatar:opacity-100 transition-all duration-200">
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 backdrop-blur-[1px]">
                       <HugeiconsIcon icon={Cancel01Icon} className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
                     </div>
                   </button>
