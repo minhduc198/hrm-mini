@@ -68,7 +68,12 @@ export function DataTable<TData, TValue>({
   }
 
   return (
-    <div className={cn("rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden transition-all hover:shadow-md", className)}>
+    <div
+      className={cn(
+        "rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden transition-all hover:shadow-md",
+        className,
+      )}
+    >
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -81,7 +86,7 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder ? null : (
                     <Typography
                       variant="label"
-                      className="text-[10px] text-slate-500 font-bold tracking-wider"
+                      className="text-[12px] text-slate-500 font-bold tracking-wider"
                     >
                       {flexRender(
                         header.column.columnDef.header,
@@ -104,20 +109,14 @@ export function DataTable<TData, TValue>({
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="px-4 py-3">
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 text-center"
-              >
+              <TableCell colSpan={columns.length} className="h-24 text-center ">
                 <Typography variant="small">Không có kết quả.</Typography>
               </TableCell>
             </TableRow>
