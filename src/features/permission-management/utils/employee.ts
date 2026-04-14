@@ -59,8 +59,9 @@ export function getInitials(name: string): string {
 /**
  * Deterministically get an avatar color based on the employee ID
  */
-export function getAvatarColor(id: string): string {
+export function getAvatarColor(id: string | number): string {
   if (!id) return AVATAR_COLORS[0];
-  const index = parseInt(id.replace(/\D/g, ""), 10) || 0;
+  const idStr = String(id);
+  const index = parseInt(idStr.replace(/\D/g, ""), 10) || 0;
   return AVATAR_COLORS[index % AVATAR_COLORS.length];
 }
