@@ -6,6 +6,7 @@ import { PermissionRow } from "./permission-row";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import { ChevronDown, ChevronRight, Users } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ModuleSectionProps {
   module: ModuleAPIResponse;
@@ -19,9 +20,10 @@ export function ModuleSection({
   onRemoveEmployee,
 }: ModuleSectionProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const isMobile = useIsMobile();
 
   return (
-    <div className="border border-line rounded-xl bg-surface shadow-sm transition-all duration-200">
+    <div className="border border-line rounded-xl bg-surface shadow-sm transition-all duration-200 overflow-visible">
       {/* Module Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
@@ -42,8 +44,8 @@ export function ModuleSection({
         </div>
       </button>
 
-      {/* Column Headers */}
-      {isExpanded && (
+      {/* Column Headers - Hidden on mobile */}
+      {isExpanded && !isMobile && (
         <div className="flex items-stretch bg-page/50 border-t border-b border-line">
           <div className="w-1/2 flex items-center gap-2 px-6 py-3 border-r border-line">
             <svg className="w-3.5 h-3.5 text-subtle-text" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
