@@ -1,13 +1,19 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { UserAPIResponse, ModuleAPIResponse } from "../types/permission";
-import { PERMISSIONS_MOCK } from "../mocks/permissions";
 import { useSavePermissions } from "./use-save-permissions";
+import { useGetPermissions } from "./use-get-permissions";
 import { toast } from "sonner";
 
 export function usePermissionMatrix() {
-  // We store the data as it comes from API (grouped by module)
-  // But we use a state for the entire structure to allow local updates
-  const [data, setData] = useState<ModuleAPIResponse[]>(PERMISSIONS_MOCK);
+  const { data: permissionList, isLoading, error } = useGetPermissions();
+
+  const [data, setData] = useState<ModuleAPIResponse[]>([]);
+
+  useEffect(() => {
+    if (permissionList) {
+      setData(permissionList);
+    }
+  }, [permissionList]);
 
   const saveMutation = useSavePermissions();
 
@@ -88,6 +94,8 @@ export function usePermissionMatrix() {
     handleAddEmployee,
     handleRemoveEmployee,
     handleSave,
-    isSaving: saveMutation.isPending
+    isSaving: saveMutation.isPending,
+    isLoading,
+    error: error as Error | null
   };
 }

@@ -38,9 +38,11 @@ export default function ClientLayout({
     >
       <AppSidebar />
 
-      <SidebarInset className="min-w-0 flex flex-col h-screen overflow-y-auto bg-page text-base scroll-smooth">
+      <SidebarInset className="min-w-0 flex flex-col h-screen overflow-hidden bg-page text-base">
         <Header />
-        <main className="w-full flex-1 min-w-0 p-4 md:p-6 lg:p-8">{children}</main>
+        <main className="w-full flex-1 min-w-0 p-4 md:p-6 lg:p-8 overflow-y-auto scroll-smooth">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

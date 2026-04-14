@@ -12,7 +12,9 @@ export function PermissionMatrix() {
     handleAddEmployee, 
     handleRemoveEmployee, 
     handleSave, 
-    isSaving 
+    isSaving,
+    isLoading,
+    error
   } = usePermissionMatrix();
 
   return (
@@ -39,16 +41,28 @@ export function PermissionMatrix() {
 
       {/* Main Content - scrollable wrapper */}
       <div className="flex-1 min-h-0 overflow-y-auto pr-1 no-scrollbar pb-10">
-        <div className="flex flex-col gap-5">
-          {modules.map((module) => (
-            <ModuleSection
-              key={module.id}
-              module={module}
-              onAddEmployee={handleAddEmployee}
-              onRemoveEmployee={handleRemoveEmployee}
-            />
-          ))}
-        </div>
+        {isLoading && modules.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="text-sm">Đang tải dữ liệu phân quyền...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-destructive">
+            <p className="text-sm font-medium">Có lỗi xảy ra khi tải dữ liệu</p>
+            <p className="text-xs opacity-80">{error.message}</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-5">
+            {modules.map((module) => (
+              <ModuleSection
+                key={module.id}
+                module={module}
+                onAddEmployee={handleAddEmployee}
+                onRemoveEmployee={handleRemoveEmployee}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

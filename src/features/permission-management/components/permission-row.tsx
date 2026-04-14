@@ -38,15 +38,10 @@ export function PermissionRow({
           depth > 0 && "pl-10"
         )}>
           <div className="flex items-center gap-2">
-            <Typography variant="label-sm" className="text-base tracking-tight leading-none">
+            <Typography variant="p" className="text-base font-semibold text-foreground tracking-tight leading-none">
               {permission.name}
             </Typography>
           </div>
-          {permission.description && (
-            <Typography variant="tiny" className="text-muted mt-1 leading-tight opacity-80">
-              {permission.description}
-            </Typography>
-          )}
         </div>
 
         {/* Employee selector */}
@@ -75,15 +70,10 @@ export function PermissionRow({
         depth > 0 && "pl-12"
       )}>
         <div className="flex items-center gap-2">
-          <Typography variant="label-sm" className="text-base tracking-tight leading-none">
+          <Typography variant="p" className="text-base font-semibold text-foreground tracking-tight leading-none">
             {permission.name}
           </Typography>
         </div>
-        {permission.description && (
-          <Typography variant="tiny" className="text-muted mt-1 leading-tight opacity-80">
-            {permission.description}
-          </Typography>
-        )}
       </div>
 
       {/* Right Column - Employee selector */}
