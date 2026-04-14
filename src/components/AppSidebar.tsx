@@ -2,12 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
-import {
-  Users,
-  CalendarDays,
-  Clock,
-  Shield,
-} from "lucide-react";
+import { Users, CalendarDays, Clock, Shield } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Typography } from "./ui/typography";
 import {
@@ -30,23 +25,53 @@ export function AppSidebar() {
   const { data: session } = useSession();
   const user = session?.user;
   const role = user?.role;
-  const { setOpenMobile } = useSidebar()
+  const { setOpenMobile } = useSidebar();
 
   const isExactActive = (url: string) => path === url;
 
   const getNavItems = () => {
     if (role === "admin") {
       return [
-        { key: "employees", label: "Quản lý nhân viên", url: routes.employeeManagement, icon: Users },
-        { key: "leave", label: "Quản lý đơn xin nghỉ", url: routes.leave.manage, icon: CalendarDays },
-        { key: "attendance", label: "Quản lý chấm công", url: routes.attendance.manage, icon: Clock },
-        { key: "roles", label: "Quản lý phân quyền", url: routes.permissionManagement, icon: Shield },
+        {
+          key: "employees",
+          label: "Quản lý nhân viên",
+          url: routes.employeeManagement,
+          icon: Users,
+        },
+        {
+          key: "leave",
+          label: "Quản lý đơn xin nghỉ",
+          url: routes.leave.manage,
+          icon: CalendarDays,
+        },
+        {
+          key: "attendance",
+          label: "Quản lý chấm công",
+          url: routes.attendance.manage,
+          icon: Clock,
+        },
+        {
+          key: "roles",
+          label: "Quản lý phân quyền",
+          url: routes.permissionManagement,
+          icon: Shield,
+        },
       ];
     }
     // Employee Role Default
     return [
-      { key: "attendance", label: "Chấm công", url: routes.attendance.personal, icon: Clock },
-      { key: "leave", label: "Xin nghỉ", url: routes.leave.personal, icon: CalendarDays },
+      {
+        key: "attendance",
+        label: "Chấm công",
+        url: routes.attendance.personal,
+        icon: Clock,
+      },
+      {
+        key: "leave",
+        label: "Xin nghỉ",
+        url: routes.leave.personal,
+        icon: CalendarDays,
+      },
     ];
   };
 
@@ -69,7 +94,7 @@ export function AppSidebar() {
             variant="h4"
             className="text-white text-sm font-semibold tracking-tight shrink-0  group-data-[collapsible=icon]:hidden"
           >
-            HRM
+            MINI HRM
           </Typography>
         </div>
       </SidebarHeader>
@@ -127,25 +152,6 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-white/10 p-3 pb-4 !bg-primary gap-3 mt-auto group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:pb-3">
-        <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.07] cursor-pointer transition-colors group-data-[collapsible=icon]:px-1 group-data-[collapsible=icon]:justify-center">
-          <Avatar className="h-8 w-8 rounded-full">
-            <AvatarImage src={user?.avatar || ""} />
-            <AvatarFallback className="bg-white/20 text-white text-[11px] font-semibold">
-              {user?.initials || "?"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <Typography variant="p" className="text-[13px] text-white/90 font-medium leading-none mb-0.5  truncate">
-              {user?.name || "Loading..."}
-            </Typography>
-            <Typography variant="small" className="text-[11px] text-white/40 leading-none  truncate block">
-              {role === "admin" ? "Administrator" : "Employee"}
-            </Typography>
-          </div>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 }

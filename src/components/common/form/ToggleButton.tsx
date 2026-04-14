@@ -10,7 +10,7 @@ const ToggleButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SwitchPrimitive.Root
     className={cn(
-      "peer relative inline-flex h-[22px] w-[42px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent",
+      "peer relative inline-flex h-[20px] w-[40px] shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent",
       "data-[state=checked]:bg-primary data-[state=unchecked]:bg-slate-200",
       className,
     )}
@@ -21,7 +21,7 @@ const ToggleButton = React.forwardRef<
 
     <SwitchPrimitive.Thumb
       className={cn(
-        "pointer-events-none relative block h-[16px] w-[16px] rounded-full shadow-md ring-0",
+        "pointer-events-none relative block h-[14px] w-[14px] rounded-full shadow-md ring-0",
         "data-[state=checked]:translate-x-[21px] data-[state=unchecked]:translate-x-[1px]",
         "data-[state=checked]:bg-white data-[state=unchecked]:bg-white",
       )}

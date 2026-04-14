@@ -8,6 +8,7 @@ import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import type { Employee } from "../types";
 import { AVATAR_COLORS } from "../constants";
+import { OverflowTooltip } from "@/components/common/form/OverflowTooltip";
 
 function getInitials(name: string) {
   return name
@@ -85,7 +86,7 @@ export function EmployeeTable({
             variant="small"
             className="font-mono text-xs text-muted-foreground"
           >
-            {renderValue(row.original.empCode)}
+            {renderValue(row.original.empCode).replaceAll("-", "")}
           </Typography>
         ),
       },
@@ -101,14 +102,19 @@ export function EmployeeTable({
       {
         accessorKey: "address",
         header: "Địa chỉ",
-        cell: ({ row }) => (
-          <Typography
-            variant="small"
-            className="text-xs text-muted-foreground truncate block max-w-[180px]"
-          >
-            {renderValue(row.original.address)}
-          </Typography>
-        ),
+
+        cell: ({ row }) => {
+          const value = renderValue(row.original.address);
+
+          return (
+            <Typography
+              variant="small"
+              className="text-xs text-muted-foreground truncate block max-w-[180px]"
+            >
+              <OverflowTooltip text={value} />
+            </Typography>
+          );
+        },
       },
       {
         accessorKey: "role",
@@ -153,7 +159,7 @@ export function EmployeeTable({
                   : "bg-slate-50 text-slate-400 border-slate-200",
               )}
             >
-              {emp.is_active ? "Hoạt động" : "Vô hiệu"}
+              {emp.is_active ? "Hoạt động" : "Vô hiệu hóa"}
             </span>
           );
         },
