@@ -252,7 +252,7 @@ export default function EmployeeManagePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Tất cả trạng thái</SelectItem>
-              <SelectItem value="active">Đang hoạt động</SelectItem>
+              <SelectItem value="active">Đang làm việc</SelectItem>
               <SelectItem value="inactive">Vô hiệu hóa</SelectItem>
             </SelectContent>
           </Select>

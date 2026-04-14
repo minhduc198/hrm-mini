@@ -59,7 +59,7 @@ export function EmployeeDialog({
   const form = useForm<AddEmployeeValues | EditEmployeeValues>({
     resolver: zodResolver(
       (isAdd ? addEmployeeSchema : editEmployeeSchema) as any,
-    ) as any,
+    ),
     defaultValues: isAdd
       ? {
           name: "",
@@ -130,7 +130,15 @@ export function EmployeeDialog({
                   AVATAR_COLORS[employee.id % AVATAR_COLORS.length],
                 )}
               >
-                {getInitials(employee.name)}
+                {employee.avatar_url ? (
+                  <img
+                    src={employee.avatar_url}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  getInitials(employee.name)
+                )}
               </div>
             ) : null}
             <div>
@@ -143,7 +151,9 @@ export function EmployeeDialog({
                 {isAdd ? (
                   "Tạo tài khoản và cung cấp thông tin đăng nhập"
                 ) : (
-                  <span className="font-mono">{employee?.empCode}</span>
+                  <span className="font-mono">
+                    {employee?.empCode.replaceAll("-", "")}
+                  </span>
                 )}
               </Typography>
             </div>
