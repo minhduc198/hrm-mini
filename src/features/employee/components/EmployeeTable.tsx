@@ -214,7 +214,6 @@ export function EmployeeTable({
       columns={columns}
       data={employees}
       emptyStateText="Không tìm thấy nhân viên nào"
-      showPagination={false}
     />
   );
 }

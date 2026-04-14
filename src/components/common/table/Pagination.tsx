@@ -1,100 +1,179 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useMemo } from "react";
+import {
+  Pagination as ShadcnPagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Typography } from "@/components/ui/typography";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-interface PaginationProps {
+const PER_PAGE_OPTIONS = [5, 10, 20] as const;
+
+interface TablePaginationProps {
   currentPage: number;
   totalPage: number;
   onPageChange: (page: number) => void;
+  perPage?: number;
+  onPerPageChange?: (size: number) => void;
+  totalItems?: number;
   className?: string;
 }
 
-export function Pagination({
+export function TablePagination({
   currentPage,
   totalPage,
   onPageChange,
+  perPage,
+  onPerPageChange,
+  totalItems,
   className,
-}: PaginationProps) {
-  if (totalPage <= 1) return null;
+}: TablePaginationProps) {
+  if (totalPage <= 0) return null;
 
-  const getPages = () => {
-    const pages = [];
+  const pages = useMemo(() => {
+    const result: (number | "start" | "end")[] = [];
     const maxVisible = 5;
 
     if (totalPage <= maxVisible) {
-      for (let i = 1; i <= totalPage; i++) pages.push(i);
+      for (let i = 1; i <= totalPage; i++) result.push(i);
     } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push("...");
-      
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPage - 1, currentPage + 1);
-      
-      for (let i = start; i <= end; i++) {
-        if (!pages.includes(i)) pages.push(i);
-      }
-      
-      if (currentPage < totalPage - 2) pages.push("...");
-      if (!pages.includes(totalPage)) pages.push(totalPage);
+      result.push(1);
+      if (currentPage > 3) result.push("start");
+
+      const from = Math.max(2, currentPage - 1);
+      const to = Math.min(totalPage - 1, currentPage + 1);
+      for (let i = from; i <= to; i++) result.push(i);
+
+      if (currentPage < totalPage - 2) result.push("end");
+      if (result[result.length - 1] !== totalPage) result.push(totalPage);
     }
-    return pages;
-  };
+
+    return result;
+  }, [currentPage, totalPage]);
+
+  const showPerPage = !!onPerPageChange && !!perPage;
+
+  const rangeFrom = totalItems
+    ? Math.min((currentPage - 1) * (perPage ?? 10) + 1, totalItems)
+    : null;
+  const rangeTo = totalItems
+    ? Math.min(currentPage * (perPage ?? 10), totalItems)
+    : null;
 
   return (
-    <div className={cn("flex items-center justify-between gap-4 py-2", className)}>
-      <div className="text-xs text-muted font-medium">
-        Trang <span className="text-base font-semibold">{currentPage}</span> / {totalPage}
-      </div>
-      
-      <div className="flex items-center gap-1.5">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 rounded-lg border-line-subtle bg-surface hover:bg-page transition-all"
-          disabled={currentPage === 1}
-          onClick={() => onPageChange(currentPage - 1)}
-        >
-          <ChevronLeft size={14} className="text-muted" />
-        </Button>
+    <div
+      className={cn(
+        "flex flex-col sm:flex-row items-center justify-end gap-3 mt-4",
+        className,
+      )}
+    >
+      <div className="flex items-center gap-4">
+        {showPerPage && (
+          <div className="flex items-center gap-2">
+            <Typography variant="small" as="span" className="text-xs">
+              Hiển thị
+            </Typography>
+            <Select
+              value={String(perPage)}
+              onValueChange={(v) => onPerPageChange(Number(v))}
+            >
+              <SelectTrigger className="h-8 w-[65px] text-xs rounded-lg border-black/40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PER_PAGE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={String(opt)}>
+                    {opt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Typography variant="small" as="span" className="text-xs">
+              / trang
+            </Typography>
+          </div>
+        )}
 
-        <div className="flex items-center gap-1">
-          {getPages().map((page, idx) => (
-            <div key={idx}>
-              {page === "..." ? (
-                <div className="w-8 h-8 flex items-center justify-center text-muted">
-                  <MoreHorizontal size={14} />
-                </div>
+        {totalItems != null && rangeFrom != null && rangeTo != null && (
+          <Typography variant="small" as="span" className="text-xs">
+            {rangeFrom}–{rangeTo} trên{" "}
+            <Typography
+              variant="small"
+              as="span"
+              className="text-xs font-semibold text-foreground"
+            >
+              {totalItems}
+            </Typography>{" "}
+            kết quả
+          </Typography>
+        )}
+      </div>
+
+      {totalPage > 1 && (
+        <ShadcnPagination className="mx-0 w-auto justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage > 1) onPageChange(currentPage - 1);
+                }}
+                className={cn(
+                  currentPage <= 1 && "pointer-events-none opacity-50",
+                )}
+              />
+            </PaginationItem>
+
+            {pages.map((page) =>
+              typeof page === "string" ? (
+                <PaginationItem key={page}>
+                  <PaginationEllipsis />
+                </PaginationItem>
               ) : (
-                <Button
-                  variant={currentPage === page ? "default" : "ghost"}
-                  size="sm"
-                  className={cn(
-                    "h-8 min-w-[32px] rounded-lg text-xs font-medium transition-all",
-                    currentPage === page 
-                      ? "bg-primary text-white shadow-sm ring-1 ring-primary/20" 
-                      : "text-muted hover:bg-page hover:text-base"
-                  )}
-                  onClick={() => onPageChange(page as number)}
-                >
-                  {page}
-                </Button>
-              )}
-            </div>
-          ))}
-        </div>
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    isActive={currentPage === page}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onPageChange(page);
+                    }}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ),
+            )}
 
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8 rounded-lg border-line-subtle bg-surface hover:bg-page transition-all"
-          disabled={currentPage === totalPage}
-          onClick={() => onPageChange(currentPage + 1)}
-        >
-          <ChevronRight size={14} className="text-muted" />
-        </Button>
-      </div>
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (currentPage < totalPage) onPageChange(currentPage + 1);
+                }}
+                className={cn(
+                  currentPage >= totalPage && "pointer-events-none opacity-50",
+                )}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </ShadcnPagination>
+      )}
     </div>
   );
 }

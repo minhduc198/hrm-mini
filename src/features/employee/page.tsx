@@ -13,8 +13,10 @@ import { Typography } from "@/components/ui/typography";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
 import { PageHeader } from "@/components/common/layout/page-header";
+import { TablePagination } from "@/components/common/table/Pagination";
 import { ExportExcelButton } from "@/components/common/button/ExportExcelButton";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
+import { getListEmployee } from "@/features/employee/services";
 import {
   AddEmployeeValues,
   EditEmployeeValues,
@@ -32,7 +34,7 @@ import {
   UserX,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ExcelColumn } from "@/types/common";
 
 export default function EmployeeManagePage() {
@@ -44,8 +46,22 @@ export default function EmployeeManagePage() {
   const [editTarget, setEditTarget] = useState<Employee | null>(null);
   const [confirmToggleTarget, setConfirmToggleTarget] =
     useState<Employee | null>(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   const isCodeSearch = /\d/.test(debouncedSearch);
+
+  const currentFilters = {
+    page,
+    per_page: perPage,
+    ...(debouncedSearch
+      ? isCodeSearch
+        ? { empCode: debouncedSearch }
+        : { name: debouncedSearch }
+      : {}),
+    ...(roleFilter !== "all" ? { role: roleFilter } : {}),
+    ...(statusFilter !== "all" ? { is_active: statusFilter === "active" } : {}),
+  };
 
   const {
     listQueryEmployee,
@@ -56,20 +72,17 @@ export default function EmployeeManagePage() {
     isCreating,
     isToggling,
     isFetching,
-  } = useEmployees({
-    ...(debouncedSearch
-      ? isCodeSearch
-        ? { empCode: debouncedSearch }
-        : { name: debouncedSearch }
-      : {}),
-    ...(roleFilter !== "all" ? { role: roleFilter } : {}),
-    ...(statusFilter !== "all" ? { is_active: statusFilter === "active" } : {}),
-  });
+  } = useEmployees(currentFilters);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, roleFilter, statusFilter]);
 
   const isInitialLoading = listQueryEmployee.isLoading;
 
   const employees = listQueryEmployee.data?.data || [];
   const totalEmployees = listQueryEmployee.data?.meta?.total || 0;
+  const totalPage = listQueryEmployee.data?.meta?.last_page || 1;
 
   const stats = useMemo(() => {
     const allEmployees = statsQueryEmployee.data?.data || [];
@@ -126,46 +139,6 @@ export default function EmployeeManagePage() {
     [],
   );
 
-  const hasFilter =
-    search.length > 0 || roleFilter !== "all" || statusFilter !== "all";
-
-  function resetFilters() {
-    setSearch("");
-    setRoleFilter("all");
-    setStatusFilter("all");
-  }
-
-  async function handleAdd(values: AddEmployeeValues) {
-    createEmployee(
-      {
-        ...values,
-        role: "employee",
-      },
-      {
-        onSuccess: () => setAddOpen(false),
-      },
-    );
-  }
-
-  async function handleEdit(id: number, values: EditEmployeeValues) {
-    updateEmployee(
-      {
-        id,
-        ...values,
-      },
-      {
-        onSuccess: () => setEditTarget(null),
-      },
-    );
-  }
-
-  async function handleToggleActive() {
-    if (!confirmToggleTarget) return;
-    toggleStatus(confirmToggleTarget.id, {
-      onSuccess: () => setConfirmToggleTarget(null),
-    });
-  }
-
   const statCards = [
     {
       label: "Tổng nhân viên",
@@ -201,6 +174,51 @@ export default function EmployeeManagePage() {
     },
   ];
 
+  const hasFilter =
+    search.length > 0 || roleFilter !== "all" || statusFilter !== "all";
+
+  const resetFilters = async () => {
+    setSearch("");
+    setRoleFilter("all");
+    setStatusFilter("all");
+    setPage(1);
+  };
+
+  const handleAdd = async (values: AddEmployeeValues) => {
+    createEmployee(
+      {
+        ...values,
+        role: "employee",
+      },
+      {
+        onSuccess: () => setAddOpen(false),
+      },
+    );
+  };
+
+  const handleEdit = async (id: number, values: EditEmployeeValues) => {
+    updateEmployee(
+      {
+        id,
+        ...values,
+      },
+      {
+        onSuccess: () => setEditTarget(null),
+      },
+    );
+  };
+
+  const handleToggleActive = async () => {
+    if (!confirmToggleTarget) return;
+    toggleStatus(confirmToggleTarget.id, {
+      onSuccess: () => setConfirmToggleTarget(null),
+    });
+  };
+
+  const getAllData = async () => {
+    const res = await getListEmployee({ per_page: 9999 });
+    return res.data;
+  };
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -210,13 +228,14 @@ export default function EmployeeManagePage() {
         actions={
           <div className="flex items-center gap-2.5">
             <ExportExcelButton
-              data={employees}
               columns={excelColumns}
               fileName={`Danh_Sach_Nhan_Vien_${new Date().toISOString().split("T")[0]}`}
               sheetName="DS Nhân viên"
               disabled={
                 isFetching || isInitialLoading || employees.length === 0
               }
+              getCurrentData={() => employees}
+              getAllData={getAllData}
             />
             <Button
               size="sm"
@@ -358,6 +377,17 @@ export default function EmployeeManagePage() {
             employees={employees}
             onEdit={(emp) => setEditTarget(emp)}
             onToggleActive={(emp) => setConfirmToggleTarget(emp)}
+          />
+          <TablePagination
+            currentPage={page}
+            totalPage={totalPage}
+            totalItems={totalEmployees}
+            perPage={perPage}
+            onPageChange={setPage}
+            onPerPageChange={(size) => {
+              setPerPage(size);
+              setPage(1);
+            }}
           />
         </div>
       )}
