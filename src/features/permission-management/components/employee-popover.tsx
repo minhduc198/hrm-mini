@@ -26,7 +26,6 @@ function PopoverContent({
   availableEmployees,
   handleSelect,
   onClose,
-  containerRef,
 }: {
   selectedEmployees: UserAPIResponse[];
   searchQuery: string;
@@ -34,7 +33,6 @@ function PopoverContent({
   availableEmployees: UserAPIResponse[];
   handleSelect: (emp: UserAPIResponse) => void;
   onClose: () => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
   return (
     <div className="flex flex-col bg-surface">
@@ -189,7 +187,6 @@ export function EmployeePopover({
             availableEmployees={availableEmployees}
             handleSelect={handleSelect}
             onClose={onClose}
-            containerRef={containerRef}
           />
         </div>
       </>
@@ -209,7 +206,6 @@ export function EmployeePopover({
         availableEmployees={availableEmployees}
         handleSelect={handleSelect}
         onClose={onClose}
-        containerRef={containerRef}
       />
       {/* Arrow */}
       <div className="absolute right-[10px] top-[-6px] w-3 h-3 bg-surface border-l border-t border-line rotate-45" />

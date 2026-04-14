@@ -83,7 +83,39 @@
 }
 
 html {
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
+}
+
+/* Custom scrollbar styling for a premium feel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tx-subtle) transparent;
+}
+
+/* For Webkit-based browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1; /* Muted gray */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Prevent layout shift on all platforms using overlay where supported */
+@supports (overflow: overlay) {
+  body, [data-slot="sidebar-inset"], main {
+    overflow: overlay;
+  }
 }
 
 .no-scrollbar {
