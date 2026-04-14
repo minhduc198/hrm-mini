@@ -4,6 +4,7 @@ import { PermissionAPIResponse, UserAPIResponse } from "../types/permission";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import { EmployeeSelector } from "./employee-selector";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PermissionRowProps {
   permission: PermissionAPIResponse;
@@ -20,6 +21,46 @@ export function PermissionRow({
   depth = 0,
   className,
 }: PermissionRowProps) {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <div
+        className={cn(
+          "group/row flex flex-col border-b border-line-subtle last:border-0 hover:bg-page/40 transition-colors duration-150",
+          depth > 0 && "bg-page/10",
+          className
+        )}
+      >
+        {/* Permission info */}
+        <div className={cn(
+          "py-3 px-4 border-b border-line-subtle flex flex-col justify-center",
+          depth > 0 && "pl-10"
+        )}>
+          <div className="flex items-center gap-2">
+            <Typography variant="label-sm" className="text-base tracking-tight leading-none">
+              {permission.name}
+            </Typography>
+          </div>
+          {permission.description && (
+            <Typography variant="tiny" className="text-muted mt-1 leading-tight opacity-80">
+              {permission.description}
+            </Typography>
+          )}
+        </div>
+
+        {/* Employee selector */}
+        <div className="relative px-4 py-2 flex items-center">
+          <EmployeeSelector
+            selectedEmployees={permission.users}
+            onAddEmployee={onAddEmployee}
+            onRemoveEmployee={onRemoveEmployee}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -46,7 +87,7 @@ export function PermissionRow({
       </div>
 
       {/* Right Column - Employee selector */}
-      <div className="w-1/2 relative px-6 py-2 flex items-center">
+      <div className="w-1/2 relative px-6 py-2 flex items-center overflow-visible">
         <EmployeeSelector
           selectedEmployees={permission.users}
           onAddEmployee={onAddEmployee}

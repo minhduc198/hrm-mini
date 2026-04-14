@@ -37,16 +37,18 @@ export function PermissionMatrix() {
         }
       />
 
-      {/* Main Content */}
-      <div className="flex flex-col gap-5 flex-1 min-h-0 overflow-y-auto pr-1 no-scrollbar pb-10">
-        {modules.map((module) => (
-          <ModuleSection
-            key={module.id}
-            module={module}
-            onAddEmployee={handleAddEmployee}
-            onRemoveEmployee={handleRemoveEmployee}
-          />
-        ))}
+      {/* Main Content - scrollable wrapper */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 no-scrollbar pb-10">
+        <div className="flex flex-col gap-5">
+          {modules.map((module) => (
+            <ModuleSection
+              key={module.id}
+              module={module}
+              onAddEmployee={handleAddEmployee}
+              onRemoveEmployee={handleRemoveEmployee}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
