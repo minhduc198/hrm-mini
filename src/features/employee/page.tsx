@@ -13,6 +13,7 @@ import { Typography } from "@/components/ui/typography";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
 import { PageHeader } from "@/components/common/layout/page-header";
+import { ExportExcelButton } from "@/components/common/button/ExportExcelButton";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
 import {
   AddEmployeeValues,
@@ -32,6 +33,7 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { ExcelColumn } from "@/types/common";
 
 export default function EmployeeManagePage() {
   const [search, setSearch] = useState("");
@@ -78,6 +80,51 @@ export default function EmployeeManagePage() {
       inactive: allEmployees.filter((e) => !e.is_active).length,
     };
   }, [statsQueryEmployee.data, totalEmployees]);
+
+  const excelColumns: ExcelColumn<Employee>[] = useMemo(
+    () => [
+      { header: "ID", key: "id", width: 10 },
+      {
+        header: "Mã nhân viên",
+        key: "empCode",
+        width: 15,
+        render: (row) => row.empCode.replaceAll("-", ""),
+      },
+      { header: "Họ và tên", key: "name", width: 25 },
+      { header: "Email", key: "email", width: 30 },
+      {
+        header: "Số điện thoại",
+        key: "phone",
+        width: 18,
+        render: (row) => row.phone || "Chưa cập nhật",
+      },
+      {
+        header: "Địa chỉ",
+        key: "address",
+        width: 40,
+        render: (row) => row.address || "Chưa cập nhật",
+      },
+      {
+        header: "Vai trò",
+        key: "role",
+        width: 18,
+        render: (row) => (row.role === "admin" ? "Quản trị viên" : "Nhân viên"),
+      },
+      {
+        header: "Trạng thái",
+        key: "is_active",
+        width: 18,
+        render: (row) => (row.is_active ? "Đang hoạt động" : "Vô hiệu hóa"),
+      },
+      {
+        header: "Ngày tạo",
+        key: "created_at",
+        width: 20,
+        render: (row) => new Date(row.created_at).toLocaleDateString("vi-VN"),
+      },
+    ],
+    [],
+  );
 
   const hasFilter =
     search.length > 0 || roleFilter !== "all" || statusFilter !== "all";
@@ -161,19 +208,30 @@ export default function EmployeeManagePage() {
         description="Quản lý tài khoản và thông tin toàn bộ nhân viên"
         icon={Users}
         actions={
-          <Button
-            size="sm"
-            className="h-9 gap-2 text-xs"
-            onClick={() => setAddOpen(true)}
-            disabled={isCreating}
-          >
-            {isCreating ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <UserPlus size={14} />
-            )}
-            Thêm nhân viên
-          </Button>
+          <div className="flex items-center gap-2.5">
+            <ExportExcelButton
+              data={employees}
+              columns={excelColumns}
+              fileName={`Danh_Sach_Nhan_Vien_${new Date().toISOString().split("T")[0]}`}
+              sheetName="DS Nhân viên"
+              disabled={
+                isFetching || isInitialLoading || employees.length === 0
+              }
+            />
+            <Button
+              size="sm"
+              className="h-9 gap-2 text-xs"
+              onClick={() => setAddOpen(true)}
+              disabled={isCreating}
+            >
+              {isCreating ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <UserPlus size={14} />
+              )}
+              Thêm nhân viên
+            </Button>
+          </div>
         }
       />
 
