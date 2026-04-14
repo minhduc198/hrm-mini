@@ -26,3 +26,10 @@ export interface PaginatedResponse<T> {
   links: PaginationLinks;
   meta: PaginationMeta;
 }
+
+export interface ExcelColumn<T> {
+  header: string;
+  key: string;
+  width?: number;
+  render?: (row: T) => React.ReactNode;
+}
