@@ -56,3 +56,8 @@ export interface EmployeeSearchResult {
   name: string;
   email: string;
 }
+
+export interface PermissionAssignPayload {
+  permission_id: number;
+  user_ids: number[];
+}
