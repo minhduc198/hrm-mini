@@ -92,9 +92,20 @@ function PopoverContent({
         ) : availableEmployees.length === 0 ? (
           <div className="py-6 flex flex-col items-center justify-center text-center">
             <HugeiconsIcon icon={UserGroupIcon} className="w-7 h-7 text-subtle-text/20 mb-1.5" strokeWidth={1} />
-            <Typography variant="label-xs" className="font-medium text-muted">
-              Không tìm thấy nhân viên
-            </Typography>
+            {hasMore ? (
+              <>
+                <Typography variant="label-xs" className="font-medium text-muted">
+                  Tất cả nhân viên đã được chọn
+                </Typography>
+                <Typography variant="tiny" className="text-subtle-text/60 mt-0.5">
+                  Ấn &quot;Xem thêm&quot; để tải thêm nhân viên
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="label-xs" className="font-medium text-muted">
+                Không còn nhân viên nào để thêm
+              </Typography>
+            )}
           </div>
         ) : (
           <div className="space-y-0.5">
@@ -126,24 +137,24 @@ function PopoverContent({
                 </div>
               </button>
             ))}
+          </div>
+        )}
 
-            {hasMore && (
-              <div className="pt-2 pb-1 px-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onLoadMore}
-                  disabled={isLoading}
-                  className="w-full h-8 text-[11px] font-semibold border-line bg-page hover:bg-subtle/10 hover:border-primary/30 text-muted hover:text-primary transition-all rounded-lg gap-2"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    "Xem thêm"
-                  )}
-                </Button>
-              </div>
-            )}
+        {hasMore && (
+          <div className="pt-2 pb-1 px-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLoadMore}
+              disabled={isLoading}
+              className="w-full h-8 text-[11px] font-semibold border-line bg-page hover:bg-subtle/10 hover:border-primary/30 text-muted hover:text-primary transition-all rounded-lg gap-2"
+            >
+              {isLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                "Xem thêm"
+              )}
+            </Button>
           </div>
         )}
       </div>
@@ -179,18 +190,27 @@ export function EmployeePopover({
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  // Reset limit when searching
+  const preSelectedCountRef = useRef(0);
+  useEffect(() => {
+    if (isOpen) {
+      preSelectedCountRef.current = selectedEmployees.length;
+      setLimit(INITIAL_LIMIT);
+    }
+  }, [isOpen]); 
+  
+  // Reset limit when search query changes
   useEffect(() => {
     setLimit(INITIAL_LIMIT);
   }, [debouncedSearch]);
 
   const { listQueryEmployee } = useEmployees({
     name: debouncedSearch || undefined,
-    per_page: limit
+    per_page: limit + preSelectedCountRef.current,
+    role: "employee",
   });
 
   const total = listQueryEmployee.data?.meta?.total || 0;
-  const hasMore = total > limit;
+  const hasMore = total > limit + preSelectedCountRef.current;
 
   const availableEmployees = useMemo(() => {
     const employees = listQueryEmployee.data?.data || [];
