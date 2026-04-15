@@ -8,6 +8,8 @@ import { Typography } from "@/components/ui/typography";
 import { UserAPIResponse } from "../types/permission";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { UserAvatar } from "@/components/common/avatar/user-avatar";
+import { useState, useMemo } from "react";
+import { SearchInput } from "@/components/common/form/search-input";
 
 interface AssignedEmployeesModalProps {
   selectedEmployees: UserAPIResponse[];
@@ -23,6 +25,18 @@ export function AssignedEmployeesModal({
   onClose,
 }: AssignedEmployeesModalProps) {
   const isMobile = useIsMobile();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredEmployees = useMemo(() => {
+    if (!searchQuery.trim()) return selectedEmployees;
+    const query = searchQuery.toLowerCase().trim();
+    return selectedEmployees.filter(
+      (emp) =>
+        emp.name.toLowerCase().includes(query) ||
+        emp.email.toLowerCase().includes(query) ||
+        (emp.empCode && emp.empCode.toLowerCase().includes(query))
+    );
+  }, [selectedEmployees, searchQuery]);
 
   if (!isOpen) return null;
 
@@ -39,13 +53,13 @@ export function AssignedEmployeesModal({
         className={cn(
           "fixed z-50 bg-surface rounded-xl shadow-2xl border border-line overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col",
           isMobile
-            ? "inset-x-4 top-1/2 -translate-y-1/2 max-h-[80vh]"
-            : "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] max-h-[70vh]"
+            ? "inset-x-4 top-1/2 -translate-y-1/2 h-[80vh]"
+            : "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[540px]"
         )}
       >
         {/* Header */}
         <div className="px-4 py-3 border-b border-line flex-shrink-0">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <HugeiconsIcon
                 icon={UserGroupIcon}
@@ -60,10 +74,17 @@ export function AssignedEmployeesModal({
               {selectedEmployees.length} nhân viên
             </Typography>
           </div>
+
+          <SearchInput
+            placeholder="Tìm trong danh sách đã gán..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onClear={() => setSearchQuery("")}
+          />
         </div>
 
         <div className="flex-1 overflow-y-auto p-2">
-          {selectedEmployees.length === 0 ? (
+          {filteredEmployees.length === 0 ? (
             <div className="py-12 flex flex-col items-center justify-center text-center">
               <HugeiconsIcon
                 icon={UserGroupIcon}
@@ -74,12 +95,12 @@ export function AssignedEmployeesModal({
                 variant="label-sm"
                 className="font-medium text-muted"
               >
-                Chưa có nhân viên nào được phân quyền
+                {searchQuery ? "Không tìm thấy nhân viên phù hợp" : "Chưa có nhân viên nào được phân quyền"}
               </Typography>
             </div>
           ) : (
             <div className="space-y-1">
-              {selectedEmployees.map((employee) => (
+              {filteredEmployees.map((employee) => (
                 <div
                   key={employee.id}
                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-page transition-all group"
@@ -91,19 +112,18 @@ export function AssignedEmployeesModal({
                     shortName={employee.shortName}
                   />
 
-                  <div className="flex-1 min-w-0 space-x-2">
+                  <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <Typography
                       variant="label-sm"
-                      className="font-medium truncate"
+                      className="font-medium truncate block leading-tight"
                     >
                       {employee.name}
                     </Typography>
                     <Typography
                       variant="tiny"
-                      className="text-muted truncate"
+                      className="text-muted truncate block leading-tight mt-0.5"
                     >
-                      {employee.empCode || employee.id} ·{" "}
-                      {employee.email}
+                      {employee.empCode ? `${employee.empCode} · ` : ""}{employee.email}
                     </Typography>
                   </div>
 

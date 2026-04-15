@@ -159,14 +159,6 @@ function PopoverContent({
         <Typography variant="tiny" className="font-medium text-muted">
           Đang chọn {selectedEmployees.length} nhân viên
         </Typography>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-5 text-[10px] font-bold text-primary hover:bg-primary-tint px-1.5"
-          onClick={onClose}
-        >
-          Hoàn tất
-        </Button>
       </div>
     </div>
   );
