@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllPermissions } from "../api/permissions";
+import { getAllPermissions } from "../api/get-all-permissions";
 import { mapPermissionModulesFromApi } from "@/features/permission-management/adapters/permission";
 import { permissionKeys } from "../queryKeys/permission";
 

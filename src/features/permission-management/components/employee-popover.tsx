@@ -5,16 +5,14 @@ import { Search01Icon, UserGroupIcon, Add01Icon } from "@hugeicons/core-free-ico
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import { UserAPIResponse } from "../types/permission";
-import { getInitials, getAvatarColor } from "../utils/employee";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
 import { useDebounce } from "@/hooks/use-debounce";
 import { mapEmployeeToUserResponse } from "../adapters/permission";
 import { Loader2 } from "lucide-react";
+import { UserAvatar } from "@/components/common/avatar/user-avatar";
 
 const INITIAL_LIMIT = 6;
 
@@ -92,9 +90,20 @@ function PopoverContent({
         ) : availableEmployees.length === 0 ? (
           <div className="py-6 flex flex-col items-center justify-center text-center">
             <HugeiconsIcon icon={UserGroupIcon} className="w-7 h-7 text-subtle-text/20 mb-1.5" strokeWidth={1} />
-            <Typography variant="label-xs" className="font-medium text-muted">
-              Không tìm thấy nhân viên
-            </Typography>
+            {hasMore ? (
+              <>
+                <Typography variant="label-xs" className="font-medium text-muted">
+                  Tất cả nhân viên đã được chọn
+                </Typography>
+                <Typography variant="tiny" className="text-subtle-text/60 mt-0.5">
+                  Ấn &quot;Xem thêm&quot; để tải thêm nhân viên
+                </Typography>
+              </>
+            ) : (
+              <Typography variant="label-xs" className="font-medium text-muted">
+                Không còn nhân viên nào để thêm
+              </Typography>
+            )}
           </div>
         ) : (
           <div className="space-y-0.5">
@@ -104,15 +113,12 @@ function PopoverContent({
                 onClick={() => handleSelect(employee)}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-page transition-all text-left group border border-transparent active:scale-[0.98] origin-left"
               >
-                <Avatar className="w-7 h-7 shadow-sm border border-line/10 flex-shrink-0">
-                  {employee.avatar ? (
-                    <AvatarImage src={employee.avatar} alt={employee.name} />
-                  ) : (
-                    <AvatarFallback className={cn("text-[9px] font-bold text-white", getAvatarColor(employee.id))}>
-                      {employee.shortName || getInitials(employee.name)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <UserAvatar
+                  name={employee.name}
+                  avatar={employee.avatar}
+                  id={employee.id}
+                  shortName={employee.shortName}
+                />
                 <div className="flex-1 min-w-0">
                   <Typography variant="label-xs" className="text-sm group-hover:text-primary transition-colors truncate leading-tight block">
                     {employee.name}
@@ -126,24 +132,24 @@ function PopoverContent({
                 </div>
               </button>
             ))}
+          </div>
+        )}
 
-            {hasMore && (
-              <div className="pt-2 pb-1 px-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onLoadMore}
-                  disabled={isLoading}
-                  className="w-full h-8 text-[11px] font-semibold border-line bg-page hover:bg-subtle/10 hover:border-primary/30 text-muted hover:text-primary transition-all rounded-lg gap-2"
-                >
-                  {isLoading ? (
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                  ) : (
-                    "Xem thêm"
-                  )}
-                </Button>
-              </div>
-            )}
+        {hasMore && (
+          <div className="pt-2 pb-1 px-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onLoadMore}
+              disabled={isLoading}
+              className="w-full h-8 text-[11px] font-semibold border-line bg-page hover:bg-subtle/10 hover:border-primary/30 text-muted hover:text-primary transition-all rounded-lg gap-2"
+            >
+              {isLoading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                "Xem thêm"
+              )}
+            </Button>
           </div>
         )}
       </div>
@@ -153,14 +159,6 @@ function PopoverContent({
         <Typography variant="tiny" className="font-medium text-muted">
           Đang chọn {selectedEmployees.length} nhân viên
         </Typography>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-5 text-[10px] font-bold text-primary hover:bg-primary-tint px-1.5"
-          onClick={onClose}
-        >
-          Hoàn tất
-        </Button>
       </div>
     </div>
   );
@@ -179,18 +177,27 @@ export function EmployeePopover({
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  // Reset limit when searching
+  const preSelectedCountRef = useRef(0);
+  useEffect(() => {
+    if (isOpen) {
+      preSelectedCountRef.current = selectedEmployees.length;
+      setLimit(INITIAL_LIMIT);
+    }
+  }, [isOpen]); 
+  
+  // Reset limit when search query changes
   useEffect(() => {
     setLimit(INITIAL_LIMIT);
   }, [debouncedSearch]);
 
   const { listQueryEmployee } = useEmployees({
     name: debouncedSearch || undefined,
-    per_page: limit
+    per_page: limit + preSelectedCountRef.current,
+    role: "employee",
   });
 
   const total = listQueryEmployee.data?.meta?.total || 0;
-  const hasMore = total > limit;
+  const hasMore = total > limit + preSelectedCountRef.current;
 
   const availableEmployees = useMemo(() => {
     const employees = listQueryEmployee.data?.data || [];

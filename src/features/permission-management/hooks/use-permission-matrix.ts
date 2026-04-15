@@ -1,101 +1,62 @@
-import { useState, useCallback, useEffect } from "react";
-import { UserAPIResponse, ModuleAPIResponse } from "../types/permission";
+import { useCallback, useEffect } from "react";
+import { UserAPIResponse } from "../types/permission";
 import { useSavePermissions } from "./use-save-permissions";
 import { useGetPermissions } from "./use-get-permissions";
-import { toast } from "sonner";
+import { usePermissionMatrixStore } from "../stores/permission";
+import { mapPermissionsToAssignPayload } from "../adapters/permission";
 
 export function usePermissionMatrix() {
   const { data: permissionList, isLoading, error } = useGetPermissions();
 
-  const [data, setData] = useState<ModuleAPIResponse[]>([]);
-
-  useEffect(() => {
-    if (permissionList) {
-      setData(permissionList);
-    }
-  }, [permissionList]);
+  const modules = usePermissionMatrixStore((state) => state.modules);
+  const setModules = usePermissionMatrixStore((state) => state.setModules);
+  const addEmployeeToPermission = usePermissionMatrixStore(
+    (state) => state.addEmployeeToPermission
+  );
+  const removeEmployeeFromPermission = usePermissionMatrixStore(
+    (state) => state.removeEmployeeFromPermission
+  );
 
   const saveMutation = useSavePermissions();
 
-  // Helper to update a specific permission in the nested structure
-  const updatePermissionUsers = useCallback((permissionId: string, updater: (users: UserAPIResponse[]) => UserAPIResponse[]) => {
-    setData((prev) => 
-      prev.map(module => ({
-        ...module,
-        permissions: module.permissions.map(perm => 
-          perm.id === permissionId 
-            ? { ...perm, users: updater(perm.users) } 
-            : perm
-        )
-      }))
-    );
-  }, []);
+  // Sync fetched data to Zustand store
+  useEffect(() => {
+    if (permissionList) {
+      setModules(permissionList);
+    }
+  }, [permissionList, setModules]);
 
-  const handleAddEmployee = useCallback((permissionId: string, employee: UserAPIResponse) => {
-    updatePermissionUsers(permissionId, (users) => {
-      if (users.find(u => u.id === employee.id)) return users;
-      return [...users, employee];
-    });
-  }, [updatePermissionUsers]);
+  const handleAddEmployee = useCallback(
+    (permissionId: string, employee: UserAPIResponse) => {
+      addEmployeeToPermission(permissionId, employee);
+    },
+    [addEmployeeToPermission]
+  );
 
-  const handleRemoveEmployee = useCallback((permissionId: string, employeeId: string) => {
-    updatePermissionUsers(permissionId, (users) => 
-      users.filter(u => u.id !== employeeId)
-    );
-  }, [updatePermissionUsers]);
+  const handleRemoveEmployee = useCallback(
+    (permissionId: string, employeeId: string) => {
+      removeEmployeeFromPermission(permissionId, employeeId);
+    },
+    [removeEmployeeFromPermission]
+  );
 
   const handleSave = useCallback(async () => {
-    // Transform data for the batch API
-    // Group permissions by their user sets
-    const userGroups = new Map<string, { userIds: string[], permissionIds: string[] }>();
-
-    data.forEach(module => {
-      module.permissions.forEach(perm => {
-        if (perm.users.length === 0) return;
-
-        // Create a unique key for the set of users
-        const userIds = perm.users.map(u => u.id).sort();
-        const groupKey = userIds.join(",");
-
-        if (userGroups.has(groupKey)) {
-          userGroups.get(groupKey)!.permissionIds.push(perm.id);
-        } else {
-          userGroups.set(groupKey, {
-            userIds,
-            permissionIds: [perm.id]
-          });
-        }
-      });
-    });
-
-    if (userGroups.size === 0) {
-      toast.error("Vui lòng thêm ít nhất một nhân viên");
-      return;
-    }
-
-    // In a real app, we might send multiple requests or one batch request
-    // For now, let's just log and call the mutation for each group
-    console.log("Saving groups:", Array.from(userGroups.values()));
+    const payload = mapPermissionsToAssignPayload(modules);
 
     try {
-      for (const [_, group] of userGroups) {
-        await saveMutation.mutateAsync({
-          user_ids: group.userIds,
-          permission_ids: group.permissionIds
-        });
-      }
-    } catch (error) {
-      console.error("Save failed", error);
+      await saveMutation.mutateAsync(payload);
+    } catch {
+      // Error already handled in useSavePermissions
     }
-  }, [data, saveMutation]);
+  }, [modules, saveMutation]);
 
   return {
-    modules: data,
+    modules,
     handleAddEmployee,
     handleRemoveEmployee,
     handleSave,
     isSaving: saveMutation.isPending,
     isLoading,
-    error: error as Error | null
+    error: error as Error | null,
   };
 }

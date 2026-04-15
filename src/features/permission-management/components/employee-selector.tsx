@@ -4,7 +4,6 @@ import { useState } from "react";
 import { PlusSignIcon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -14,10 +13,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { UserAPIResponse } from "../types/permission";
-import { getInitials, getAvatarColor } from "../utils/employee";
 import { Typography } from "@/components/ui/typography";
 import { EmployeePopover } from "./employee-popover";
+import { AssignedEmployeesModal } from "./assigned-employees-modal";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { UserAvatar } from "@/components/common/avatar/user-avatar";
 
 interface EmployeeSelectorProps {
   selectedEmployees: UserAPIResponse[];
@@ -33,7 +33,8 @@ export function EmployeeSelector({
   onAddEmployee,
   onRemoveEmployee,
 }: EmployeeSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isAddPopoverOpen, setIsAddPopoverOpen] = useState(false);
+  const [isAssignedModalOpen, setIsAssignedModalOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const isMobile = useMediaQuery("(max-width: 767px)");
 
@@ -57,17 +58,12 @@ export function EmployeeSelector({
                     onClick={() => onRemoveEmployee(employee.id)}
                     className="relative block transition-transform active:scale-95"
                   >
-                    <Avatar className="w-8 h-8 border-2 border-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.08)] ring-1 ring-line/30 cursor-pointer transition-all hover:ring-primary/20 hover:scale-105 active:scale-95 after:hidden">
-                      {employee.avatar ? (
-                        <AvatarImage src={employee.avatar} alt={employee.name} />
-                      ) : (
-                        <AvatarFallback className={cn("text-white flex items-center justify-center", getAvatarColor(employee.id))}>
-                          <Typography variant="label-xs" className="text-white">
-                            {employee.shortName || getInitials(employee.name)}
-                          </Typography>
-                        </AvatarFallback>
-                      )}
-                    </Avatar>
+                    <UserAvatar
+                      name={employee.name}
+                      avatar={employee.avatar}
+                      id={employee.id}
+                      shortName={employee.shortName}
+                    />
                     {/* Remove overlay on hover */}
                     <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition-all duration-200 backdrop-blur-[1px]">
                       <HugeiconsIcon icon={Cancel01Icon} className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
@@ -88,7 +84,7 @@ export function EmployeeSelector({
 
           {hiddenCount > 0 && (
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsAssignedModalOpen(true)}
               className="w-8 h-8 rounded-full bg-subtle border border-line hover:bg-subtle/80 transition-colors flex items-center justify-center overflow-hidden flex-shrink-0"
             >
               <Typography variant="label-xs" className="text-muted">
@@ -103,26 +99,33 @@ export function EmployeeSelector({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsAddPopoverOpen(!isAddPopoverOpen)}
             className={cn(
               "h-8 w-8 p-0 rounded-full border-line transition-all group shadow-sm",
-              isOpen ? "bg-primary-tint border-primary-border text-primary" : "hover:bg-primary-tint hover:border-primary-border hover:text-primary"
+              isAddPopoverOpen ? "bg-primary-tint border-primary-border text-primary" : "hover:bg-primary-tint hover:border-primary-border hover:text-primary"
             )}
           >
             <HugeiconsIcon
               icon={PlusSignIcon}
-              className={cn("w-4 h-4 transition-transform duration-300", isOpen ? "rotate-45" : "group-hover:rotate-90")}
+              className={cn("w-4 h-4 transition-transform duration-300", isAddPopoverOpen ? "rotate-45" : "group-hover:rotate-90")}
               strokeWidth={2.5}
             />
           </Button>
 
           <EmployeePopover
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
+            isOpen={isAddPopoverOpen}
+            onClose={() => setIsAddPopoverOpen(false)}
             onSelect={onAddEmployee}
             selectedEmployees={selectedEmployees}
           />
         </div>
+
+        <AssignedEmployeesModal
+          selectedEmployees={selectedEmployees}
+          onRemoveEmployee={onRemoveEmployee}
+          isOpen={isAssignedModalOpen}
+          onClose={() => setIsAssignedModalOpen(false)}
+        />
       </div>
     </TooltipProvider>
   );

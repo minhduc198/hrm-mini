@@ -1,26 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query-client";
 import { toast } from "sonner";
-
-interface SavePermissionsInput {
-  user_ids: string[];
-  permission_ids: string[];
-}
+import { permissionKeys } from "../queryKeys/permission";
+import { savePermissions } from "@/features/permission-management/api/save-permissions";
+import { PermissionAssignPayload } from "@/features/permission-management/types/permission";
 
 export function useSavePermissions() {
-  return useMutation({
-    mutationFn: async (input: SavePermissionsInput) => {
-      // TODO: Replace with actual API call
-      // const response = await axios.post("/permissions/assign", input);
-      // return response.data;
 
-      // Mock implementation
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return input;
-    },
-    onSuccess: (_, variables) => {
-      toast.success(
-        `Đã lưu phân quyền cho ${variables.user_ids.length} nhân viên`
-      );
+  return useMutation({
+    mutationFn: (payload: PermissionAssignPayload[]) => savePermissions(payload),
+    onSuccess: () => {
+      toast.success("Đã lưu phân quyền thành công");
+      queryClient.invalidateQueries({ queryKey: permissionKeys.lists() });
     },
     onError: (error: { message?: string }) => {
       toast.error(error.message ?? "Có lỗi xảy ra khi lưu phân quyền");

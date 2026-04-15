@@ -23,7 +23,7 @@ export interface PermissionAPIResponse {
 
 export interface PermissionUserBE {
   id: number;
-  emp_code?: string;
+  empCode?: string;
   name: string;
   email: string;
   avatar_url: string | null;
@@ -55,4 +55,9 @@ export interface EmployeeSearchResult {
   id: string;
   name: string;
   email: string;
+}
+
+export interface PermissionAssignPayload {
+  permission_id: number;
+  user_ids: number[];
 }
