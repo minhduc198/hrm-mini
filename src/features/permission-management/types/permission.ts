@@ -7,6 +7,7 @@ export interface SelectedEmployee {
 
 export interface UserAPIResponse {
   id: string;
+  empCode?: string;
   name: string;
   shortName: string;
   avatar?: string;
@@ -22,6 +23,7 @@ export interface PermissionAPIResponse {
 
 export interface PermissionUserBE {
   id: number;
+  emp_code?: string;
   name: string;
   email: string;
   avatar_url: string | null;

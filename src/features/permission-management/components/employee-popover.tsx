@@ -9,8 +9,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import { UserAPIResponse } from "../types/permission";
-import { MOCK_EMPLOYEES, getInitials, getAvatarColor } from "../utils/employee";
+import { getInitials, getAvatarColor } from "../utils/employee";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEmployees } from "@/features/employee/hooks/use-employees";
+import { useDebounce } from "@/hooks/use-debounce";
+import { mapEmployeeToUserResponse } from "../adapters/permission";
+import { Loader2 } from "lucide-react";
+
+const INITIAL_LIMIT = 6;
+
 
 interface EmployeePopoverProps {
   selectedEmployees: UserAPIResponse[];
@@ -24,6 +31,9 @@ function PopoverContent({
   searchQuery,
   setSearchQuery,
   availableEmployees,
+  isLoading,
+  hasMore,
+  onLoadMore,
   handleSelect,
   onClose,
 }: {
@@ -31,6 +41,9 @@ function PopoverContent({
   searchQuery: string;
   setSearchQuery: (v: string) => void;
   availableEmployees: UserAPIResponse[];
+  isLoading: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
   handleSelect: (emp: UserAPIResponse) => void;
   onClose: () => void;
 }) {
@@ -61,12 +74,22 @@ function PopoverContent({
             className="pl-8 h-8 bg-page border-line focus-visible:ring-primary/10 focus-visible:border-primary rounded-lg text-xs transition-all placeholder:text-subtle-text/70 shadow-none"
             autoFocus
           />
+          {isLoading && (
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+              <Loader2 className="w-3 h-3 animate-spin text-primary" />
+            </div>
+          )}
         </div>
       </div>
 
       {/* List */}
-      <div className="px-1 py-0.5 max-h-[180px] overflow-y-auto no-scrollbar">
-        {availableEmployees.length === 0 ? (
+      <div className="px-1 py-0.5 max-h-[220px] overflow-y-auto no-scrollbar flex flex-col">
+        {isLoading && availableEmployees.length === 0 ? (
+          <div className="py-12 flex flex-col items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-primary/40 mb-2" />
+            <Typography variant="tiny" className="text-muted">Đang tải...</Typography>
+          </div>
+        ) : availableEmployees.length === 0 ? (
           <div className="py-6 flex flex-col items-center justify-center text-center">
             <HugeiconsIcon icon={UserGroupIcon} className="w-7 h-7 text-subtle-text/20 mb-1.5" strokeWidth={1} />
             <Typography variant="label-xs" className="font-medium text-muted">
@@ -95,7 +118,7 @@ function PopoverContent({
                     {employee.name}
                   </Typography>
                   <Typography variant="tiny" className="text-muted truncate leading-tight block font-normal">
-                    {employee.id} · {employee.email}
+                    {employee.empCode || employee.id} · {employee.email}
                   </Typography>
                 </div>
                 <div className="w-6 h-6 rounded-md flex items-center justify-center text-subtle-text group-hover:text-primary group-hover:bg-primary-tint opacity-0 group-hover:opacity-100 transition-all">
@@ -103,6 +126,24 @@ function PopoverContent({
                 </div>
               </button>
             ))}
+
+            {hasMore && (
+              <div className="pt-2 pb-1 px-1">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onLoadMore}
+                  disabled={isLoading}
+                  className="w-full h-8 text-[11px] font-semibold border-line bg-page hover:bg-subtle/10 hover:border-primary/30 text-muted hover:text-primary transition-all rounded-lg gap-2"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    "Xem thêm"
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -110,7 +151,7 @@ function PopoverContent({
       {/* Footer */}
       <div className="px-2.5 py-1.5 bg-page border-t border-line flex items-center justify-between">
         <Typography variant="tiny" className="font-medium text-muted">
-          {selectedEmployees.length} nhân viên
+          Đang chọn {selectedEmployees.length} nhân viên
         </Typography>
         <Button
           variant="ghost"
@@ -125,6 +166,7 @@ function PopoverContent({
   );
 }
 
+
 export function EmployeePopover({
   selectedEmployees,
   onSelect,
@@ -132,29 +174,38 @@ export function EmployeePopover({
   onClose,
 }: EmployeePopoverProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [limit, setLimit] = useState(INITIAL_LIMIT);
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
-  const availableEmployees = useMemo(() => {
-    return MOCK_EMPLOYEES.map(emp => ({
-      ...emp,
-      shortName: getInitials(emp.name)
-    })).filter((emp) => {
-      const isAlreadySelected = selectedEmployees.some((s) => s.id === emp.id);
-      if (isAlreadySelected) return false;
+  // Reset limit when searching
+  useEffect(() => {
+    setLimit(INITIAL_LIMIT);
+  }, [debouncedSearch]);
 
-      const searchLower = searchQuery.toLowerCase();
-      return (
-        emp.name.toLowerCase().includes(searchLower) ||
-        emp.email.toLowerCase().includes(searchLower) ||
-        emp.id.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [selectedEmployees, searchQuery]);
+  const { listQueryEmployee } = useEmployees({
+    name: debouncedSearch || undefined,
+    per_page: limit
+  });
+
+  const total = listQueryEmployee.data?.meta?.total || 0;
+  const hasMore = total > limit;
+
+  const availableEmployees = useMemo(() => {
+    const employees = listQueryEmployee.data?.data || [];
+    return employees
+      .map(mapEmployeeToUserResponse)
+      .filter((emp) => !selectedEmployees.some((s) => s.id === emp.id));
+  }, [listQueryEmployee.data, selectedEmployees]);
 
   const handleSelect = (employee: UserAPIResponse) => {
     onSelect(employee);
     setSearchQuery("");
+  };
+
+  const handleLoadMore = () => {
+    setLimit(prev => prev + INITIAL_LIMIT);
   };
 
   useEffect(() => {
@@ -185,6 +236,9 @@ export function EmployeePopover({
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             availableEmployees={availableEmployees}
+            isLoading={listQueryEmployee.isFetching}
+            hasMore={hasMore}
+            onLoadMore={handleLoadMore}
             handleSelect={handleSelect}
             onClose={onClose}
           />
@@ -204,6 +258,9 @@ export function EmployeePopover({
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         availableEmployees={availableEmployees}
+        isLoading={listQueryEmployee.isFetching}
+        hasMore={hasMore}
+        onLoadMore={handleLoadMore}
         handleSelect={handleSelect}
         onClose={onClose}
       />
