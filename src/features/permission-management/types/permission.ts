@@ -23,7 +23,7 @@ export interface PermissionAPIResponse {
 
 export interface PermissionUserBE {
   id: number;
-  emp_code?: string;
+  empCode?: string;
   name: string;
   email: string;
   avatar_url: string | null;

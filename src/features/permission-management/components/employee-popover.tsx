@@ -5,16 +5,14 @@ import { Search01Icon, UserGroupIcon, Add01Icon } from "@hugeicons/core-free-ico
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 import { UserAPIResponse } from "../types/permission";
-import { getInitials, getAvatarColor } from "../utils/employee";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
 import { useDebounce } from "@/hooks/use-debounce";
 import { mapEmployeeToUserResponse } from "../adapters/permission";
 import { Loader2 } from "lucide-react";
+import { UserAvatar } from "@/components/common/avatar/user-avatar";
 
 const INITIAL_LIMIT = 6;
 
@@ -115,15 +113,12 @@ function PopoverContent({
                 onClick={() => handleSelect(employee)}
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-page transition-all text-left group border border-transparent active:scale-[0.98] origin-left"
               >
-                <Avatar className="w-7 h-7 shadow-sm border border-line/10 flex-shrink-0">
-                  {employee.avatar ? (
-                    <AvatarImage src={employee.avatar} alt={employee.name} />
-                  ) : (
-                    <AvatarFallback className={cn("text-[9px] font-bold text-white", getAvatarColor(employee.id))}>
-                      {employee.shortName || getInitials(employee.name)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <UserAvatar
+                  name={employee.name}
+                  avatar={employee.avatar}
+                  id={employee.id}
+                  shortName={employee.shortName}
+                />
                 <div className="flex-1 min-w-0">
                   <Typography variant="label-xs" className="text-sm group-hover:text-primary transition-colors truncate leading-tight block">
                     {employee.name}

@@ -1,5 +1,5 @@
+import { getInitials } from "@/utils/avatar";
 import { ModuleAPIResponse, AllPermissionsResponseBE, UserAPIResponse, PermissionAssignPayload } from "../types/permission";
-import { getInitials } from "../utils/employee";
 import { Employee } from "@/features/employee/types";
 
 // api -> fe
@@ -29,7 +29,7 @@ export function mapPermissionModulesFromApi(dataObj: AllPermissionsResponseBE): 
         code: perm.key,
         users: (perm.users || []).map((user) => ({
           id: String(user.id),
-          empCode: user.emp_code || "",
+          empCode: user.empCode || "",
           name: user.name,
           email: user.email,
           avatar: user.avatar_url || undefined,
