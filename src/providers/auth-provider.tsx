@@ -8,21 +8,30 @@ import { normalizePermissions } from "@/features/auth/utils/permission-utils";
 import { authKeys } from "@/features/auth/queryKeys/auth";
 import { ALL_PERMISSIONS } from "@/features/auth/constants/permissions";
 
+
+const getModule = (permission: string): string => permission.split(".")[0];
+
+
 interface AuthContextType {
   permissions: string[];
   isPermissionsLoading: boolean;
+  isAdmin: boolean;
   hasPermission: (permission: string) => boolean;
   hasAnyPermission: (permissions: string[]) => boolean;
+  /** ALL of the given permissions */
+  hasAllPermissions: (permissions: string[]) => boolean;
+  /** True if user has ANY permission belonging to the given module */
+  hasModuleAccess: (module: string) => boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const role = session?.user?.role;
 
-  // Permissions Query
   const { data: rawPermissions, isLoading: isPermissionsLoading } = useQuery({
     queryKey: authKeys.permissions(userId as string),
     queryFn: () => getPermissions(userId as string),
@@ -33,37 +42,108 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     retry: 1,
   });
 
-  // Normalize permissions
-  const permissions = useMemo(
-    () => normalizePermissions(rawPermissions, role),
-    [rawPermissions, role]
+  const IS_MOCKING = true; 
+  const MOCKED_DATA = [
+    { module: "employee", action: "view" },
+    { module: "employee", action: "create" },
+    { module: "employee", action: "update" },
+    { module: "leave", action: "view" },
+  ];
+
+  // ── Normalize to string[] ────────────────────────────────────────────────
+  const permissions = useMemo(() => {
+    // 1. Priority: Use real Backend data if it exists and is not empty
+    if (rawPermissions && rawPermissions.length > 0) {
+      return normalizePermissions(rawPermissions, role);
+    }
+
+    // 2. Fallback: Use mock data during development if API is failing/empty
+    if (IS_MOCKING) {
+      return normalizePermissions(MOCKED_DATA, role);
+    }
+
+    return normalizePermissions(rawPermissions, role);
+  }, [rawPermissions, role, IS_MOCKING]);
+
+  // ── Optimized Sets (built once per permissions change) ───────────────────
+
+  /** O(1) exact permission lookup */
+  const permissionsSet = useMemo(() => new Set(permissions), [permissions]);
+
+  /**
+   * Set of module names derived from the user's permissions.
+   * e.g. ["employee.update", "leave.view"] → Set { "employee", "leave" }
+   * The wildcard "*" is intentionally excluded — use isAdmin for admin logic.
+   */
+  const moduleSet = useMemo(() => {
+    const modules = new Set<string>();
+    for (const p of permissions) {
+      if (p !== ALL_PERMISSIONS) {
+        modules.add(getModule(p));
+      }
+    }
+    // DEBUG — remove after confirming
+    console.log("[RBAC] role:", role, "| permissions:", permissions, "| moduleSet:", [...modules]);
+    return modules;
+  }, [permissions]);
+
+  // ── Derived booleans & check functions ──────────────────────────────────
+
+  /** Single source of truth for admin status */
+  const isAdmin = useMemo(
+    () => permissionsSet.has(ALL_PERMISSIONS),
+    [permissionsSet]
   );
 
-  // Permission checks
   const hasPermission = useMemo(
-    () => (permission: string) => {
-      if (permissions.includes(ALL_PERMISSIONS)) return true;
-      return permissions.includes(permission);
-    },
-    [permissions]
+    () =>
+      (permission: string): boolean =>
+        isAdmin || permissionsSet.has(permission),
+    [isAdmin, permissionsSet]
   );
 
   const hasAnyPermission = useMemo(
-    () => (requiredPermissions: string[]) => {
-      if (permissions.includes(ALL_PERMISSIONS)) return true;
-      return requiredPermissions.some((p) => permissions.includes(p));
-    },
-    [permissions]
+    () =>
+      (required: string[]): boolean =>
+        isAdmin || required.some((p) => permissionsSet.has(p)),
+    [isAdmin, permissionsSet]
   );
 
+  const hasAllPermissions = useMemo(
+    () =>
+      (required: string[]): boolean =>
+        isAdmin || required.every((p) => permissionsSet.has(p)),
+    [isAdmin, permissionsSet]
+  );
+
+  /** Show a module's management tab if user has ANY permission in that module */
+  const hasModuleAccess = useMemo(
+    () =>
+      (module: string): boolean =>
+        isAdmin || moduleSet.has(module),
+    [isAdmin, moduleSet]
+  );
+
+  // ── Context value ────────────────────────────────────────────────────────
   const value = useMemo(
     () => ({
       permissions,
       isPermissionsLoading,
+      isAdmin,
       hasPermission,
       hasAnyPermission,
+      hasAllPermissions,
+      hasModuleAccess,
     }),
-    [permissions, isPermissionsLoading, hasPermission, hasAnyPermission]
+    [
+      permissions,
+      isPermissionsLoading,
+      isAdmin,
+      hasPermission,
+      hasAnyPermission,
+      hasAllPermissions,
+      hasModuleAccess,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

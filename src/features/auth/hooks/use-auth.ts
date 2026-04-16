@@ -12,9 +12,17 @@ export function useAuth() {
     throw new Error("useAuth must be used within an AuthProvider");
   }
 
-  const { permissions, isPermissionsLoading, hasPermission, hasAnyPermission } = context;
+  const {
+    permissions,
+    isPermissionsLoading,
+    isAdmin,
+    hasPermission,
+    hasAnyPermission,
+    hasAllPermissions,
+    hasModuleAccess,
+  } = context;
 
-  // Global loading state: session is resolving OR permissions are fetching
+  // Global loading: session resolving OR permissions still fetching
   const isLoading = status === "loading" || isPermissionsLoading;
 
   return {
@@ -22,8 +30,12 @@ export function useAuth() {
     permissions,
     status,
     isLoading,
+    isPermissionsLoading,
     isAuthenticated: status === "authenticated",
+    isAdmin,
     hasPermission,
     hasAnyPermission,
+    hasAllPermissions,
+    hasModuleAccess,
   };
 }

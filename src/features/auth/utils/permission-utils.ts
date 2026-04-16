@@ -6,7 +6,8 @@ export const normalizePermissions = (
   rawPermissions: PermissionItem[] | undefined,
   role?: string
 ): string[] => {
-  if (role === "admin" && (!rawPermissions || rawPermissions.length === 0)) {
+  // Admin always has full access — regardless of what DB returns
+  if (role === "admin") {
     return [ALL_PERMISSIONS];
   }
 

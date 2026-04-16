@@ -8,41 +8,45 @@ export interface NavItem {
   label: string;
   url: string;
   icon: any;
+  /** Module name used for module-level access check ("employee", "leave") */
+  module?: string;
+  /** Specific permission used for exact action-level access check */
   permission?: string;
   isEmployeeDefault?: boolean;
   audience?: Audience;
 }
 
 export const navItemsConfig: NavItem[] = [
+  // --- Management tabs: shown when user has ANY permission in that module ---
   {
     key: "employees",
     label: "Quản lý nhân viên",
     url: routes.employeeManagement,
     icon: Users,
-    permission: "employee.view",
+    module: "employee",
   },
   {
     key: "leave_manage",
     label: "Quản lý đơn xin nghỉ",
     url: routes.leave.manage,
     icon: CalendarDays,
-    permission: "leave.manage",
+    module: "leave",
   },
   {
     key: "attendance_manage",
     label: "Quản lý chấm công",
     url: routes.attendance.manage,
     icon: Clock,
-    permission: "attendance.manage",
+    module: "attendance",
   },
   {
     key: "roles",
     label: "Quản lý phân quyền",
     url: routes.permissionManagement,
     icon: Shield,
-    permission: "permission.manage",
+    module: "permission",
   },
-  // Employee specific personal views
+  // --- Employee default personal tabs: shown to all employees by default ---
   {
     key: "attendance_personal",
     label: "Chấm công",

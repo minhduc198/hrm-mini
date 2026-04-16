@@ -4,7 +4,5 @@ export interface PermissionItem {
 }
 
 export interface PermissionResponse {
-  data: {
-    permissions: PermissionItem[];
-  };
+  permissions: PermissionItem[];
 }

@@ -1,6 +1,5 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { Users, CalendarDays, Clock, Shield } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Typography } from "./ui/typography";
 import {
@@ -11,43 +10,57 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
+  useSidebar,
 } from "./ui/sidebar";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { useSidebar } from "./ui/sidebar";
-
 import { navItemsConfig } from "./sidebar-items";
 
 export function AppSidebar() {
   const router = useRouter();
   const path = usePathname();
-  const { user, hasPermission } = useAuth();
+  const {
+    user,
+    isAdmin,
+    isPermissionsLoading,
+    hasModuleAccess,
+    hasPermission,
+  } = useAuth();
   const { setOpenMobile } = useSidebar();
 
   const isExactActive = (url: string) => path === url;
 
-  const getNavItems = () => {
+  const navItems = (() => {
+    // ── Block render until permissions are ready to prevent flicker ─────────
+    if (!user || isPermissionsLoading) return [];
+
     return navItemsConfig.filter((item) => {
-      if (!user) return false;
+      // 1. Admin sees everything except employee-only personal tabs
+      if (isAdmin) {
+        return item.audience !== "employee-only";
+      }
 
-      const canAccessByPermission = item.permission
-        ? hasPermission(item.permission)
-        : false;
+      // 2. Employee default personal tabs (Chấm công, Xin nghỉ)
+      //    Shown to all employees regardless of permissions
+      if (item.isEmployeeDefault && user.role === "employee") {
+        return true;
+      }
 
-      const isEmployeeDefault =
-        user.role === "employee" && item.isEmployeeDefault;
+      // 3. Module-level check
+      //    If item declares a module, show it when user has ANY permission in that module.
+      //    This is the key rule: employee.update grants access to the "employee" module tab.
+      if (item.module) {
+        return hasModuleAccess(item.module);
+      }
 
-      const isHiddenForAdmin =
-        user.role === "admin" && item.audience === "employee-only";
+      // 4. Exact permission check (fallback for items without a module)
+      if (item.permission) {
+        return hasPermission(item.permission);
+      }
 
-      const isVisible =
-        (canAccessByPermission || isEmployeeDefault) && !isHiddenForAdmin;
-
-      return isVisible;
+      // 5. Default: hide
+      return false;
     });
-  };
-
-  const navItems = getNavItems();
+  })();
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 !bg-primary text-white">
