@@ -30,7 +30,7 @@ export function OverflowTooltip({ text }: { text: string }) {
           <TooltipContent
             side="top"
             align="center"
-            className="z-50 max-w-[280px] break-words bg-slate-700! text-white shadow-xl px-3 py-2 text-xs font-medium rounded-lg"
+            className="z-50 max-w-[280px] break-words bg-slate-800 text-white shadow-xl px-3 py-2 text-xs font-medium rounded-lg"
           >
             {text}
           </TooltipContent>
