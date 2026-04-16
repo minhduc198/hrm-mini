@@ -12,6 +12,7 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
+import { BulkLeaveInitToolbar } from "@/features/employee/components/BulkLeaveInitToolbar";
 import { PageHeader } from "@/components/common/layout/page-header";
 import { TablePagination } from "@/components/common/table/Pagination";
 import { ExportExcelButton } from "@/components/common/button/ExportExcelButton";
@@ -21,7 +22,7 @@ import {
   AddEmployeeValues,
   EditEmployeeValues,
 } from "@/features/employee/schemas";
-import { Employee, RoleFilter, StatusFilter } from "@/features/employee/types";
+import { Employee, StatusFilter } from "@/features/employee/types";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import {
@@ -36,11 +37,11 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ExcelColumn } from "@/types/common";
+import { Role } from "../auth/types/auth";
 
 export default function EmployeeManagePage() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Employee | null>(null);
@@ -48,6 +49,7 @@ export default function EmployeeManagePage() {
     useState<Employee | null>(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
 
   const isCodeSearch = /\d/.test(debouncedSearch);
 
@@ -59,8 +61,8 @@ export default function EmployeeManagePage() {
         ? { empCode: debouncedSearch }
         : { name: debouncedSearch }
       : {}),
-    ...(roleFilter !== "all" ? { role: roleFilter } : {}),
     ...(statusFilter !== "all" ? { is_active: statusFilter === "active" } : {}),
+    role: "employee" as Role,
   };
 
   const {
@@ -76,7 +78,7 @@ export default function EmployeeManagePage() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, roleFilter, statusFilter]);
+  }, [debouncedSearch, statusFilter]);
 
   const isInitialLoading = listQueryEmployee.isLoading;
 
@@ -121,7 +123,7 @@ export default function EmployeeManagePage() {
         header: "Vai trò",
         key: "role",
         width: 18,
-        render: (row) => (row.role === "admin" ? "Quản trị viên" : "Nhân viên"),
+        render: (row) => (row.role === "employee" ? "Nhân viên" : ""),
       },
       {
         header: "Trạng thái",
@@ -135,6 +137,17 @@ export default function EmployeeManagePage() {
         width: 20,
         render: (row) => new Date(row.created_at).toLocaleDateString("vi-VN"),
       },
+      {
+        header: "Phép năm",
+        key: "leave_balances",
+        width: 20,
+        render: (row) => {
+          const annualLeave = row.leave_balances?.find(
+            (lb) => lb.leave_type.id === 2,
+          );
+          return `${annualLeave?.remaining_days} / ${annualLeave?.balance}`;
+        },
+      },
     ],
     [],
   );
@@ -147,14 +160,6 @@ export default function EmployeeManagePage() {
       color: "text-primary",
       bg: "bg-primary/8",
       border: "border-primary/15",
-    },
-    {
-      label: "Quản trị viên",
-      value: stats.admins,
-      icon: ShieldCheck,
-      color: "text-violet-600",
-      bg: "bg-violet-50",
-      border: "border-violet-100",
     },
     {
       label: "Đang hoạt động",
@@ -174,12 +179,10 @@ export default function EmployeeManagePage() {
     },
   ];
 
-  const hasFilter =
-    search.length > 0 || roleFilter !== "all" || statusFilter !== "all";
+  const hasFilter = search.length > 0 || statusFilter !== "all";
 
   const resetFilters = async () => {
     setSearch("");
-    setRoleFilter("all");
     setStatusFilter("all");
     setPage(1);
   };
@@ -197,6 +200,7 @@ export default function EmployeeManagePage() {
   };
 
   const handleEdit = async (id: number, values: EditEmployeeValues) => {
+    console.log(values);
     updateEmployee(
       {
         id,
@@ -254,7 +258,7 @@ export default function EmployeeManagePage() {
         }
       />
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {statCards.map((s) => (
           <div
             key={s.label}
@@ -306,20 +310,6 @@ export default function EmployeeManagePage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <Select
-            value={roleFilter}
-            onValueChange={(v) => setRoleFilter(v as RoleFilter)}
-          >
-            <SelectTrigger className="h-10 w-fit min-w-[145px] whitespace-nowrap text-sm bg-white border-primary/20 rounded-xl transition-all px-4">
-              <SelectValue placeholder="Vai trò" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tất cả vai trò</SelectItem>
-              <SelectItem value="admin">Quản trị viên</SelectItem>
-              <SelectItem value="employee">Nhân viên</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Select
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as StatusFilter)}
@@ -377,6 +367,8 @@ export default function EmployeeManagePage() {
             employees={employees}
             onEdit={(emp) => setEditTarget(emp)}
             onToggleActive={(emp) => setConfirmToggleTarget(emp)}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
           />
           <TablePagination
             currentPage={page}
@@ -429,6 +421,15 @@ export default function EmployeeManagePage() {
         }
         onConfirm={handleToggleActive}
         isLoading={isToggling}
+      />
+
+      <BulkLeaveInitToolbar
+        employees={employees}
+        selectedEmployeeIds={Object.keys(rowSelection)
+          .filter((key) => rowSelection[key])
+          .map((key) => employees[parseInt(key)]?.id)
+          .filter((id) => id !== undefined)}
+        onClearSelection={() => setRowSelection({})}
       />
     </div>
   );

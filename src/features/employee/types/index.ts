@@ -14,6 +14,7 @@ export interface Employee {
     id: number;
     name: string;
   } | null;
+  leave_balances?: LeaveBalance[];
   created_at: string;
   updated_at: string;
 }
@@ -37,6 +38,7 @@ export type CreateEmployeePayload = {
   address?: string;
   phone?: string;
   is_active?: boolean;
+  leave_balances?: Partial<LeaveBalance>[];
 };
 
 export type UpdateEmployeePayload = {
@@ -48,6 +50,7 @@ export type UpdateEmployeePayload = {
   address?: string;
   phone?: string;
   is_active?: boolean;
+  leave_balances?: Partial<LeaveBalance>[];
 };
 
 export type UpdateProfilePayload = {
@@ -63,5 +66,19 @@ export type ChangePasswordPayload = {
   new_password_confirmation: string;
 };
 
-export type RoleFilter = "all" | "admin" | "employee";
+export interface LeaveType {
+  id: number;
+  name: string;
+}
+
+export interface LeaveBalance {
+  id: number;
+  leave_type: LeaveType;
+  year: number;
+  balance: number;
+  used_days: number;
+  pending_days: number;
+  remaining_days: number;
+}
+
 export type StatusFilter = "all" | "active" | "inactive";

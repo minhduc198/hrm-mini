@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import type { Employee } from "../types";
 import { AVATAR_COLORS } from "../constants";
 import { OverflowTooltip } from "@/components/common/form/OverflowTooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function getInitials(name: string) {
   return name
@@ -23,6 +24,10 @@ interface EmployeeTableProps {
   employees: Employee[];
   onEdit: (emp: Employee) => void;
   onToggleActive: (emp: Employee) => void;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 }
 
 const renderValue = (value: string | null | undefined) => {
@@ -33,9 +38,31 @@ export function EmployeeTable({
   employees,
   onEdit,
   onToggleActive,
+  rowSelection = {},
+  onRowSelectionChange,
 }: EmployeeTableProps) {
   const columns = useMemo<ColumnDef<Employee>[]>(
     () => [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={table.getToggleAllPageRowsSelectedHandler()}
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onChange={row.getToggleSelectedHandler()}
+            aria-label="Select row"
+          />
+        ),
+        size: 40,
+        enableSorting: false,
+        enableHiding: false,
+      },
       {
         accessorKey: "name",
         header: "Nhân viên",
@@ -116,6 +143,7 @@ export function EmployeeTable({
           );
         },
       },
+
       {
         accessorKey: "role",
         header: "Vai trò",
@@ -181,6 +209,39 @@ export function EmployeeTable({
         },
       },
       {
+        accessorKey: "leave_balances",
+        header: "Phép năm",
+        cell: ({ row }) => {
+          const balances = row.original.leave_balances || [];
+          const annualLeave = balances.find(
+            (b) => b.leave_type.name === "Nghỉ phép năm",
+          );
+
+          if (!annualLeave) {
+            return (
+              <Typography
+                variant="small"
+                className="text-xs text-slate-300 italic"
+              >
+                -
+              </Typography>
+            );
+          }
+
+          return (
+            <div className="flex flex-col">
+              <Typography
+                variant="small"
+                className="text-[12px] font-semibold tabular-nums text-primary whitespace-nowrap"
+              >
+                {annualLeave.balance - annualLeave.used_days} /{" "}
+                {annualLeave.balance}
+              </Typography>
+            </div>
+          );
+        },
+      },
+      {
         id: "actions",
         header: "",
         cell: ({ row }) => {
@@ -214,6 +275,8 @@ export function EmployeeTable({
       columns={columns}
       data={employees}
       emptyStateText="Không tìm thấy nhân viên nào"
+      rowSelection={rowSelection}
+      onRowSelectionChange={onRowSelectionChange}
     />
   );
 }

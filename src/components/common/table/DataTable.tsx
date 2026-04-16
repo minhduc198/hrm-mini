@@ -26,6 +26,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   emptyStateText?: string;
   className?: string;
+  rowSelection?: Record<string, boolean>;
+  onRowSelectionChange?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 export function DataTable<TData, TValue>({
@@ -33,6 +35,8 @@ export function DataTable<TData, TValue>({
   data,
   emptyStateText = "Không có dữ liệu",
   className,
+  rowSelection = {},
+  onRowSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -42,8 +46,10 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: onRowSelectionChange,
     state: {
       sorting,
+      rowSelection,
     },
   });
 
@@ -82,17 +88,29 @@ export function DataTable<TData, TValue>({
               className="bg-slate-50/80 hover:bg-slate-50/80 border-b-slate-200/80"
             >
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="h-11 px-4">
+                <TableHead
+                  key={header.id}
+                  className="h-11 px-4"
+                  style={{ width: header.getSize() }}
+                >
                   {header.isPlaceholder ? null : (
-                    <Typography
-                      variant="label"
-                      className="text-[12px] text-slate-500 font-bold tracking-wider"
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
+                    <div
+                      className={cn(
+                        "flex items-center",
+                        (header.id === "select" || header.id === "actions") &&
+                          "justify-center",
                       )}
-                    </Typography>
+                    >
+                      <Typography
+                        variant="label"
+                        className="text-[12px] text-slate-500 font-bold tracking-wider"
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                      </Typography>
+                    </div>
                   )}
                 </TableHead>
               ))}
@@ -108,7 +126,16 @@ export function DataTable<TData, TValue>({
                 className="hover:bg-slate-50/30 transition-colors border-b-slate-100/80 last:border-0"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-4 py-3">
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      "px-4 py-3",
+                      (cell.column.id === "select" ||
+                        cell.column.id === "actions") &&
+                        "text-center",
+                    )}
+                    style={{ width: cell.column.getSize() }}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

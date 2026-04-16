@@ -1,4 +1,9 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { toast } from "sonner";
 import { employeeKeys } from "../query-key/employees.query-key";
 import {
@@ -14,7 +19,7 @@ export function useEmployees(params: GetListEmployeeParams) {
 
   const statsQueryEmployee = useQuery({
     queryKey: employeeKeys.stats(),
-    queryFn: () => getListEmployee({ per_page: 9999 }),
+    queryFn: () => getListEmployee({ per_page: 9999, role: "employee" }),
     staleTime: 5 * 60 * 1000,
   });
 

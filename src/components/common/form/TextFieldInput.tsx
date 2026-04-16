@@ -49,6 +49,7 @@ export function TextFieldInput({
               id={name}
               type={inputType}
               placeholder={placeholder}
+              value={field.value ?? ""}
               autoComplete={isPassword ? "current-password" : "off"}
               className={cn(
                 "h-10 rounded-lg border-black/40 bg-white px-3 py-2 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10",
