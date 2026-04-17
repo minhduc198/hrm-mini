@@ -22,9 +22,19 @@ export function useLogin() {
 
       return res;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       sessionStorage.setItem("showLoginSuccessToast", "true");
-      router.replace(routes.employeeManagement);
+      
+      // Fetch session to determine role for correct redirection
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      const role = session?.user?.role;
+      
+      const destination = role === "admin" 
+        ? routes.employeeManagement 
+        : routes.attendance.personal;
+        
+      router.replace(destination);
     },
     onError: (error: Error) => {
       toast.error(error.message || "Đăng nhập thất bại");

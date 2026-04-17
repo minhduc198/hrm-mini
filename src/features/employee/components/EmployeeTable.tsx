@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, ShieldCheck, User } from "lucide-react";
 import { useMemo } from "react";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { DataTable } from "@/components/common/table/DataTable";
 import { ToggleButton } from "@/components/common/form/ToggleButton";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import type { Employee } from "../types";
 import { AVATAR_COLORS } from "../constants";
 import { OverflowTooltip } from "@/components/common/form/OverflowTooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Can } from "@/components/common/auth/Can";
 
 function getInitials(name: string) {
   return name
@@ -28,21 +30,26 @@ interface EmployeeTableProps {
   onRowSelectionChange?: React.Dispatch<
     React.SetStateAction<Record<string, boolean>>
   >;
+  isSelectionMode?: boolean;
 }
 
 const renderValue = (value: string | null | undefined) => {
   return value && value.trim() !== "" ? value : "Chưa cập nhật";
 };
-
 export function EmployeeTable({
   employees,
   onEdit,
   onToggleActive,
   rowSelection = {},
   onRowSelectionChange,
+  isSelectionMode = false,
 }: EmployeeTableProps) {
+  const { hasPermission } = useAuth();
+  const canViewLeave = hasPermission("leave_balance.view");
+
   const columns = useMemo<ColumnDef<Employee>[]>(
-    () => [
+    () => {
+      const baseColumns: ColumnDef<Employee>[] = [
       {
         id: "select",
         header: ({ table }) => (
@@ -248,26 +255,41 @@ export function EmployeeTable({
           const emp = row.original;
           return (
             <div className="flex items-center justify-end gap-3 pr-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0 text-muted-foreground border-none hover:text-primary shadow-none transition-all"
-                onClick={() => onEdit(emp)}
-              >
-                <Pencil size={13} />
-              </Button>
+              <Can permission="employee.edit">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground border-none hover:text-primary shadow-none transition-all"
+                  onClick={() => onEdit(emp)}
+                >
+                  <Pencil size={13} />
+                </Button>
+              </Can>
 
-              <ToggleButton
-                checked={emp.is_active}
-                onCheckedChange={() => onToggleActive(emp)}
-                title={emp.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
-              />
+              <Can permission="employee.toggle_status">
+                <ToggleButton
+                  checked={emp.is_active}
+                  onCheckedChange={() => onToggleActive(emp)}
+                  title={emp.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
+                />
+              </Can>
             </div>
           );
         },
       },
-    ],
-    [onEdit, onToggleActive],
+      ];
+
+      return baseColumns.filter((col) => {
+        // Safe check for both 'id' and 'accessorKey'
+        const columnId = col.id || ("accessorKey" in col ? col.accessorKey : undefined);
+        
+        if (!isSelectionMode && columnId === "select") return false;
+        if (!canViewLeave && columnId === "leave_balances") return false;
+        
+        return true;
+      });
+    },
+    [onEdit, onToggleActive, canViewLeave, isSelectionMode],
   );
 
   return (

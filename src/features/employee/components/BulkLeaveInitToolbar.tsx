@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { CalendarDays, X } from "lucide-react";
 import { useState } from "react";
 import { BulkLeaveInitModal } from "./BulkLeaveInitModal";
+import { Can } from "@/components/common/auth/Can";
 
 interface BulkLeaveInitToolbarProps {
   employees: any[];
@@ -45,14 +46,16 @@ export function BulkLeaveInitToolbar({
           </div>
 
           <div className="flex items-center gap-2 px-2">
-            <Button
-              size="sm"
-              onClick={() => setIsModalOpen(true)}
-              className="h-10 px-5 rounded-2xl gap-2.5 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 transition-all duration-300 font-bold text-[13px]"
-            >
-              <CalendarDays size={15} strokeWidth={2.5} />
-              Khởi tạo ngày phép
-            </Button>
+            <Can permission="leave_balance.edit">
+              <Button
+                size="sm"
+                onClick={() => setIsModalOpen(true)}
+                className="h-10 px-5 rounded-2xl gap-2.5 bg-primary hover:bg-primary/90 text-white shadow-md shadow-primary/20 transition-all duration-300 font-bold text-[13px]"
+              >
+                <CalendarDays size={15} strokeWidth={2.5} />
+                Khởi tạo ngày phép
+              </Button>
+            </Can>
           </div>
 
           <div className="pl-1 pr-1.5">
