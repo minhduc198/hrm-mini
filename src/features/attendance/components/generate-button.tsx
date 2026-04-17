@@ -1,7 +1,8 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { useAttendanceStore } from "../store/attendance-store";
+import { useAttendanceStore } from "../stores/attendance";
+import { useGenerateAttendance } from "../hooks/use-generate-attendance";
 import { Loader2, CalendarPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,21 +17,22 @@ export function GenerateButton({
   className,
   showIcon = true 
 }: GenerateButtonProps) {
-  const { generateSchedule, isGenerating } = useAttendanceStore();
+  const { mutate: generateSchedule, isPending } = useGenerateAttendance();
 
   return (
     <Button
       variant={variant}
-      disabled={isGenerating}
+      disabled={isPending}
       onClick={() => generateSchedule()}
       className={cn("gap-2 shadow-sm font-bold", className)}
     >
-      {isGenerating ? (
+      {isPending ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (
         showIcon && <CalendarPlus className="size-4" />
       )}
-      {isGenerating ? "Đang xử lý..." : "Sinh lịch làm việc"}
+      {isPending ? "Đang xử lý..." : "Sinh lịch làm việc"}
     </Button>
   );
 }
+

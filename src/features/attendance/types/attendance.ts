@@ -14,3 +14,18 @@ export interface AttendanceDayData {
   };
   [key: string]: any;
 }
+
+export interface WorkMonthBE {
+  id: number | string;
+  year: number;
+  month: number;
+  total_workdays: number;
+  note: string | null;
+  days: AttendanceDayData[];
+}
+
+export interface GenerateAttendanceResponse {
+  status: "success";
+  message: string;
+  data: WorkMonthBE[];
+}

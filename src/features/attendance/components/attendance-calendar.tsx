@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
 
-import { AttendanceDayData, AttendanceDayType } from "../types/attendance"
+import { AttendanceDayData } from "../types/attendance"
 import { WEEKDAYS } from "../constants"
 
 interface AttendanceCalendarProps {
@@ -70,7 +70,6 @@ export function AttendanceCalendar({
     )}>
       {/* ─── Body: Lưới ngày (Scrollable) ─── */}
       <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden">
-        {/* Header: Thứ trong tuần (Sticky inside scrollable container to align with body grid) */}
         <div className="grid grid-cols-7 border-b border-line bg-[#2E66A5] sticky top-0 z-30">
           {WEEKDAYS.map((day, index) => (
             <div key={day} className="py-3 text-center border-r last:border-0 border-line/20">
@@ -78,7 +77,7 @@ export function AttendanceCalendar({
                 variant="label-xs" 
                 className={cn(
                   "uppercase font-extrabold tracking-widest text-white/90",
-                  index >= 5 && "text-rose-200" 
+                  index >= 5 && "text-white/70" 
                 )}
               >
                 {day}
@@ -89,8 +88,8 @@ export function AttendanceCalendar({
 
         <div className="grid grid-cols-7">
         {days.map(({ date, isoString, isCurrentMonth, apiData }, index) => {
-          // Chỉ định ngày cuối tuần dựa trên dữ liệu API/Mock trả về (day_type) 
-          const isWeekend = apiData?.day_type === 'weekend' || index % 7 >= 5;
+          // Ưu tiên dữ liệu từ API, nếu không có mới dùng logic mặc định (T7, CN)
+          const isWeekend = apiData ? apiData.day_type === 'weekend' : (index % 7 >= 5);
           const isUserToday = isToday(date);
 
           return (
@@ -103,7 +102,13 @@ export function AttendanceCalendar({
                 
                 !isCurrentMonth && "bg-subtle/50 select-none pointer-events-none",
                 
-                isCurrentMonth && "bg-surface hover:bg-primary-tint/30 cursor-pointer group hover:z-10",
+                isCurrentMonth && (
+                  isWeekend 
+                    ? "bg-holiday-pattern" // Màu họa tiết gạch gạch cho ngày nghỉ
+                    : "bg-surface hover:bg-primary-tint/30" // Màu nền cho ngày làm việc
+                ),
+                
+                isCurrentMonth && "cursor-pointer group hover:z-10",
                 
                 isUserToday && isCurrentMonth && "bg-primary-tint/20 z-10 shadow-[inset_0_0_0_1px_rgba(27,79,138,0.2)]"
               )}
@@ -117,9 +122,7 @@ export function AttendanceCalendar({
                         ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
                         : !isCurrentMonth 
                           ? "text-subtle-text" 
-                          : isWeekend 
-                            ? "text-danger" 
-                            : "text-base"
+                          : "text-base bg-secondary/5"
                     )}>
                       <Typography variant="label" className="inherit">
                         {format(date, "d")}
