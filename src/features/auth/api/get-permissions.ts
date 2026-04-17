@@ -1,7 +1,7 @@
 import api from "@/lib/axios";
 import { PermissionResponse } from "../types/permissions";
 
-export const getPermissions = async (userId: string | number) => {
-  const response = await api.get<PermissionResponse>(`/employees/${userId}/permissions`);
-  return response.data.permissions;
+export const getMyPermissions = async () => {
+  const response = await api.get<PermissionResponse>(`/permissions/my`);
+  return response.data;
 };

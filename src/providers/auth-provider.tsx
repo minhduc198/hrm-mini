@@ -3,7 +3,7 @@
 import React, { createContext, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { getPermissions } from "@/features/auth/api/get-permissions";
+import { getMyPermissions } from "@/features/auth/api/get-permissions";
 import { normalizePermissions } from "@/features/auth/utils/permission-utils";
 import { authKeys } from "@/features/auth/queryKeys/auth";
 import { ALL_PERMISSIONS } from "@/features/auth/constants/permissions";
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const { data: rawPermissions, isLoading: isPermissionsLoading } = useQuery({
     queryKey: authKeys.permissions(userId as string),
-    queryFn: () => getPermissions(userId as string),
+    queryFn: () => getMyPermissions(),
     enabled: status === "authenticated" && !!userId,
     staleTime: Infinity,
     gcTime: 30 * 60 * 1000,
@@ -42,28 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     retry: 1,
   });
 
-  const IS_MOCKING = true; 
-  const MOCKED_DATA = [
-    { module: "employee", action: "view" },
-    { module: "employee", action: "create" },
-    { module: "employee", action: "update" },
-    { module: "leave", action: "view" },
-  ];
-
   // ── Normalize to string[] ────────────────────────────────────────────────
   const permissions = useMemo(() => {
-    // 1. Priority: Use real Backend data if it exists and is not empty
-    if (rawPermissions && rawPermissions.length > 0) {
-      return normalizePermissions(rawPermissions, role);
-    }
-
-    // 2. Fallback: Use mock data during development if API is failing/empty
-    if (IS_MOCKING) {
-      return normalizePermissions(MOCKED_DATA, role);
-    }
-
-    return normalizePermissions(rawPermissions, role);
-  }, [rawPermissions, role, IS_MOCKING]);
+    return normalizePermissions(rawPermissions?.data, role);
+  }, [rawPermissions, role]);
 
   // ── Optimized Sets (built once per permissions change) ───────────────────
 

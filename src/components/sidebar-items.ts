@@ -30,7 +30,7 @@ export const navItemsConfig: NavItem[] = [
     label: "Quản lý đơn xin nghỉ",
     url: routes.leave.manage,
     icon: CalendarDays,
-    module: "leave",
+    module: "leave_request",
   },
   {
     key: "attendance_manage",

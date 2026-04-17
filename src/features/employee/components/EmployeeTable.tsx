@@ -10,6 +10,7 @@ import type { Employee } from "../types";
 import { AVATAR_COLORS } from "../constants";
 import { OverflowTooltip } from "@/components/common/form/OverflowTooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Can } from "@/components/common/auth/Can";
 
 function getInitials(name: string) {
   return name
@@ -248,20 +249,22 @@ export function EmployeeTable({
           const emp = row.original;
           return (
             <div className="flex items-center justify-end gap-3 pr-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 w-8 p-0 text-muted-foreground border-none hover:text-primary shadow-none transition-all"
-                onClick={() => onEdit(emp)}
-              >
-                <Pencil size={13} />
-              </Button>
+              <Can permission="employee.update">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground border-none hover:text-primary shadow-none transition-all"
+                  onClick={() => onEdit(emp)}
+                >
+                  <Pencil size={13} />
+                </Button>
 
-              <ToggleButton
-                checked={emp.is_active}
-                onCheckedChange={() => onToggleActive(emp)}
-                title={emp.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
-              />
+                <ToggleButton
+                  checked={emp.is_active}
+                  onCheckedChange={() => onToggleActive(emp)}
+                  title={emp.is_active ? "Vô hiệu hóa" : "Kích hoạt"}
+                />
+              </Can>
             </div>
           );
         },

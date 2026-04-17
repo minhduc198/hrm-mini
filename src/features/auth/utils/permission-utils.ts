@@ -13,5 +13,5 @@ export const normalizePermissions = (
 
   if (!rawPermissions) return [];
 
-  return rawPermissions.map((p) => `${p.module}.${p.action}`);
+  return rawPermissions.map((p) => p.key);
 };

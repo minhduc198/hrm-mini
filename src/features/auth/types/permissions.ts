@@ -1,8 +1,10 @@
 export interface PermissionItem {
-  module: string;
+  id: number;
+  key: string;
   action: string;
+  description: string;
 }
 
 export interface PermissionResponse {
-  permissions: PermissionItem[];
+  data: PermissionItem[];
 }
