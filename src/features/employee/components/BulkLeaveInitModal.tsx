@@ -8,20 +8,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Switch } from "@/components/ui/switch";
 import { Typography } from "@/components/ui/typography";
-import {
-  useInitLeaveBalance,
-  useLeaveTypes,
-} from "@/features/leave/hooks/use-leave";
+import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 import { cn } from "@/lib/utils";
-import {
-  AlertCircle,
-  CalendarDays,
-  CheckCircle2,
-  Loader2,
-  RotateCcw,
-} from "lucide-react";
+import { AlertCircle, CalendarDays, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 import { Employee } from "@/features/employee/types";
@@ -41,12 +31,17 @@ export function BulkLeaveInitModal({
   employees,
   onSuccess,
 }: BulkLeaveInitModalProps) {
-  const { data: leaveTypes, isLoading: isLoadingTypes } = useLeaveTypes();
-  const { mutate: initBalance, isPending } = useInitLeaveBalance();
+  const {
+    leaveTypes,
+    isLoading: isLoadingTypes,
+    initLeaveBalance: initBalance,
+    isInitializing: isPending,
+  } = useLeavePolicy();
   const [processedTypes, setProcessedTypes] = useState<number[]>([]);
   const [shouldReset, setShouldReset] = useState(false);
 
-  const paidLeaveTypes = leaveTypes?.filter((type) => type.is_paid) || [];
+  const paidLeaveTypes =
+    leaveTypes?.filter((type) => type.is_paid && type.is_active) || [];
 
   const currentYear = new Date().getFullYear();
 

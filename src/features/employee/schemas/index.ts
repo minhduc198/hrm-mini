@@ -20,22 +20,22 @@ export const addEmployeeSchema = z
     phone: z
       .string()
       .optional()
-      .refine((val) => !val || /^[0-9]{10}$/.test(val), {
+      .refine((val: string | undefined) => !val || /^[0-9]{10}$/.test(val), {
         message: "Số điện thoại phải đúng 10 chữ số",
       }),
     address: z
       .string()
       .optional()
-      .refine((val) => !val || val.length >= 5, {
+      .refine((val: string | undefined) => !val || val.length >= 5, {
         message: "Địa chỉ quá ngắn",
       })
-      .refine((val) => !val || val.length <= 255, {
+      .refine((val: string | undefined) => !val || val.length <= 255, {
         message: "Địa chỉ quá dài",
       }),
     password: z.string().min(6, "Tối thiểu 6 ký tự"),
     password_confirmation: z.string(),
   })
-  .refine((d) => d.password === d.password_confirmation, {
+  .refine((d: AddEmployeeValues) => d.password === d.password_confirmation, {
     message: "Mật khẩu xác nhận không khớp",
     path: ["password_confirmation"],
   });
@@ -48,16 +48,16 @@ export const editEmployeeSchema = z.object({
   phone: z
     .string()
     .optional()
-    .refine((val) => !val || /^[0-9]{10}$/.test(val), {
+    .refine((val: string | undefined) => !val || /^[0-9]{10}$/.test(val), {
       message: "Số điện thoại phải đúng 10 chữ số",
     }),
   address: z
     .string()
     .optional()
-    .refine((val) => !val || val.length >= 5, {
+    .refine((val: string | undefined) => !val || val.length >= 5, {
       message: "Địa chỉ quá ngắn",
     })
-    .refine((val) => !val || val.length <= 255, {
+    .refine((val: string | undefined) => !val || val.length <= 255, {
       message: "Địa chỉ quá dài",
     }),
   is_active: z.boolean(),
@@ -74,14 +74,17 @@ export const profileSchema = z.object({
     .string()
     .optional()
     .nullable()
-    .refine((val) => !val || /^[0-9]{10}$/.test(val), {
-      message: "Số điện thoại phải đúng 10 chữ số",
-    }),
+    .refine(
+      (val: string | undefined | null) => !val || /^[0-9]{10}$/.test(val),
+      {
+        message: "Số điện thoại phải đúng 10 chữ số",
+      },
+    ),
   address: z
     .string()
     .optional()
     .nullable()
-    .refine((val) => !val || val.length >= 5, {
+    .refine((val: string | undefined | null) => !val || val.length >= 5, {
       message: "Địa chỉ quá ngắn",
     }),
 });
@@ -94,9 +97,13 @@ export const changePasswordSchema = z
     new_password: z.string().min(6, "Tối thiểu 6 ký tự"),
     new_password_confirmation: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
   })
-  .refine((data) => data.new_password === data.new_password_confirmation, {
-    message: "Mật khẩu xác nhận không khớp",
-    path: ["new_password_confirmation"],
-  });
+  .refine(
+    (data: ChangePasswordFormValues) =>
+      data.new_password === data.new_password_confirmation,
+    {
+      message: "Mật khẩu xác nhận không khớp",
+      path: ["new_password_confirmation"],
+    },
+  );
 
 export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>;

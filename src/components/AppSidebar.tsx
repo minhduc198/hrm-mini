@@ -1,23 +1,21 @@
 "use client";
 
+import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
+import { CalendarDays, Clock, Settings, Shield, Users } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Users, CalendarDays, Clock, Shield } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { Typography } from "./ui/typography";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
+  SidebarMenuItem,
   useSidebar,
 } from "./ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { routes } from "@/constants/routes";
+import { Typography } from "./ui/typography";
 
 export function AppSidebar() {
   const router = useRouter();
@@ -55,6 +53,12 @@ export function AppSidebar() {
           label: "Quản lý phân quyền",
           url: routes.permissionManagement,
           icon: Shield,
+        },
+        {
+          key: "work-settings",
+          label: "Cấu hình làm việc và loại nghỉ",
+          url: routes.workSettings,
+          icon: Settings,
         },
       ];
     }
