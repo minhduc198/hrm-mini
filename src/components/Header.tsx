@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useSidebar } from "./ui/sidebar";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Typography } from "./ui/typography";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import Link from "next/link";
@@ -19,8 +19,7 @@ import Link from "next/link";
 export default function Header() {
   const { toggleSidebar } = useSidebar();
 
-  const { data: session } = useSession();
-  const user = session?.user;
+  const { user } = useAuth();
   const role = user?.role;
 
   const { mutate: handleSignOut } = useLogout();
@@ -56,7 +55,7 @@ export default function Header() {
                 variant="small"
                 className="text-[10px] text-muted mt-1 leading-none block capitalize"
               >
-                {role || "Employee"}
+                {role}
               </Typography>
             </div>
             <ChevronDown

@@ -1,10 +1,9 @@
 "use client";
-
-import { routes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
-import { CalendarDays, Clock, Settings, Shield, Users } from "lucide-react";
-import { useSession } from "next-auth/react";
+
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { navItemsConfig } from "./sidebar-items";
 import {
   Sidebar,
   SidebarContent,
@@ -20,66 +19,49 @@ import { Typography } from "./ui/typography";
 export function AppSidebar() {
   const router = useRouter();
   const path = usePathname();
-  const { data: session } = useSession();
-  const user = session?.user;
-  const role = user?.role;
+  const {
+    user,
+    isAdmin,
+    isPermissionsLoading,
+    hasModuleAccess,
+    hasPermission,
+  } = useAuth();
   const { setOpenMobile } = useSidebar();
 
   const isExactActive = (url: string) => path === url;
 
-  const getNavItems = () => {
-    if (role === "admin") {
-      return [
-        {
-          key: "employees",
-          label: "Quản lý nhân viên",
-          url: routes.employeeManagement,
-          icon: Users,
-        },
-        {
-          key: "leave",
-          label: "Quản lý đơn xin nghỉ",
-          url: routes.leave.manage,
-          icon: CalendarDays,
-        },
-        {
-          key: "attendance",
-          label: "Quản lý chấm công",
-          url: routes.attendance.manage,
-          icon: Clock,
-        },
-        {
-          key: "roles",
-          label: "Quản lý phân quyền",
-          url: routes.permissionManagement,
-          icon: Shield,
-        },
-        {
-          key: "work-settings",
-          label: "Cấu hình làm việc và loại nghỉ",
-          url: routes.workSettings,
-          icon: Settings,
-        },
-      ];
-    }
-    // Employee Role Default
-    return [
-      {
-        key: "attendance",
-        label: "Chấm công",
-        url: routes.attendance.personal,
-        icon: Clock,
-      },
-      {
-        key: "leave",
-        label: "Xin nghỉ",
-        url: routes.leave.personal,
-        icon: CalendarDays,
-      },
-    ];
-  };
+  const navItems = (() => {
+    // ── Block render until permissions are ready to prevent flicker ─────────
+    if (!user || isPermissionsLoading) return [];
 
-  const navItems = getNavItems();
+    return navItemsConfig.filter((item) => {
+      // 1. Admin sees everything except employee-only personal tabs
+      if (isAdmin) {
+        return item.audience !== "employee-only";
+      }
+
+      // 2. Employee default personal tabs (Chấm công, Xin nghỉ)
+      //    Shown to all employees regardless of permissions
+      if (item.isEmployeeDefault && user.role === "employee") {
+        return true;
+      }
+
+      // 3. Module-level check
+      //    If item declares a module, show it when user has ANY permission in that module.
+      //    This is the key rule: employee.update grants access to the "employee" module tab.
+      if (item.module) {
+        return hasModuleAccess(item.module);
+      }
+
+      // 4. Exact permission check (fallback for items without a module)
+      if (item.permission) {
+        return hasPermission(item.permission);
+      }
+
+      // 5. Default: hide
+      return false;
+    });
+  })();
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 !bg-primary text-white">

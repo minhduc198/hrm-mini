@@ -28,7 +28,8 @@ export async function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from login page
   if (isAuthPage && token) {
-    return NextResponse.redirect(new URL(routes.employeeManagement, request.url));
+    const destination = role === 'admin' ? routes.employeeManagement : routes.attendance.personal;
+    return NextResponse.redirect(new URL(destination, request.url));
   }
 
   // Role-based routing: prevent admin from accessing employee-only routes
