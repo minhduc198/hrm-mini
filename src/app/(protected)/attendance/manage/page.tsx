@@ -1,6 +1,6 @@
 import { PageHeader } from "@/components/common/layout/page-header";
 import { AttendanceManage } from "@/features/attendance/components/attendance-manage";
-import { AttendanceLegend } from "@/features/attendance/components/attendance-legend";
+import { AttendanceControls } from "@/features/attendance/components/attendance-controls";
 import { CalendarClock } from "lucide-react";
 
 export default function AttendanceManagePage() {
@@ -10,7 +10,7 @@ export default function AttendanceManagePage() {
         title="Quản lý chấm công"
         description="Theo dõi và quản lý lịch trình làm việc của toàn bộ hệ thống"
         icon={CalendarClock}
-        actions={<AttendanceLegend />}
+        actions={<AttendanceControls />}
       />
       <AttendanceManage />
     </div>

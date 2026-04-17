@@ -1,37 +1,15 @@
 "use client"
 
 import * as React from "react"
-import { AttendanceCalendar, AttendanceDayData, AttendanceDayType } from "./attendance-calendar"
+import { AttendanceCalendar } from "./attendance-calendar"
 import { Typography } from "@/components/ui/typography"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { parseISO, format } from "date-fns"
 import { cn } from "@/lib/utils"
 
-const MOCK_DATA: AttendanceDayData[] = Array.from({ length: 42 }, (_, i) => {
-  const dayNum = i + 1;
-  const dateStr = `2026-04-${dayNum.toString().padStart(2, '0')}`;
-  const date = parseISO(dateStr);
-  const dayOfWeek = date.getDay();
-  
-  const dayType: AttendanceDayType = (dayOfWeek === 0 || dayOfWeek === 6) ? 'weekend' : 'workday';
-  
-  const hasStatus = dayType === 'workday' && dayNum > 13 && dayNum < 18;
-  
-  return {
-    id: 100 + i,
-    work_date: dateStr,
-    day_type: dayType,
-    holiday_name: null,
-    note: null,
-    total_employees: hasStatus ? 4 : 0,
-    status: hasStatus ? {
-      on_time: Math.floor(Math.random() * 3) + 1,
-      late: Math.floor(Math.random() * 2),
-      absent: Math.floor(Math.random() * 2),
-    } : undefined
-  };
-});
+import { useAttendanceStore } from "@/features/attendance/stores/attendance"  
+import { AttendanceEmptyState } from "./attendance-empty-state"
 
 const EMPLOYEES_MOCK = [
   { id: 1, name: "Nguyễn Văn A", code: "NV001", status: "Đúng giờ" },
@@ -41,41 +19,61 @@ const EMPLOYEES_MOCK = [
 ];
 
 export function AttendanceManage() {
+  const { attendanceData, viewDate } = useAttendanceStore();
+  
   const handleDateClick = (date: string) => {
     // Future detail loading logic
   };
 
+  // Kiểm tra xem tháng hiện tại đang xem đã có dữ liệu hay chưa
+  const viewMonthStr = format(viewDate, "yyyy-MM");
+  const hasDataForCurrentMonth = attendanceData?.some(d => d.work_date?.startsWith(viewMonthStr));
+
+  // Nếu tháng đang xem chưa có dữ liệu lịch, hiển thị Empty State
+  if (!hasDataForCurrentMonth) {
+    return <AttendanceEmptyState />;
+  }
+
   return (
-    <div className="flex-1 min-h-0">
+    <div className="flex-1 min-h-0 flex flex-col animate-in fade-in duration-500">
       <AttendanceCalendar 
-        data={MOCK_DATA}
+        data={attendanceData}
+        currentDate={viewDate}
         className="h-full"
         onDateClick={handleDateClick}
         renderCellFooter={(day) => {
-          if (!day.total_employees || day.total_employees === 0) return null;
+          if (!day?.total_employees || day.total_employees === 0) return null;
           
           return (
             <Popover>
               <PopoverTrigger asChild>
                 <div 
-                  className="flex items-center gap-1 text-[11px] font-semibold text-tx-muted hover:text-primary transition-colors cursor-pointer group/btn"
+                  className="flex items-center gap-1 hover:text-primary transition-colors cursor-pointer group/btn"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <span className="text-primary/70 group-hover/btn:text-primary">{day.total_employees}</span>
-                  <span>nhân viên</span>
+                  <Typography variant="label-sm" className="text-primary/70 group-hover/btn:text-primary">
+                    {day.total_employees}
+                  </Typography>
+                  <Typography variant="label-sm" className="text-tx-muted">
+                    nhân viên
+                  </Typography>
                 </div>
               </PopoverTrigger>
               <PopoverContent className="w-64 p-3 shadow-2xl border-line-subtle" align="start">
                 <div className="space-y-2.5">
                   <Typography variant="p" className="text-xs font-bold text-tx-base border-b border-line-subtle pb-2">
-                    Danh sách chi tiết ({format(parseISO(day.work_date), "dd/MM")})
+                    Danh sách chi tiết ({day.work_date ? format(parseISO(day.work_date), "dd/MM") : ""})
                   </Typography>
                   <div className="space-y-2 overflow-y-auto max-h-48 pr-1 custom-scrollbar">
                     {EMPLOYEES_MOCK.slice(0, day.total_employees).map(emp => (
                       <div key={emp.id} className="flex items-center justify-between gap-2 p-2 hover:bg-page rounded-lg transition-colors border border-transparent hover:border-line-subtle/50">
                         <div className="min-w-0">
-                          <p className="text-[12px] font-bold text-tx-base truncate">{emp.name}</p>
-                          <p className="text-[10px] text-tx-muted font-mono">{emp.code}</p>
+                          <Typography variant="p" className="text-[12px] font-bold text-tx-base truncate">
+                            {emp.name}
+                          </Typography>
+                          <Typography variant="tiny" className="text-tx-muted font-mono">
+                            {emp.code}
+                          </Typography>
                         </div>
                         <Badge 
                           variant="secondary" 
