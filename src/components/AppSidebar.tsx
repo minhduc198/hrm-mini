@@ -1,19 +1,20 @@
 "use client";
 import { cn } from "@/lib/utils";
+
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { Typography } from "./ui/typography";
+import { navItemsConfig } from "./sidebar-items";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuItem,
   useSidebar,
 } from "./ui/sidebar";
-import { useAuth } from "@/features/auth/hooks/use-auth";
-import { navItemsConfig } from "./sidebar-items";
+import { Typography } from "./ui/typography";
 
 export function AppSidebar() {
   const router = useRouter();

@@ -1,18 +1,19 @@
 export const routes = {
-  home: '/',
+  home: "/",
   auth: {
-    login: '/',
+    login: "/",
   },
-  employeeManagement: '/employee-management',
+  employeeManagement: "/employee-management",
   attendance: {
-    manage: '/attendance/manage',
-    personal: '/attendance/personal',
+    manage: "/attendance/manage",
+    personal: "/attendance/personal",
   },
   leave: {
-    manage: '/leave/manage',
-    personal: '/leave/personal',
+    manage: "/leave/manage",
+    personal: "/leave/personal",
   },
-  permissionManagement: '/permission-management',
+  permissionManagement: "/permission-management",
+  workSettings: "/work-settings",
 } as const;
 
 export type AppRoutes = typeof routes;

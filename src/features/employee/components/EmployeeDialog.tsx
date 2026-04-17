@@ -13,7 +13,12 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarDays, Pencil, UserPlus } from "lucide-react";
 import { useEffect } from "react";
-import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import {
+  FormProvider,
+  useFieldArray,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -49,9 +54,6 @@ interface EmployeeDialogProps {
   onSubmit: (values: any) => void;
 }
 
-/**
- * Sub-component for General Information fields
- */
 function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
   const isAdd = mode === "add";
   return (
@@ -173,8 +175,10 @@ function LeaveManagementContent() {
                       className="text-xl font-bold text-primary tabular-nums leading-none"
                     >
                       {(() => {
-                        const bal = watch(`leave_balances.${index}.balance`) || 0;
-                        const used = watch(`leave_balances.${index}.used_days`) || 0;
+                        const bal =
+                          watch(`leave_balances.${index}.balance`) || 0;
+                        const used =
+                          watch(`leave_balances.${index}.used_days`) || 0;
                         return Math.max(0, Number(bal) - Number(used));
                       })()}
                     </Typography>

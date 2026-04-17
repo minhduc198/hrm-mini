@@ -1,5 +1,5 @@
 import { routes } from "@/constants/routes";
-import { Users, CalendarDays, Clock, Shield } from "lucide-react";
+import { Users, CalendarDays, Clock, Shield, Settings } from "lucide-react";
 
 export type Audience = "employee-only" | "admin-only";
 
@@ -45,6 +45,12 @@ export const navItemsConfig: NavItem[] = [
     url: routes.permissionManagement,
     icon: Shield,
     module: "permission",
+  },
+  {
+    key: "work-settings",
+    label: "Cấu hình làm việc và loại nghỉ",
+    url: routes.workSettings,
+    icon: Settings,
   },
   // --- Employee default personal tabs: shown to all employees by default ---
   {
