@@ -9,7 +9,11 @@ import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
 import { LeavePolicyTable } from "./components/LeavePolicyTable";
 import { LeavePolicyDialog } from "./components/LeavePolicyDialog";
 import { useLeavePolicy } from "./hooks/use-leave-policy";
-import type { LeaveType } from "./types";
+import type {
+  CreateLeaveTypePayload,
+  LeaveType,
+  UpdateLeaveTypePayload,
+} from "./types";
 
 export function LeavePolicyPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -69,11 +73,13 @@ export function LeavePolicyPage() {
     }
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (
+    values: CreateLeaveTypePayload | UpdateLeaveTypePayload,
+  ) => {
     if (selectedItem) {
       updateType({ id: selectedItem.id, ...values });
     } else {
-      createType(values);
+      createType(values as CreateLeaveTypePayload);
     }
     setIsDialogOpen(false);
   };

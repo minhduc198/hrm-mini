@@ -47,9 +47,8 @@ export function EmployeeTable({
   const { hasPermission } = useAuth();
   const canViewLeave = hasPermission("leave_balance.view");
 
-  const columns = useMemo<ColumnDef<Employee>[]>(
-    () => {
-      const baseColumns: ColumnDef<Employee>[] = [
+  const columns = useMemo<ColumnDef<Employee>[]>(() => {
+    const baseColumns: ColumnDef<Employee>[] = [
       {
         id: "select",
         header: ({ table }) => (
@@ -97,7 +96,7 @@ export function EmployeeTable({
               <div className="min-w-0 py-1">
                 <Typography
                   variant="p"
-                  className="text-[13px] font-medium leading-tight mb-0.5 truncate"
+                  className="text-xs font-medium leading-tight mb-0.5 truncate italic"
                 >
                   {renderValue(emp.name)}
                 </Typography>
@@ -120,7 +119,7 @@ export function EmployeeTable({
             variant="small"
             className="font-mono text-xs text-muted-foreground"
           >
-            {renderValue(row.original.empCode).replaceAll("-", "")}
+            {renderValue(row.original.empCode)}
           </Typography>
         ),
       },
@@ -220,21 +219,17 @@ export function EmployeeTable({
         header: "Phép năm",
         cell: ({ row }) => {
           const balances = row.original.leave_balances || [];
-          const annualLeave = balances.find(
-            (b) => b.leave_type.name === "Nghỉ phép năm",
-          );
-
+          const annualLeave = balances.find((b) => b.leave_type.id === 1);
           if (!annualLeave) {
             return (
               <Typography
                 variant="small"
-                className="text-xs text-slate-300 italic"
+                className="text-xs font-medium leading-tight mb-0.5 truncate italic"
               >
-                -
+                Chưa cập nhật
               </Typography>
             );
           }
-
           return (
             <div className="flex flex-col">
               <Typography
@@ -277,20 +272,19 @@ export function EmployeeTable({
           );
         },
       },
-      ];
+    ];
 
-      return baseColumns.filter((col) => {
-        // Safe check for both 'id' and 'accessorKey'
-        const columnId = col.id || ("accessorKey" in col ? col.accessorKey : undefined);
-        
-        if (!isSelectionMode && columnId === "select") return false;
-        if (!canViewLeave && columnId === "leave_balances") return false;
-        
-        return true;
-      });
-    },
-    [onEdit, onToggleActive, canViewLeave, isSelectionMode],
-  );
+    return baseColumns.filter((col) => {
+      // Safe check for both 'id' and 'accessorKey'
+      const columnId =
+        col.id || ("accessorKey" in col ? col.accessorKey : undefined);
+
+      if (!isSelectionMode && columnId === "select") return false;
+      if (!canViewLeave && columnId === "leave_balances") return false;
+
+      return true;
+    });
+  }, [onEdit, onToggleActive, canViewLeave, isSelectionMode]);
 
   return (
     <DataTable
