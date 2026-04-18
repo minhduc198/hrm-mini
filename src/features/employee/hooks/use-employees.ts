@@ -2,7 +2,6 @@ import {
   keepPreviousData,
   useMutation,
   useQuery,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";
@@ -14,9 +13,9 @@ import {
   updateEmployeeStatus,
 } from "../services";
 import { Employee, GetListEmployeeParams } from "../types";
+import { queryClient } from "@/lib/query-client";
 
 export function useEmployees(params: GetListEmployeeParams) {
-  const queryClient = useQueryClient();
 
   const statsQueryEmployee = useQuery({
     queryKey: employeeKeys.stats(),

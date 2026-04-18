@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";
 import { leavePolicyKeys } from "../query-key/leave-policy.query-key";
@@ -16,9 +16,9 @@ import {
   UpdateLeaveTypePayload,
   UpdateLeaveBalancePayload,
 } from "../types";
+import { queryClient } from "@/lib/query-client";
 
 export function useLeavePolicy() {
-  const queryClient = useQueryClient();
 
   const leaveTypesQuery = useQuery({
     queryKey: leavePolicyKeys.list(),

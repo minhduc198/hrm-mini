@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";
-
+import { queryClient } from "@/lib/query-client";
 import {
   getRuleWorkSettings,
   createRuleWorkSetting,
@@ -12,7 +12,6 @@ import {
 import { workScheduleKeys } from "../query-key";
 
 export const useWorkSchedule = () => {
-  const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: workScheduleKeys.lists(),

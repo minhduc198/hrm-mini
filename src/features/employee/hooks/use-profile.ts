@@ -1,11 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";
 import { employeeKeys } from "../query-key/employees.query-key";
 import { changePassword, getEmployeeById, updateProfile } from "../services";
+import { queryClient } from "@/lib/query-client";
 
 export function useProfile(userId?: string | number) {
-  const queryClient = useQueryClient();
 
   const profileQuery = useQuery({
     queryKey: employeeKeys.detail(userId!),
