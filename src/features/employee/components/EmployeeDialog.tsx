@@ -34,6 +34,7 @@ import {
 
 import { AVATAR_COLORS } from "../constants";
 import type { Employee } from "../types";
+import { Infer } from "next/dist/compiled/superstruct";
 
 function getInitials(name: string) {
   return name
@@ -222,7 +223,9 @@ export function EmployeeDialog({
 
   const form = useForm<AddEmployeeValues | EditEmployeeValues>({
     resolver: zodResolver(
-      (isAdd ? addEmployeeSchema : editEmployeeSchema) as any,
+      (isAdd ? addEmployeeSchema : editEmployeeSchema) as Infer<
+        typeof addEmployeeSchema | typeof editEmployeeSchema
+      >,
     ),
     defaultValues: isAdd
       ? {
