@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
 import { employeeKeys } from "../query-key/employees.query-key";
 import {
   createEmployee,
@@ -35,8 +36,8 @@ export function useEmployees(params: GetListEmployeeParams) {
       toast.success("Thêm nhân viên thành công");
       queryClient.invalidateQueries({ queryKey: employeeKeys.all });
     },
-    onError: (err: any) => {
-      toast.error(err.message || "Không thể thêm nhân viên");
+    onError: (err) => {
+      handleError(err, "Không thể thêm nhân viên");
     },
   });
 
@@ -59,14 +60,14 @@ export function useEmployees(params: GetListEmployeeParams) {
       }
       return { previousData };
     },
-    onError: (err: any, _, context: any) => {
+    onError: (err, _, context: any) => {
       if (context?.previousData) {
         queryClient.setQueryData(
           employeeKeys.list(params),
           context.previousData,
         );
       }
-      toast.error(err.message || "Không thể cập nhật thông tin");
+      handleError(err, "Không thể cập nhật thông tin");
     },
     onSuccess: () => {
       toast.success("Cập nhật thông tin thành công");
@@ -95,14 +96,14 @@ export function useEmployees(params: GetListEmployeeParams) {
       }
       return { previousData };
     },
-    onError: (err: any, _, context: any) => {
+    onError: (err, _, context: any) => {
       if (context?.previousData) {
         queryClient.setQueryData(
           employeeKeys.list(params),
           context.previousData,
         );
       }
-      toast.error(err.message || "Không thể cập nhật trạng thái");
+      handleError(err, "Không thể cập nhật trạng thái");
     },
     onSuccess: () => {
       toast.success("Cập nhật trạng thái thành công");

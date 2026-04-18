@@ -33,21 +33,24 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status || 503; // Default to Service Unavailable for network errors
-    const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Đã có lỗi xảy ra, vui lòng thử lại sau.";
+    const status = error.response?.status || 500;
+    const data = error.response?.data;
+
+    let message = data?.message || error.message || "Đã có lỗi xảy ra.";
+    const errors = data?.errors;
 
     // Handle 401 Unauthorized - session expired or invalid token
     if (status === 401 && typeof window !== "undefined") {
-      // Only handle on client-side to avoid SSR issues
       import("next-auth/react").then(({ signOut }) => {
         signOut({ callbackUrl: "/", redirect: true });
       });
     }
 
-    return Promise.reject({ message, status } as ApiError);
+    return Promise.reject({
+      message,
+      status,
+      errors,
+    } as ApiError);
   },
 );
 

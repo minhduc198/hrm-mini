@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { generateNext3MonthsAttendance } from "../api/attendance-api";
 import { attendanceKeys } from "../queryKeys/attendance";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
 
 export function useGenerateAttendance() {
   const queryClient = useQueryClient();
@@ -15,10 +16,8 @@ export function useGenerateAttendance() {
         description: "Lịch làm việc đã được cập nhật thành công.",
       });
     },
-    onError: (error: any) => {
-      toast.error("Không thể sinh lịch làm việc", {
-        description: error?.response?.data?.message || "Vui lòng thử lại sau.",
-      });
+    onError: (error) => {
+      handleError(error, "Không thể sinh lịch làm việc");
     }
   });
 }

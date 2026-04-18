@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
 import { employeeKeys } from "../query-key/employees.query-key";
 import { changePassword, getEmployeeById, updateProfile } from "../services";
 
@@ -20,8 +21,8 @@ export function useProfile(userId?: string | number) {
         queryClient.invalidateQueries({ queryKey: employeeKeys.detail(userId) });
       }
     },
-    onError: (err: any) => {
-      toast.error(err.message || "Không thể cập nhật hồ sơ");
+    onError: (err) => {
+      handleError(err, "Không thể cập nhật hồ sơ");
     },
   });
 
@@ -30,8 +31,8 @@ export function useProfile(userId?: string | number) {
     onSuccess: () => {
       toast.success("Thay đổi mật khẩu thành công");
     },
-    onError: (err: any) => {
-      toast.error(err.message || "Không thể thay đổi mật khẩu");
+    onError: (err) => {
+      handleError(err, "Không thể thay đổi mật khẩu");
     },
   });
 
