@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const timeToMinutes = (time: string) => {
+  if (!time) return 0;
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
 export const workShiftSchema = z
   .object({
     name: z.string().min(1, "Tên ca làm việc là bắt buộc"),
@@ -9,14 +15,40 @@ export const workShiftSchema = z
     break_end: z.string().min(1, "Giờ kết thúc nghỉ là bắt buộc"),
     half_day_split: z.string().min(1, "Điểm chia ca là bắt buộc"),
   })
-  .refine((data: any) => data.work_start < data.work_end, {
-    message: "Giờ bắt đầu phải nhỏ hơn giờ kết thúc",
-    path: ["work_start"],
-  })
-  .refine((data: any) => data.break_start < data.break_end, {
-    message: "Giờ nghỉ trưa bắt đầu phải nhỏ hơn kết thúc",
-    path: ["break_start"],
-  });
+  .refine(
+    (data: any) =>
+      timeToMinutes(data.work_end) - timeToMinutes(data.work_start) >= 60,
+    {
+      message: "Giờ tan làm phải sau giờ vào làm ít nhất 1 tiếng",
+      path: ["work_end"],
+    },
+  )
+  .refine(
+    (data: any) =>
+      timeToMinutes(data.break_start) >= timeToMinutes(data.work_start) &&
+      timeToMinutes(data.break_end) <= timeToMinutes(data.work_end),
+    {
+      message: "Thời gian nghỉ trưa phải nằm trong thời gian làm việc",
+      path: ["break_start"],
+    },
+  )
+  .refine(
+    (data: any) =>
+      timeToMinutes(data.break_start) < timeToMinutes(data.break_end),
+    {
+      message: "Bắt đầu nghỉ trưa phải trước kết thúc nghỉ trưa",
+      path: ["break_end"],
+    },
+  )
+  .refine(
+    (data: any) =>
+      timeToMinutes(data.half_day_split) >= timeToMinutes(data.work_start) &&
+      timeToMinutes(data.half_day_split) <= timeToMinutes(data.work_end),
+    {
+      message: "Điểm chia nửa ngày phải nằm trong thời gian làm việc",
+      path: ["half_day_split"],
+    },
+  );
 
 export const saturdayConfigSchema = z
   .object({

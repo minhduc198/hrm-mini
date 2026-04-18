@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Clock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ export function TextFieldInput({
   const [showPassword, setShowPassword] = React.useState(false);
 
   const isPassword = type === "password";
+  const isTime = type === "time";
   const inputType = isPassword ? (showPassword ? "text" : "password") : type;
 
   return (
@@ -54,6 +55,7 @@ export function TextFieldInput({
               className={cn(
                 "h-10 rounded-lg border-black/40 bg-white px-3 py-2 text-sm transition-all focus:border-primary focus:ring-4 focus:ring-primary/10",
                 isPassword && "pr-10",
+                isTime && "pr-10 [&::-webkit-calendar-picker-indicator]:hidden",
                 error &&
                   "border-red-500 focus:border-red-500 focus:ring-red-500/10",
                 className,
@@ -63,10 +65,15 @@ export function TextFieldInput({
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors outline-none z-20"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            )}
+            {isTime && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none z-0">
+                <Clock size={16} className="text-slate-500" />
+              </div>
             )}
           </div>
 

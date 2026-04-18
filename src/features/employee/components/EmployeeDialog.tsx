@@ -108,9 +108,6 @@ function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
   );
 }
 
-/**
- * Sub-component for Leave Management content
- */
 function LeaveManagementContent() {
   const { control, watch } = useFormContext();
   const { fields } = useFieldArray({
@@ -264,18 +261,12 @@ export function EmployeeDialog({
           phone: employee.phone || "",
           address: employee.address || "",
           is_active: employee.is_active,
-          leave_balances: (employee.leave_balances || [])
-            .filter(
-              (lb) =>
-                lb.leave_type?.id !== 1 &&
-                !lb.leave_type?.name?.toLowerCase().includes("không lương"),
-            )
-            .map((lb) => ({
-              ...lb,
-              balance: lb.balance ?? 0,
-              used_days: lb.used_days ?? 0,
-              year: lb.year ?? new Date().getFullYear(),
-            })),
+          leave_balances: (employee.leave_balances || []).map((lb) => ({
+            ...lb,
+            balance: lb.balance ?? 0,
+            used_days: lb.used_days ?? 0,
+            year: lb.year ?? new Date().getFullYear(),
+          })),
         } as EditEmployeeValues);
       }
     }
