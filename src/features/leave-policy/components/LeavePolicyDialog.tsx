@@ -17,6 +17,7 @@ import { TextFieldNumber } from "@/components/common/form/TextFieldNumber";
 import { leaveTypeSchema, type LeaveTypeFormValues } from "../schemas";
 import type { LeaveType } from "../types";
 import { cn } from "@/lib/utils";
+import { Infer } from "next/dist/compiled/superstruct";
 
 interface LeavePolicyDialogProps {
   open: boolean;
@@ -34,15 +35,25 @@ export function LeavePolicyDialog({
   isLoading,
 }: LeavePolicyDialogProps) {
   const form = useForm<LeaveTypeFormValues>({
-    resolver: zodResolver(leaveTypeSchema),
+    resolver: zodResolver(leaveTypeSchema as Infer<typeof leaveTypeSchema>),
     defaultValues: {
       name: "",
-      is_paid: true,
+      is_paid: false,
       default_days: 0,
-      allow_half_day: true,
+      allow_half_day: false,
       allow_hourly: false,
     },
   });
+
+  const isPaid = form.watch("is_paid");
+
+  useEffect(() => {
+    if (isPaid) {
+      form.setValue("allow_hourly", false);
+    } else {
+      form.setValue("default_days", 0);
+    }
+  }, [isPaid, form]);
 
   useEffect(() => {
     if (open) {
@@ -57,9 +68,9 @@ export function LeavePolicyDialog({
       } else {
         form.reset({
           name: "",
-          is_paid: true,
+          is_paid: false,
           default_days: 0,
-          allow_half_day: true,
+          allow_half_day: false,
           allow_hourly: false,
         });
       }
@@ -101,11 +112,13 @@ export function LeavePolicyDialog({
                 required
               />
 
-              <TextFieldNumber
-                name="default_days"
-                label="Số ngày mặc định (năm)"
-                placeholder="0"
-              />
+              {isPaid && (
+                <TextFieldNumber
+                  name="default_days"
+                  label="Số ngày mặc định (năm)"
+                  placeholder="0"
+                />
+              )}
 
               <div className="space-y-3 pt-1">
                 <Controller
@@ -131,7 +144,12 @@ export function LeavePolicyDialog({
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-3">
+                <div
+                  className={cn(
+                    "grid gap-3",
+                    isPaid ? "grid-cols-1" : "grid-cols-2",
+                  )}
+                >
                   <Controller
                     name="allow_half_day"
                     control={form.control}
@@ -152,25 +170,27 @@ export function LeavePolicyDialog({
                     )}
                   />
 
-                  <Controller
-                    name="allow_hourly"
-                    control={form.control}
-                    render={({ field }) => (
-                      <FormItem
-                        className={cn(
-                          "flex flex-col items-center justify-center rounded-xl border p-4 h-16 transition-all cursor-pointer text-center",
-                          field.value
-                            ? "border-emerald-500 bg-emerald-50/10 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]"
-                            : "border-slate-200 bg-white hover:bg-slate-50/80",
-                        )}
-                        onClick={() => field.onChange(!field.value)}
-                      >
-                        <FormLabel className="text-[13px] font-bold text-slate-800 cursor-pointer">
-                          Theo giờ
-                        </FormLabel>
-                      </FormItem>
-                    )}
-                  />
+                  {!isPaid && (
+                    <Controller
+                      name="allow_hourly"
+                      control={form.control}
+                      render={({ field }) => (
+                        <FormItem
+                          className={cn(
+                            "flex flex-col items-center justify-center rounded-xl border p-4 h-16 transition-all cursor-pointer text-center",
+                            field.value
+                              ? "border-emerald-500 bg-emerald-50/10 shadow-[0_0_15px_-5px_rgba(16,185,129,0.3)]"
+                              : "border-slate-200 bg-white hover:bg-slate-50/80",
+                          )}
+                          onClick={() => field.onChange(!field.value)}
+                        >
+                          <FormLabel className="text-[13px] font-bold text-slate-800 cursor-pointer">
+                            Theo giờ
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
             </div>

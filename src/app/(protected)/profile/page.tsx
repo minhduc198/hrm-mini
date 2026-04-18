@@ -16,6 +16,7 @@ import { ChangePasswordPayload } from "@/features/employee/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, KeyRound, Loader2, Save } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { Infer } from "next/dist/compiled/superstruct";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ export default function ProfilePage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema as any),
+    resolver: zodResolver(profileSchema as Infer<typeof profileSchema>),
     defaultValues: {
       empCode: "",
       email: "",
@@ -39,7 +40,9 @@ export default function ProfilePage() {
   });
 
   const passwordForm = useForm<ChangePasswordFormValues>({
-    resolver: zodResolver(changePasswordSchema as any),
+    resolver: zodResolver(
+      changePasswordSchema as Infer<typeof changePasswordSchema>,
+    ),
     defaultValues: {
       old_password: "",
       new_password: "",

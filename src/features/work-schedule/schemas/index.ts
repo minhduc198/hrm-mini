@@ -13,7 +13,6 @@ export const workShiftSchema = z
     work_end: z.string().min(1, "Giờ kết thúc là bắt buộc"),
     break_start: z.string().min(1, "Giờ bắt đầu nghỉ là bắt buộc"),
     break_end: z.string().min(1, "Giờ kết thúc nghỉ là bắt buộc"),
-    half_day_split: z.string().min(1, "Điểm chia ca là bắt buộc"),
   })
   .refine(
     (data: any) =>
@@ -39,15 +38,6 @@ export const workShiftSchema = z
       message: "Bắt đầu nghỉ trưa phải trước kết thúc nghỉ trưa",
       path: ["break_end"],
     },
-  )
-  .refine(
-    (data: any) =>
-      timeToMinutes(data.half_day_split) >= timeToMinutes(data.work_start) &&
-      timeToMinutes(data.half_day_split) <= timeToMinutes(data.work_end),
-    {
-      message: "Điểm chia nửa ngày phải nằm trong thời gian làm việc",
-      path: ["half_day_split"],
-    },
   );
 
 export const saturdayConfigSchema = z
@@ -67,31 +57,32 @@ export const saturdayConfigSchema = z
       message: "Ngày mốc và trạng thái là bắt buộc khi chọn làm việc cách tuần",
       path: ["reference_date"],
     },
+  )
+  .refine(
+    (data: any) => {
+      if (data.type === "bi_weekly" && data.reference_date) {
+        const date = new Date(data.reference_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date >= today && date.getDay() === 6;
+      }
+      return true;
+    },
+    {
+      message: "Ngày mốc phải là thứ 7 và từ thời điểm hiện tại",
+      path: ["reference_date"],
+    },
   );
 
 export const workScheduleSchema = z
   .object({
     name: z.string().min(1, "Tên cấu hình là bắt buộc"),
-    apply_from: z.string().optional().nullable(),
-    apply_to: z.string().optional().nullable(),
     setting: z.object({
       shifts: z.object({
         office_hours: workShiftSchema,
       }),
       saturday_config: saturdayConfigSchema,
     }),
-  })
-  .refine(
-    (data: any) => {
-      if (data.apply_from && data.apply_to) {
-        return new Date(data.apply_from) <= new Date(data.apply_to);
-      }
-      return true;
-    },
-    {
-      message: "Ngày bắt đầu không được lớn hơn ngày kết thúc",
-      path: ["apply_from"],
-    },
-  );
+  });
 
 export type WorkScheduleFormValues = z.infer<typeof workScheduleSchema>;

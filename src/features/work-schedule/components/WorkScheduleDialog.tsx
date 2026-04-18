@@ -39,8 +39,6 @@ export function WorkScheduleDialog({
     resolver: zodResolver(workScheduleSchema),
     defaultValues: {
       name: "",
-      apply_from: null,
-      apply_to: null,
       setting: {
         shifts: {
           office_hours: {
@@ -49,7 +47,6 @@ export function WorkScheduleDialog({
             work_end: "17:30",
             break_start: "12:00",
             break_end: "13:00",
-            half_day_split: "12:00",
           },
         },
         saturday_config: {
@@ -69,15 +66,11 @@ export function WorkScheduleDialog({
       if (initialData) {
         form.reset({
           name: initialData.name,
-          apply_from: initialData.apply_from,
-          apply_to: initialData.apply_to,
           setting: initialData.setting,
         });
       } else {
         form.reset({
           name: "",
-          apply_from: null,
-          apply_to: null,
           setting: {
             shifts: {
               office_hours: {
@@ -86,7 +79,6 @@ export function WorkScheduleDialog({
                 work_end: "17:30",
                 break_start: "12:00",
                 break_end: "13:00",
-                half_day_split: "12:00",
               },
             },
             saturday_config: {
@@ -149,18 +141,6 @@ export function WorkScheduleDialog({
                   placeholder="VD: Cấu hình năm 2026, Ca gãy..."
                   required
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <DatePickerInput
-                    name="apply_from"
-                    label="Ngày áp dụng từ"
-                    placeholder="Chọn ngày"
-                  />
-                  <DatePickerInput
-                    name="apply_to"
-                    label="Đến ngày (không bắt buộc)"
-                    placeholder="Chọn ngày"
-                  />
-                </div>
               </div>
 
               <div className="space-y-4">
@@ -200,14 +180,6 @@ export function WorkScheduleDialog({
                     type="time"
                     required
                   />
-                  <div className="col-span-2">
-                    <TextFieldInput
-                      name="setting.shifts.office_hours.half_day_split"
-                      label="Điểm chia nửa ngày (Ví dụ: 12:00)"
-                      type="time"
-                      required
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -223,7 +195,7 @@ export function WorkScheduleDialog({
                   <Separator className="flex-1" />
                 </div>
 
-                <div className="space-y-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100">
+                <div className="space-y-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 ">
                   <SelectFieldInput
                     name="setting.saturday_config.type"
                     label="Kiểu làm việc"
@@ -236,11 +208,16 @@ export function WorkScheduleDialog({
                   />
 
                   {satType === "bi_weekly" && (
-                    <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
                       <DatePickerInput
                         name="setting.saturday_config.reference_date"
                         label="Ngày mốc (thứ 7)"
                         placeholder="Chọn một ngày thứ 7"
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date <= today || date.getDay() !== 6;
+                        }}
                       />
                       <SelectFieldInput
                         name="setting.saturday_config.reference_type"

@@ -23,7 +23,7 @@ interface DatePickerInputProps {
   placeholder?: string;
   required?: boolean;
   className?: string;
-  disabled?: boolean;
+  disabled?: boolean | ((date: Date) => boolean);
 }
 
 export function DatePickerInput({
@@ -59,7 +59,7 @@ export function DatePickerInput({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                disabled={disabled}
+                disabled={disabled === true}
                 className={cn(
                   "w-full h-10 justify-start text-left font-normal bg-white border-black/40 rounded-lg hover:bg-slate-50 transition-all",
                   !field.value && "text-muted-foreground",
