@@ -25,3 +25,11 @@ export type CreateLeaveTypePayload = Omit<
 export type UpdateLeaveTypePayload = Partial<CreateLeaveTypePayload> & {
   id: number;
 };
+
+export interface UpdateLeaveBalancePayload {
+  id: number;
+  leave_type_id: number;
+  balance: number;
+  year: number;
+  used_days: number;
+}

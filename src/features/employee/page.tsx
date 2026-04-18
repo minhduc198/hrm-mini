@@ -40,6 +40,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ExcelColumn } from "@/types/common";
 import { Role } from "../auth/types/auth";
 import { Can } from "@/components/common/auth/Can";
+import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 
 export default function EmployeeManagePage() {
   const [search, setSearch] = useState("");
@@ -67,6 +68,8 @@ export default function EmployeeManagePage() {
     ...(statusFilter !== "all" ? { is_active: statusFilter === "active" } : {}),
     role: "employee" as Role,
   };
+
+  const { updateLeaveBalance } = useLeavePolicy();
 
   const {
     listQueryEmployee,
@@ -146,9 +149,9 @@ export default function EmployeeManagePage() {
         width: 20,
         render: (row) => {
           const annualLeave = row.leave_balances?.find(
-            (lb) => lb.leave_type.id === 2,
+            (lb) => lb.leave_type.id === 1,
           );
-          return `${annualLeave?.remaining_days} / ${annualLeave?.balance}`;
+          return `${annualLeave?.remaining_days || 0} / ${annualLeave?.balance || 0}`;
         },
       },
     ],
@@ -203,7 +206,20 @@ export default function EmployeeManagePage() {
   };
 
   const handleEdit = async (id: number, values: EditEmployeeValues) => {
-    console.log(values);
+    if (values.leave_balances && values.leave_balances.length > 0) {
+      values.leave_balances.forEach((lb) => {
+        if (lb.id) {
+          updateLeaveBalance({
+            id: lb.id,
+            leave_type_id: lb.leave_type.id,
+            balance: lb.balance,
+            year: lb.year || new Date().getFullYear(),
+            used_days: lb.used_days,
+          });
+        }
+      });
+    }
+
     updateEmployee(
       {
         id,
@@ -226,6 +242,7 @@ export default function EmployeeManagePage() {
     const res = await getListEmployee({ per_page: 9999 });
     return res.data;
   };
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -296,7 +313,10 @@ export default function EmployeeManagePage() {
               <div className="min-w-0">
                 <Typography
                   variant="h4"
-                  className={cn("text-xl font-bold leading-none mb-0.5", s.color)}
+                  className={cn(
+                    "text-xl font-bold leading-none mb-0.5",
+                    s.color,
+                  )}
                 >
                   {s.value}
                 </Typography>

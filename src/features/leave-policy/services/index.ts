@@ -4,6 +4,7 @@ import {
   LeaveBalanceInitPayload,
   LeaveType,
   UpdateLeaveTypePayload,
+  UpdateLeaveBalancePayload,
 } from "../types";
 
 export const getLeaveTypes = async (): Promise<LeaveType[]> => {
@@ -34,5 +35,13 @@ export const initLeaveBalance = async (
   data: LeaveBalanceInitPayload,
 ): Promise<{ message: string }> => {
   const res = await api.post("/leave-balance/init", data);
+  return res.data;
+};
+
+export const updateLeaveBalance = async (
+  data: UpdateLeaveBalancePayload,
+): Promise<{ message: string }> => {
+  const { id, ...rest } = data;
+  const res = await api.put(`/leave-balance/${id}`, rest);
   return res.data;
 };

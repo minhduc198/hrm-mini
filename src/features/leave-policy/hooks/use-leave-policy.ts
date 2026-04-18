@@ -7,11 +7,13 @@ import {
   getLeaveTypes,
   initLeaveBalance,
   updateLeaveType,
+  updateLeaveBalance,
 } from "../services";
 import {
   CreateLeaveTypePayload,
   LeaveBalanceInitPayload,
   UpdateLeaveTypePayload,
+  UpdateLeaveBalancePayload,
 } from "../types";
 
 export function useLeavePolicy() {
@@ -74,6 +76,18 @@ export function useLeavePolicy() {
     },
   });
 
+  const updateLeaveBalanceMutation = useMutation({
+    mutationFn: (payload: UpdateLeaveBalancePayload) => updateLeaveBalance(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.message || "Không thể cập nhật hạn mức phép",
+      );
+    },
+  });
+
   return {
     leaveTypes: leaveTypesQuery.data ?? [],
     isLoading: leaveTypesQuery.isLoading,
@@ -82,6 +96,7 @@ export function useLeavePolicy() {
     updateLeaveType: updateLeaveTypeMutation.mutate,
     deleteLeaveType: deleteLeaveTypeMutation.mutate,
     initLeaveBalance: initLeaveBalanceMutation.mutate,
+    updateLeaveBalance: updateLeaveBalanceMutation.mutate,
     isCreating: createLeaveTypeMutation.isPending,
     isUpdating: updateLeaveTypeMutation.isPending,
     isDeleting: deleteLeaveTypeMutation.isPending,
