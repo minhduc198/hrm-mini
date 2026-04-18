@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { generateNext3MonthsAttendance } from "../api/attendance-api";
 import { attendanceKeys } from "../queryKeys/attendance";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
+import { queryClient } from "@/lib/query-client";
 
 export function useGenerateAttendance() {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: generateNext3MonthsAttendance,
     onSuccess: (response) => {
@@ -15,10 +15,8 @@ export function useGenerateAttendance() {
         description: "Lịch làm việc đã được cập nhật thành công.",
       });
     },
-    onError: (error: any) => {
-      toast.error("Không thể sinh lịch làm việc", {
-        description: error?.response?.data?.message || "Vui lòng thử lại sau.",
-      });
+    onError: (error) => {
+      handleError(error, "Không thể sinh lịch làm việc");
     }
   });
 }

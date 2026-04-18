@@ -1,6 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
+import { queryClient } from "@/lib/query-client";
 import {
   getRuleWorkSettings,
   createRuleWorkSetting,
@@ -11,7 +12,6 @@ import {
 import { workScheduleKeys } from "../query-key";
 
 export const useWorkSchedule = () => {
-  const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: workScheduleKeys.lists(),
@@ -24,8 +24,8 @@ export const useWorkSchedule = () => {
       queryClient.invalidateQueries({ queryKey: workScheduleKeys.lists() });
       toast.success("Thêm cấu hình làm việc thành công");
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error(error.response?.data?.message || "Lỗi khi thêm cấu hình");
+    onError: (error) => {
+      handleError(error, "Lỗi khi thêm cấu hình");
     },
   });
 
@@ -35,8 +35,8 @@ export const useWorkSchedule = () => {
       queryClient.invalidateQueries({ queryKey: workScheduleKeys.lists() });
       toast.success("Cập nhật cấu hình thành công");
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error(error.response?.data?.message || "Lỗi khi cập nhật cấu hình");
+    onError: (error) => {
+      handleError(error, "Lỗi khi cập nhật cấu hình");
     },
   });
 
@@ -46,8 +46,8 @@ export const useWorkSchedule = () => {
       queryClient.invalidateQueries({ queryKey: workScheduleKeys.lists() });
       toast.success("Xóa cấu hình thành công");
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error(error.response?.data?.message || "Lỗi khi xóa cấu hình");
+    onError: (error) => {
+      handleError(error, "Lỗi khi xóa cấu hình");
     },
   });
 
@@ -57,10 +57,8 @@ export const useWorkSchedule = () => {
       queryClient.invalidateQueries({ queryKey: workScheduleKeys.lists() });
       toast.success("Đã thay đổi trạng thái cấu hình");
     },
-    onError: (error: AxiosError<{ message?: string }>) => {
-      toast.error(
-        error.response?.data?.message || "Lỗi khi thay đổi trạng thái",
-      );
+    onError: (error) => {
+      handleError(error, "Lỗi khi thay đổi trạng thái");
     },
   });
 

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { signIn } from "next-auth/react";
+import { handleError } from "@/utils/error-handler";
 import { LoginFormValues } from "../types/auth";
 import { routes } from "@/constants/routes";
 
@@ -36,8 +36,8 @@ export function useLogin() {
         
       router.replace(destination);
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Đăng nhập thất bại");
+    onError: (error) => {
+      handleError(error, "Đăng nhập thất bại");
     }
   });
 }
