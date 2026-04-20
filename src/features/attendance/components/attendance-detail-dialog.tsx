@@ -17,7 +17,8 @@ interface Props {
 export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
   if (!day) return null;
 
-  const status = typeof day.status === "string" ? statusMap[day.status as keyof typeof statusMap] : null;
+  const normalizedStatus = typeof day.status === "string" ? day.status.toLowerCase() : "";
+  const status = normalizedStatus ? statusMap[normalizedStatus as keyof typeof statusMap] : null;
   const dayType = dayTypeMap[day.day_type] || dayTypeMap.workday;
   const isLate = (day.late_minutes ?? 0) > 0;
   const isEarly = (day.early_leave_minutes ?? 0) > 0;
@@ -33,15 +34,16 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
                 <BadgeTag 
                   icon={status.icon} 
                   label={status.label} 
-                  className={
-                    "shadow-sm " + (
-                      day.status === "late" || day.status === "early_leave"
-                        ? "bg-warning-bg border-warning-bd text-warning"
-                        : day.status === "absent"
-                        ? "bg-danger-bg border-danger-bd text-danger"
-                        : "bg-success-bg border-success-bd text-success"
-                    )
-                  } 
+                  className={cn(
+                    "shadow-sm",
+                    normalizedStatus === "late" || normalizedStatus === "early_leave" || normalizedStatus === "late_early_leave"
+                      ? "bg-warning-bg border-warning-bd text-warning"
+                      : normalizedStatus === "absent"
+                      ? "bg-danger-bg border-danger-bd text-danger"
+                      : normalizedStatus === "leave"
+                      ? "bg-purple-50 border-purple-200 text-purple-600"
+                      : "bg-success-bg border-success-bd text-success"
+                  )} 
                 />
               )}
             </div>
@@ -67,8 +69,8 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
              <Typography variant="label-sm" className="px-1 text-muted uppercase tracking-widest">Hiệu suất ngày</Typography>
              <div className="grid grid-cols-3 gap-3">
                 <StatItem label="Tổng giờ" value={formatDurationFromHours(day.total_hours)} />
-                <StatItem label="Đi muộn" value={isLate ? formatDurationFromMinutes(day.late_minutes) : "Đúng giờ"} active={isLate} activeClass="bg-warning-bg border-warning-bd text-warning" />
-                <StatItem label="Về sớm" value={isEarly ? formatDurationFromMinutes(day.early_leave_minutes) : "Đúng giờ"} active={isEarly} activeClass="bg-danger-bg border-danger-bd text-danger" />
+                <StatItem label="Đi muộn" value={isLate ? formatDurationFromMinutes(day.late_minutes) : "0 phút"} active={isLate} activeClass="bg-warning-bg border-warning-bd text-warning" />
+                <StatItem label="Về sớm" value={isEarly ? formatDurationFromMinutes(day.early_leave_minutes) : "0 phút"} active={isEarly} activeClass="bg-danger-bg border-danger-bd text-danger" />
               </div>
           </div>
 

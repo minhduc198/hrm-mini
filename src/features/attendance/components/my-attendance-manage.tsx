@@ -89,15 +89,15 @@ export function MyAttendanceManage() {
           return (
             <div className="flex flex-col gap-0.5 select-none pt-1">
               {day.check_in && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-tx-muted">Vào</span>
-                  <span className="font-semibold text-primary">{timeFormat(day.check_in)}</span>
+                <div className="flex space-x-2 items-center px-0.5">
+                  <Typography variant="label-xs" className="text-muted">Giờ vào</Typography>
+                  <Typography variant="label-xs" className="text-primary">{timeFormat(day.check_in)}</Typography>
                 </div>
               )}
               {day.check_out && (
-                <div className="flex justify-between items-center text-[10px]">
-                  <span className="text-tx-muted">Ra</span>
-                  <span className="font-semibold text-primary">{timeFormat(day.check_out)}</span>
+                <div className="flex space-x-4 items-center px-0.5">
+                  <Typography variant="label-xs" className="text-muted">Giờ ra</Typography>
+                  <Typography variant="label-xs" className="text-primary">{timeFormat(day.check_out)}</Typography>
                 </div>
               )}
             </div>

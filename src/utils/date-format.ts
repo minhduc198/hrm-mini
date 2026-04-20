@@ -31,12 +31,13 @@ export const formatTime = (time: string | Date | null | undefined, includeSecond
  * Định dạng số giờ (vd: 8.5) thành dạng text "X giờ" hoặc "Y phút" nếu quá ngắn
  */
 export const formatDurationFromHours = (hoursVal: string | number | null | undefined): string => {
-  if (!hoursVal) return "0 giờ";
+  if (!hoursVal) return "0 phút";
   const numHours = typeof hoursVal === "string" ? parseFloat(hoursVal) : hoursVal;
-  if (isNaN(numHours) || numHours <= 0) return "0 giờ";
+  if (isNaN(numHours) || numHours <= 0) return "0 phút";
   
   if (numHours < 1) {
     const m = Math.round(numHours * 60);
+    if (m === 0 && numHours > 0) return "< 1 phút";
     return `${m} phút`;
   }
   
