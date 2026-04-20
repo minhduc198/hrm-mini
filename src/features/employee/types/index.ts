@@ -69,6 +69,7 @@ export type ChangePasswordPayload = {
 export interface LeaveType {
   id: number;
   name: string;
+  is_paid: number;
 }
 
 export interface LeaveBalance {
