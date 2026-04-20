@@ -28,6 +28,7 @@ interface DataTableProps<TData, TValue> {
   className?: string;
   rowSelection?: Record<string, boolean>;
   onRowSelectionChange?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  enableRowSelection?: ((row: any) => boolean) | boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -37,6 +38,7 @@ export function DataTable<TData, TValue>({
   className,
   rowSelection = {},
   onRowSelectionChange,
+  enableRowSelection,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -47,6 +49,7 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: onRowSelectionChange,
+    enableRowSelection: enableRowSelection,
     state: {
       sorting,
       rowSelection,

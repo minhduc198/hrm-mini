@@ -20,10 +20,12 @@ export interface SelectOption {
 }
 
 export interface SelectFieldInputProps {
-  name: string;
-  label: string;
+  name?: string;
+  label?: string;
   placeholder?: string;
   required?: boolean;
   options: SelectOption[];
   className?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
 }

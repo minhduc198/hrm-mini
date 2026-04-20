@@ -16,7 +16,7 @@ import { SelectFieldInput } from "@/components/common/form/SelectFieldInput";
 import { DatePickerInput } from "@/components/common/form/DatePickerInput";
 import { TextareaFieldInput } from "@/components/common/form/TextareaFieldInput";
 import { leaveRequestSchema, LeaveRequestFormValues } from "../schemas";
-import { useCreateLeaveRequest } from "../hooks/use-leave";
+import { useLeave } from "../hooks/use-leave";
 import { useProfile } from "../../employee/hooks/use-profile";
 import { CreateLeaveRequestPayload } from "../types";
 import { format } from "date-fns";
@@ -42,7 +42,7 @@ export function LeaveRequestDialog({
   const { profileQuery } = useProfile(userId);
   const employeeData = profileQuery.data;
 
-  const { mutate: createRequest, isPending } = useCreateLeaveRequest();
+  const { createLeave, isCreating } = useLeave();
 
   const methods = useForm<LeaveRequestFormValues>({
     resolver: zodResolver(
@@ -119,7 +119,7 @@ export function LeaveRequestDialog({
         : {}),
     };
 
-    createRequest(payload, {
+    createLeave(payload, {
       onSuccess: (data) => {
         onOpenChange(false);
         reset();
@@ -282,7 +282,7 @@ export function LeaveRequestDialog({
               >
                 Hủy
               </Button>
-              <Button type="submit" isLoading={isPending}>
+              <Button type="submit" isLoading={isCreating}>
                 Gửi đơn
               </Button>
             </DialogFooter>
