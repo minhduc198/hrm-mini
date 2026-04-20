@@ -15,14 +15,12 @@ import {
 import { ChangePasswordPayload } from "@/features/employee/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Camera, KeyRound, Loader2, Save } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { Infer } from "next/dist/compiled/superstruct";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
-  const { data: session, status: sessionStatus, update } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -58,9 +56,7 @@ export default function ProfilePage() {
   } = useProfile();
   const { data: employeeData, isPending: isProfileFetching } = profileQuery;
 
-  const showLoading =
-    sessionStatus === "loading" ||
-    (sessionStatus === "authenticated" && isProfileFetching);
+  const showLoading = isProfileFetching;
 
   useEffect(() => {
     if (employeeData) {
@@ -93,15 +89,7 @@ export default function ProfilePage() {
     }
 
     updateProfile(formData, {
-      onSuccess: async (responseData: any) => {
-        console.log(responseData);
-        const updatedEmployee = responseData.user;
-        await update({
-          name: values.name,
-          ...(updatedEmployee.avatar_url && {
-            avatar: updatedEmployee.avatar_url,
-          }),
-        });
+      onSuccess: () => {
         setAvatarFile(null);
         form.reset({}, { keepValues: true });
       },

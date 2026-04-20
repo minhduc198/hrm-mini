@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Calendar, Clock, Pencil, UserCheck, UserX } from "lucide-react";
 import { useMemo } from "react";
 import { DataTable } from "@/components/common/table/DataTable";
-import { ToggleButton } from "@/components/common/form/ToggleButton";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
@@ -27,7 +27,7 @@ export function WorkScheduleTable({
         accessorKey: "name",
         header: "Tên cấu hình",
         cell: ({ row }) => (
-          <div className="flex flex-col py-1">
+          <div className="flex flex-col">
             <Typography
               variant="p"
               className="text-[13px] font-bold text-slate-800"
@@ -57,7 +57,7 @@ export function WorkScheduleTable({
         cell: ({ row }) => {
           const shift = row.original.setting.shifts.office_hours;
           return (
-            <div className="flex flex-col gap-1 py-1">
+            <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <div className="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider">
                   {shift.work_start} - {shift.work_end}
@@ -109,11 +109,11 @@ export function WorkScheduleTable({
               </Typography>
             );
 
-          const from = format(new Date(apply_from), "dd/MM/yyyy", {
+          const from = format(apply_from, "dd/MM/yyyy", {
             locale: vi,
           });
           const to = apply_to
-            ? format(new Date(apply_to), "dd/MM/yyyy", { locale: vi })
+            ? format(apply_to, "dd/MM/yyyy", { locale: vi })
             : "Nay";
 
           return (
@@ -140,14 +140,19 @@ export function WorkScheduleTable({
               <Pencil size={13} />
             </Button>
 
-            <ToggleButton
-              checked={row.original.is_active}
-              onCheckedChange={() =>
+            <RadioGroup
+              value={row.original.is_active ? "active" : ""}
+              onValueChange={() =>
                 !row.original.is_active && onToggleActive(row.original)
               }
               title={row.original.is_active ? "Đang áp dụng" : "Kích hoạt"}
-              disabled={row.original.is_active}
-            />
+            >
+              <RadioGroupItem
+                value="active"
+                disabled={row.original.is_active}
+                className={row.original.is_active ? "border-primary bg-primary text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary" : ""}
+              />
+            </RadioGroup>
           </div>
         ),
       },
@@ -160,6 +165,7 @@ export function WorkScheduleTable({
       columns={columns}
       data={data || []}
       emptyStateText="Chưa có cấu hình làm việc nào"
+      className="[&_td]:py-2.5 [&_th]:h-10"
     />
   );
 }
