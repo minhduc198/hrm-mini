@@ -41,6 +41,11 @@ export const getEmployeeById = async (
   return res.data.data;
 };
 
+export const getMyProfile = async (): Promise<Employee> => {
+  const res = await api.get("/employees/my");
+  return res.data.data;
+};
+
 export const updateEmployeeStatus = async (id: number): Promise<Employee> => {
   const res = await api.patch(`/employees/${id}/status`);
   return res.data;

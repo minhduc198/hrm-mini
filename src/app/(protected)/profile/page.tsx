@@ -23,7 +23,6 @@ import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { data: session, status: sessionStatus, update } = useSession();
-  const userId = session?.user?.id;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -56,7 +55,7 @@ export default function ProfilePage() {
     changePassword,
     isUpdatingProfile,
     isChangingPassword,
-  } = useProfile(userId);
+  } = useProfile();
   const { data: employeeData, isPending: isProfileFetching } = profileQuery;
 
   const showLoading =
