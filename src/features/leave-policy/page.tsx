@@ -124,7 +124,6 @@ export function LeavePolicyPage() {
         isLoading={isCreating || isUpdating}
       />
 
-      {/* Modal xác nhận xóa */}
       <ConfirmDialog
         open={!!deleteTargetId}
         onOpenChange={(open) => !open && setDeleteTargetId(null)}
@@ -136,7 +135,6 @@ export function LeavePolicyPage() {
         isLoading={isDeleting}
       />
 
-      {/* Modal xác nhận bật/tắt trạng thái */}
       <ConfirmDialog
         open={!!confirmToggleTarget}
         onOpenChange={(open) => !open && setConfirmToggleTarget(null)}

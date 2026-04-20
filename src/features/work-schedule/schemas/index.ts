@@ -13,6 +13,7 @@ export const workShiftSchema = z
     work_end: z.string().min(1, "Giờ kết thúc là bắt buộc"),
     break_start: z.string().min(1, "Giờ bắt đầu nghỉ là bắt buộc"),
     break_end: z.string().min(1, "Giờ kết thúc nghỉ là bắt buộc"),
+    half_day_split: z.string().default("12:00"),
   })
   .refine(
     (data: any) =>

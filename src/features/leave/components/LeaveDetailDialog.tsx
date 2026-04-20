@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { useCancelLeaveRequest } from "../hooks/use-leave";
 import { LeaveRequest } from "../types";
+import { formatTime } from "@/utils/date";
 
 interface LeaveDetailDialogProps {
   request: LeaveRequest | null;
@@ -148,7 +150,7 @@ export function LeaveDetailDialog({
                     Từ ngày
                   </span>
                   <span className="text-sm font-bold text-slate-800">
-                    {request.start_time}
+                    {formatTime(request.start_time)}
                   </span>
                 </div>
               </div>
@@ -159,7 +161,7 @@ export function LeaveDetailDialog({
                     Đến ngày
                   </span>
                   <span className="text-sm font-bold text-slate-800">
-                    {request.end_time}
+                    {formatTime(request.end_time)}
                   </span>
                 </div>
               </div>

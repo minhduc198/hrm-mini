@@ -1,5 +1,6 @@
 "use client";
 import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -141,7 +142,10 @@ export default function EmployeeManagePage() {
         header: "Ngày tạo",
         key: "created_at",
         width: 20,
-        render: (row) => new Date(row.created_at).toLocaleDateString("vi-VN"),
+        render: (row) => {
+          const date = new Date(row.created_at);
+          return !isNaN(date.getTime()) ? format(date, "dd/MM/yyyy") : "Chưa cập nhật";
+        },
       },
       {
         header: "Phép năm",

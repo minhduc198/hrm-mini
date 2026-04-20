@@ -12,6 +12,7 @@ import { AVATAR_COLORS } from "../constants";
 import { OverflowTooltip } from "@/components/common/form/OverflowTooltip";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Can } from "@/components/common/auth/Can";
+import { format } from "date-fns";
 
 function getInitials(name: string) {
   return name
@@ -209,7 +210,7 @@ export function EmployeeTable({
               variant="small"
               className="text-xs tabular-nums text-muted-foreground"
             >
-              {isValidDate ? date.toLocaleDateString("vi-VN") : "Chưa cập nhật"}
+              {isValidDate ? format(date, "dd/MM/yyyy") : "Chưa cập nhật"}
             </Typography>
           );
         },
@@ -275,7 +276,6 @@ export function EmployeeTable({
     ];
 
     return baseColumns.filter((col) => {
-      // Safe check for both 'id' and 'accessorKey'
       const columnId =
         col.id || ("accessorKey" in col ? col.accessorKey : undefined);
 
