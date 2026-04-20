@@ -19,7 +19,7 @@ import {
   MessageSquare,
   XCircle,
 } from "lucide-react";
-import { useCancelLeaveRequest } from "../hooks/use-leave";
+import { useLeave } from "../hooks/use-leave";
 import { LeaveRequest } from "../types";
 
 interface LeaveDetailDialogProps {
@@ -48,7 +48,7 @@ export function LeaveDetailDialog({
   onOpenChange,
   onCancelSuccess,
 }: LeaveDetailDialogProps) {
-  const { mutate: cancelRequest, isPending } = useCancelLeaveRequest();
+  const { cancelLeave, isCancelling } = useLeave();
 
   if (!request) return null;
 
@@ -56,7 +56,7 @@ export function LeaveDetailDialog({
   const StatusIcon = status.icon;
 
   const handleCancel = () => {
-    cancelRequest(request.id, {
+    cancelLeave(request.id, {
       onSuccess: () => {
         onOpenChange(false);
         if (onCancelSuccess) onCancelSuccess();
@@ -209,7 +209,7 @@ export function LeaveDetailDialog({
               variant="destructive"
               className="flex-1 rounded-lg shadow-sm"
               onClick={handleCancel}
-              isLoading={isPending}
+              isLoading={isCancelling}
             >
               Hủy đơn
             </Button>

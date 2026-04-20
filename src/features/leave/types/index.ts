@@ -3,7 +3,16 @@ import { LeaveType } from "../../leave-policy/types";
 export type RequestScope = "hourly" | "full_day" | "half_day";
 export type HalfDayPeriod = "morning" | "afternoon";
 export type AmountUnit = "hours" | "days";
-export type LeaveStatus = "pending" | "approved" | "rejected" | "cancelled";
+export type LeaveStatus = "pending" | "approved" | "rejected";
+
+export interface UserInfo {
+  id: number;
+  name: string;
+  empCode: string;
+  avatar?: string;
+  avatar_url?: string;
+}
+
 
 export interface LeaveRequest {
   id: number;
@@ -24,6 +33,7 @@ export interface LeaveRequest {
   created_at: string;
   updated_at: string;
   leave_type: LeaveType;
+  user?: UserInfo;
 }
 
 export interface CreateLeaveRequestPayload {
@@ -49,4 +59,15 @@ export interface LeaveRequestResponse {
   prev_page_url: string | null;
   to: number;
   total: number;
+}
+
+export interface UpdateLeaveStatusPayload {
+  status: "approved" | "rejected";
+  approver_note?: string;
+}
+
+export interface UpdateBulkLeaveStatusesPayload {
+  ids: number[];
+  status: "approved" | "rejected";
+  approver_note?: string;
 }

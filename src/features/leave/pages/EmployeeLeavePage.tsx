@@ -7,7 +7,7 @@ import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 import { LeaveDetailDialog } from "../components/LeaveDetailDialog";
 import { LeaveHistoryTable } from "../components/LeaveHistoryTable";
-import { useLeaveHistory } from "../hooks/use-leave";
+import { useLeave } from "../hooks/use-leave";
 import { LeaveRequest } from "../types";
 
 export default function EmployeeLeavePage() {
@@ -21,10 +21,12 @@ export default function EmployeeLeavePage() {
 
   const handleCreateSuccess = () => {};
 
-  const { data, isLoading } = useLeaveHistory({
+  const { historyQuery } = useLeave({
     page: currentPage,
     per_page: perPage,
   });
+
+  const { data, isLoading } = historyQuery;
 
   const handleViewDetail = (request: LeaveRequest) => {
     setSelectedRequest(request);

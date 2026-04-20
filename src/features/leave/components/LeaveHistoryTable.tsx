@@ -53,7 +53,6 @@ const statusMap: Record<
   pending: { label: "Chờ duyệt", variant: "warning", icon: Clock },
   approved: { label: "Đã duyệt", variant: "success", icon: CheckCircle2 },
   rejected: { label: "Từ chối", variant: "destructive", icon: XCircle },
-  cancelled: { label: "Đã hủy", variant: "secondary", icon: AlertCircle },
 };
 
 const scopeMap: Record<string, string> = {
@@ -163,7 +162,8 @@ export function LeaveHistoryTable({
       accessorKey: "status",
       header: "Trạng thái",
       cell: ({ row }) => {
-        const status = statusMap[row.original.status];
+        const rawStatus = row.original.status;
+        const status = (statusMap as any)[rawStatus] || statusMap.rejected;
         const StatusIcon = status.icon;
         return (
           <div className="flex items-center justify-between min-w-[130px]">
