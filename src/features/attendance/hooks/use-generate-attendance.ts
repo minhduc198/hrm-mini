@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { generateNext3MonthsAttendance } from "../api/attendance-api";
+import { generateNext3MonthsAttendance } from "../api/generate-attendance";
 import { attendanceKeys } from "../queryKeys/attendance";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";

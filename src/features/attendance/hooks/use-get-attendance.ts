@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAttendanceData } from "../api/attendance-api";
+import { getAttendanceData } from "../api/get-attendance";
 import { attendanceKeys } from "../queryKeys/attendance";
 import { AttendanceDayData } from "../types/attendance";
 
