@@ -27,7 +27,9 @@ interface DataTableProps<TData, TValue> {
   emptyStateText?: string;
   className?: string;
   rowSelection?: Record<string, boolean>;
-  onRowSelectionChange?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  onRowSelectionChange?: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
   enableRowSelection?: ((row: any) => boolean) | boolean;
 }
 
@@ -60,7 +62,7 @@ export function DataTable<TData, TValue>({
     return (
       <div
         className={cn(
-          "rounded-xl border border-border/60 bg-white flex flex-col items-center justify-center py-16 gap-2",
+          "rounded-xl bg-white flex flex-col items-center justify-center py-16 gap-2",
           className,
         )}
       >
