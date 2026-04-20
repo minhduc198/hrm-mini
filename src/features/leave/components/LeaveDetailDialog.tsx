@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import { useCancelLeaveRequest } from "../hooks/use-leave";
 import { LeaveRequest } from "../types";
-import { formatTime } from "@/utils/date";
 
 interface LeaveDetailDialogProps {
   request: LeaveRequest | null;
@@ -150,7 +149,7 @@ export function LeaveDetailDialog({
                     Từ ngày
                   </span>
                   <span className="text-sm font-bold text-slate-800">
-                    {formatTime(request.start_time)}
+                    {format(request.start_time, "dd/MM/yyyy")}
                   </span>
                 </div>
               </div>
@@ -161,7 +160,7 @@ export function LeaveDetailDialog({
                     Đến ngày
                   </span>
                   <span className="text-sm font-bold text-slate-800">
-                    {formatTime(request.end_time)}
+                    {format(request.end_time, "dd/MM/yyyy")}
                   </span>
                 </div>
               </div>

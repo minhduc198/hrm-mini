@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import React from "react";
 import { LeaveRequest, LeaveStatus } from "../types";
-import { formatTime } from "@/utils/date";
 
 interface LeaveHistoryTableProps {
   data: LeaveRequest[];
@@ -109,8 +108,8 @@ export function LeaveHistoryTable({
       header: "Thời gian",
       cell: ({ row }) => {
         const isHourly = row.original.request_scope === "hourly";
-        const start = formatTime(row.original.start_time);
-        const end = formatTime(row.original.end_time);
+        const start = format(row.original.start_time, "dd/MM/yyyy");
+        const end = format(row.original.end_time, "dd/MM/yyyy");
 
         return (
           <div className="flex flex-col gap-1 py-1">
