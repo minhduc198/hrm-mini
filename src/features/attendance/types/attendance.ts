@@ -68,4 +68,10 @@ export interface MyAttendanceRecord {
 
 export interface MyAttendanceResponse {
   data: MyAttendanceRecord[];
-}
+}
+
+export interface CheckOutResponse {
+  message: string;
+  data: MyAttendanceRecord
+}
+

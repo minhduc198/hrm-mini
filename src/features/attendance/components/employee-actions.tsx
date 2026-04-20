@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useCheckIn } from "../hooks/use-check-in";
+import { useCheckOut } from "../hooks/use-check-out";
 import { useAttendanceTodayStatus } from "../hooks/use-attendance-today-status";
 
 export function EmployeeActions() {
   const { isCheckedIn, isCompleted, isLoading: isStatusLoading } = useAttendanceTodayStatus();
   const { mutate: performCheckIn, isPending: isCheckingIn } = useCheckIn();
+  const { mutate: performCheckOut, isPending: isCheckingOut } = useCheckOut();
 
   const handleCheckInOut = () => {
     if (isCompleted) {
@@ -23,11 +25,10 @@ export function EmployeeActions() {
     if (!isCheckedIn) {
       performCheckIn();
     } else {
-      toast.info("Bạn đã check-in hôm nay", {
-        description: "Tính năng check-out sẽ sớm được cập nhật.",
-      });
+      performCheckOut();
     }
   };
+
 
   const handleCreateRequest = () => {
     toast("Tính năng tạo đơn đang được phát triển", {
@@ -40,13 +41,14 @@ export function EmployeeActions() {
       {/* Check-in/out Toggle Button */}
       <Button
         onClick={handleCheckInOut}
-        isLoading={isCheckingIn || isStatusLoading}
+        isLoading={isCheckingIn || isCheckingOut || isStatusLoading}
         disabled={isCompleted}
+
         variant={isCompleted ? "outline" : isCheckedIn ? "outline" : "default"}
         className={cn(
           "h-11 px-4 md:px-6 flex items-center gap-2.5 transition-all duration-300 rounded-xl shadow-sm",
           isCompleted
-            ? "bg-green-50 text-green-600 border-green-200 opacity-80 cursor-not-allowed"
+            ? "bg-white text-base border-primary-border shadow-sm opacity-100 cursor-not-allowed"
             : isCheckedIn 
               ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 hover:text-primary active:bg-primary/30" 
               : "bg-primary text-white hover:bg-primary/90 hover:shadow-lg active:scale-95 shadow-primary/20"
@@ -54,7 +56,7 @@ export function EmployeeActions() {
       >
         {isCompleted ? (
           <>
-            <CheckCircle size={18} className="animate-in fade-in zoom-in duration-300" />
+            <CheckCircle size={18} className="text-success animate-in fade-in zoom-in duration-300" />
             <span className="font-bold text-[11px] md:text-sm tracking-wide">HOÀN THÀNH</span>
           </>
         ) : isCheckedIn ? (
