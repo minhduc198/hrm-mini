@@ -36,7 +36,7 @@ api.interceptors.response.use(
     const status = error.response?.status || 500;
     const data = error.response?.data;
 
-    let message = data?.message || error.message || "Đã có lỗi xảy ra.";
+    let message = data?.message || data?.error || error.message || "Đã có lỗi xảy ra.";
     const errors = data?.errors;
 
     // Handle 401 Unauthorized - session expired or invalid token

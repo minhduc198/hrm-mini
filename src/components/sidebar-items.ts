@@ -63,7 +63,7 @@ export const navItemsConfig: NavItem[] = [
   },
   {
     key: "leave_personal",
-    label: "Xin nghỉ",
+    label: "Lịch sử xin nghỉ",
     url: routes.leave.personal,
     icon: CalendarDays,
     isEmployeeDefault: true,
