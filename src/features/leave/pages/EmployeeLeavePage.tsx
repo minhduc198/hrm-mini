@@ -3,17 +3,17 @@
 import React, { useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Button } from "@/components/ui/button";
-import { Plus, Info, History } from "lucide-react";
-import { LeaveRequestDialog } from "../components/LeaveRequestDialog";
+import { Info, History, CalendarDays } from "lucide-react";
 import { LeaveHistoryTable } from "../components/LeaveHistoryTable";
 import { LeaveDetailDialog } from "../components/LeaveDetailDialog";
 import { useLeaveHistory } from "../hooks/use-leave";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect } from "react";
 import { LeaveRequest } from "../types";
+import { PageHeader } from "@/components/common/layout/page-header";
+import { EmployeeActions } from "@/features/attendance/components/employee-actions";
 
 export default function EmployeeLeavePage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -59,22 +59,14 @@ export default function EmployeeLeavePage() {
   const showRecentButton = !!requestToShow;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 h-full overflow-hidden animate-in fade-in duration-500">
+      <PageHeader
+        icon={CalendarDays}
+        title="Lịch sử xin nghỉ"
+        description="Theo dõi trạng thái và lịch sử các yêu cầu nghỉ phép cá nhân"
+        actions={<EmployeeActions onLeaveRequestSuccess={handleCreateSuccess} />}
+      />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <Typography
-            variant="h2"
-            className="text-2xl font-bold tracking-tight text-slate-900"
-          >
-            Quản lý nghỉ phép
-          </Typography>
-          <Typography
-            variant="small"
-            className="text-muted-foreground italic flex items-center gap-1"
-          >
-            Theo dõi và gửi yêu cầu nghỉ phép của bạn tại đây
-          </Typography>
-        </div>
 
         <div className="flex items-center gap-3">
           {showRecentButton && (
@@ -87,13 +79,6 @@ export default function EmployeeLeavePage() {
               Xem đơn vừa tạo
             </Button>
           )}
-          <Button
-            onClick={() => setIsDialogOpen(true)}
-            className="rounded-lg shadow-sm hover:shadow-md transition-all font-semibold"
-          >
-            <Plus size={18} className="mr-2 border-2 rounded-full p-0.5" />
-            Tạo đơn xin nghỉ
-          </Button>
         </div>
       </div>
 
@@ -140,12 +125,6 @@ export default function EmployeeLeavePage() {
           />
         )}
       </div>
-
-      <LeaveRequestDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSuccess={handleCreateSuccess}
-      />
 
       <LeaveDetailDialog
         open={isDetailOpen}

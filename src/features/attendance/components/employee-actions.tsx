@@ -1,18 +1,24 @@
 "use client";
 
-import React from "react";
-import { Play, Square, PlusCircle, CheckCircle } from "lucide-react";
+import React, { useState } from "react";
+import { Play, Square, Plus, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useCheckIn } from "../hooks/use-check-in";
 import { useCheckOut } from "../hooks/use-check-out";
 import { useAttendanceTodayStatus } from "../hooks/use-attendance-today-status";
+import { LeaveRequestDialog } from "@/features/leave/components/LeaveRequestDialog";
 
-export function EmployeeActions() {
+interface EmployeeActionsProps {
+  onLeaveRequestSuccess?: (data: any) => void;
+}
+
+export function EmployeeActions({ onLeaveRequestSuccess }: EmployeeActionsProps) {
   const { isCheckedIn, isCompleted, isLoading: isStatusLoading } = useAttendanceTodayStatus();
   const { mutate: performCheckIn, isPending: isCheckingIn } = useCheckIn();
   const { mutate: performCheckOut, isPending: isCheckingOut } = useCheckOut();
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
 
   const handleCheckInOut = () => {
     if (isCompleted) {
@@ -29,13 +35,6 @@ export function EmployeeActions() {
     }
   };
 
-
-  const handleCreateRequest = () => {
-    toast("Tính năng tạo đơn đang được phát triển", {
-      description: "Hệ thống sẽ cập nhật tính năng này trong thời gian sớm nhất.",
-    });
-  };
-
   return (
     <div className="flex items-center gap-3">
       {/* Check-in/out Toggle Button */}
@@ -43,7 +42,6 @@ export function EmployeeActions() {
         onClick={handleCheckInOut}
         isLoading={isCheckingIn || isCheckingOut || isStatusLoading}
         disabled={isCompleted}
-
         variant={isCompleted ? "outline" : isCheckedIn ? "outline" : "default"}
         className={cn(
           "h-11 px-4 md:px-6 flex items-center gap-2.5 transition-all duration-300 rounded-xl shadow-sm",
@@ -57,31 +55,37 @@ export function EmployeeActions() {
         {isCompleted ? (
           <>
             <CheckCircle size={18} className="text-success animate-in fade-in zoom-in duration-300" />
-            <span className="font-bold text-[11px] md:text-sm tracking-wide">HOÀN THÀNH</span>
+            <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Hoàn thành</span>
           </>
         ) : isCheckedIn ? (
           <>
             <Square size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />
-            <span className="font-bold text-[11px] md:text-sm tracking-wide">CHECK OUT</span>
+            <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Check out</span>
           </>
         ) : (
           <>
             <Play size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />
-            <span className="font-bold text-[11px] md:text-sm tracking-wide">CHECK IN</span>
+            <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Check in</span>
           </>
         )}
       </Button>
 
 
-      {/* Create Request Button */}
+      {/* Create Leave Request Button */}
       <Button
-        variant="outline"
-        onClick={handleCreateRequest}
-        className="h-11 px-3 md:px-6 flex items-center gap-2 md:gap-2.5 border-primary/20 text-primary hover:bg-primary/5 hover:text-primary rounded-xl transition-all shadow-sm hover:shadow-md"
+        onClick={() => setIsLeaveDialogOpen(true)}
+        className="h-11 rounded-xl shadow-sm hover:shadow-md transition-all font-semibold px-4 md:px-6"
       >
-        <PlusCircle size={18} />
-        <span className="font-bold text-[11px] md:text-sm tracking-wide">TẠO ĐƠN</span>
+        <Plus size={18} className="mr-2 border-2 rounded-full p-0.5" />
+        Tạo đơn xin nghỉ
       </Button>
+
+      <LeaveRequestDialog 
+        open={isLeaveDialogOpen} 
+        onOpenChange={setIsLeaveDialogOpen}
+        onSuccess={onLeaveRequestSuccess}
+      />
     </div>
   );
 }
+
