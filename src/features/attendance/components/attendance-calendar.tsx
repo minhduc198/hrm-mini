@@ -15,12 +15,12 @@ import { cn } from "@/lib/utils"
 import { Typography } from "@/components/ui/typography"
 
 import { AttendanceDayData } from "../types/attendance"
-import { WEEKDAYS } from "../constants"
+import { WEEKDAYS, statusMap } from "../constants"
 
 interface AttendanceCalendarProps {
   data: AttendanceDayData[];
   currentDate?: Date;
-  onDateClick?: (date: string) => void;
+  onDateClick?: (day: AttendanceDayData) => void;
   renderCellFooter?: (day: AttendanceDayData) => React.ReactNode;
   className?: string;
 }
@@ -95,7 +95,15 @@ export function AttendanceCalendar({
           return (
             <div
               key={isoString}
-              onClick={() => isCurrentMonth && onDateClick?.(isoString)}
+              onClick={() => {
+                if (isCurrentMonth) {
+                  const dayPayload: AttendanceDayData = apiData ?? {
+                    work_date: isoString,
+                    day_type: index % 7 >= 5 ? "weekend" : "workday",
+                  };
+                  onDateClick?.(dayPayload);
+                }
+              }}
               className={cn(
                 "min-h-[110px] p-2.5 flex flex-col relative transition-all duration-200 border-b border-r border-line",
                 "last:border-r-0", 
@@ -115,7 +123,7 @@ export function AttendanceCalendar({
             >
               <div className={cn("flex flex-col h-full flex-1", !isCurrentMonth && "opacity-30")}>
                 <div className="flex justify-between items-start mb-1.5">
-                  <div className="flex flex-col gap-1">
+                  <div className="flex gap-2 items-center">
                     <div className={cn(
                       "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
                       isUserToday && isCurrentMonth 
@@ -139,9 +147,34 @@ export function AttendanceCalendar({
 
                 <div className="flex-1 mt-1">
                   {isCurrentMonth && apiData?.status && (
-                      <div className="flex gap-1 flex-wrap">
-                        {(['on_time', 'late', 'absent'] as const).map(statusKey => {
-                          const count = apiData.status?.[statusKey] || 0;
+                    <div className="flex gap-1 flex-wrap">
+                      {typeof apiData.status === "string" ? (() => {
+                        const normalizedStatus = apiData.status.toLowerCase();
+                        return (
+                          <div className="flex items-center gap-1.5 px-0.5">
+                            <div 
+                              className={cn(
+                                "size-1.5 rounded-full ring-1 ring-surface shadow-sm shrink-0",
+                                normalizedStatus === 'on_time' ? 'bg-success' : 
+                                normalizedStatus === 'absent' ? 'bg-danger' : 
+                                normalizedStatus === 'leave' ? 'bg-purple-500' :
+                                'bg-warning' // late, early_leave
+                              )} 
+                            />
+                            <Typography variant="label-xs" className={cn(
+                              "font-bold tracking-tight",
+                              normalizedStatus === 'on_time' ? 'text-success' : 
+                              normalizedStatus === 'absent' ? 'text-danger' : 
+                              normalizedStatus === 'leave' ? 'text-purple-600' :
+                              'text-warning'
+                            )}>
+                              {statusMap[normalizedStatus as keyof typeof statusMap]?.label || apiData.status}
+                            </Typography>
+                          </div>
+                        );
+                      })() : typeof apiData.status === 'object' ? (
+                        (['on_time', 'late', 'absent'] as const).map(statusKey => {
+                          const count = (apiData.status as Record<string, number>)?.[statusKey] || 0;
                           const colorClass = 
                             statusKey === 'on_time' ? 'bg-success' : 
                             statusKey === 'late' ? 'bg-warning' : 'bg-danger';
@@ -152,8 +185,9 @@ export function AttendanceCalendar({
                               className={cn("size-1.5 rounded-full ring-1 ring-surface shadow-sm", colorClass)} 
                             />
                           );
-                        })}
-                      </div>
+                        })
+                      ) : null}
+                    </div>
                   )}
                 </div>
                 

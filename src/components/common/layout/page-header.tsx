@@ -19,7 +19,7 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2", className)}>
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5">
           <Icon size={16} className="text-primary" />
