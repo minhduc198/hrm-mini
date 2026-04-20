@@ -8,12 +8,13 @@ import { format } from "date-fns"
 import { useAttendanceStore } from "@/features/attendance/stores/attendance"  
 import { AttendanceEmptyState } from "./attendance-empty-state"
 import { useGetAttendance } from "../hooks/use-get-attendance"
+import { AttendanceDayData } from "../types/attendance"
 
 export function AttendanceManage() {
   const { viewDate } = useAttendanceStore();
   const { data: attendanceData, isLoading } = useGetAttendance();
   
-  const handleDateClick = (date: string) => {
+  const handleDateClick = (day: AttendanceDayData) => {
     // Logic cho sự kiện click ngày (nếu cần trong tương lai)
   };
 

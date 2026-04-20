@@ -9,15 +9,20 @@ import { useAttendanceStore } from "@/features/attendance/stores/attendance"
 import { AttendanceEmptyState } from "./attendance-empty-state"
 import { useGetMyAttendance } from "../hooks/use-get-my-attendance"
 import { useGetAttendance } from "../hooks/use-get-attendance"
-import { AttendanceDayData, MyAttendanceRecord } from "../types/attendance"
+import { MyAttendanceRecord, AttendanceDayData } from "../types/attendance"
+import { AttendanceDetailDialog } from "./attendance-detail-dialog"
 
 export function MyAttendanceManage() {
   const { viewDate } = useAttendanceStore();
   const { data: attendanceHistory, isLoading: isLoadingMy } = useGetMyAttendance();
   const { data: monthData, isLoading: isLoadingMonth } = useGetAttendance();
   
-  const handleDateClick = (date: string) => {
-    // Tương lai có thể mở modal chi tiết tại đây
+  const [selectedDay, setSelectedDay] = React.useState<AttendanceDayData | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+
+  const handleDateClick = (dayData: AttendanceDayData) => {
+    setSelectedDay(dayData);
+    setIsDetailOpen(true);
   };
 
   const isLoading = isLoadingMy || isLoadingMonth;
@@ -51,14 +56,17 @@ export function MyAttendanceManage() {
     
     return {
       ...day,
-      // Nút đè data của employee nếu có (bỏ qua 'status' tổng của admin)
       ...(personalRecord ? {
         status: personalRecord.status,
         check_in: personalRecord.check_in,
         check_out: personalRecord.check_out,
         total_hours: personalRecord.total_hours,
+        late_minutes: personalRecord.late_minutes,
+        early_leave_minutes: personalRecord.early_leave_minutes,
+        ot_hours: personalRecord.ot_hours,
+        note: personalRecord.note,
       } : {
-        status: undefined // Set undefined để ngày chưa làm sẽ không hiện dấu chấm
+        status: undefined,
       }),
     };
   }) || [];
@@ -95,6 +103,12 @@ export function MyAttendanceManage() {
             </div>
           );
         }}
+      />
+
+      <AttendanceDetailDialog
+        day={selectedDay}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
       />
     </div>
   );

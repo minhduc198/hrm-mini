@@ -20,7 +20,7 @@ import { WEEKDAYS } from "../constants"
 interface AttendanceCalendarProps {
   data: AttendanceDayData[];
   currentDate?: Date;
-  onDateClick?: (date: string) => void;
+  onDateClick?: (day: AttendanceDayData) => void;
   renderCellFooter?: (day: AttendanceDayData) => React.ReactNode;
   className?: string;
 }
@@ -95,7 +95,15 @@ export function AttendanceCalendar({
           return (
             <div
               key={isoString}
-              onClick={() => isCurrentMonth && onDateClick?.(isoString)}
+              onClick={() => {
+                if (isCurrentMonth) {
+                  const dayPayload: AttendanceDayData = apiData ?? {
+                    work_date: isoString,
+                    day_type: index % 7 >= 5 ? "weekend" : "workday",
+                  };
+                  onDateClick?.(dayPayload);
+                }
+              }}
               className={cn(
                 "min-h-[110px] p-2.5 flex flex-col relative transition-all duration-200 border-b border-r border-line",
                 "last:border-r-0", 
