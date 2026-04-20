@@ -5,6 +5,7 @@ const leaveBalanceSchema = z.object({
   leave_type: z.object({
     id: z.number(),
     name: z.string(),
+    is_paid: z.number().default(1),
   }),
   year: z.coerce.number().optional(),
   balance: z.coerce.number().min(0, "Ngày phép không được âm"),

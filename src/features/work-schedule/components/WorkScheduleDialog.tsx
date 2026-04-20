@@ -19,6 +19,7 @@ import type { RuleWorkSetting } from "../types";
 import { Typography } from "@/components/ui/typography";
 import { Clock, Calendar, Settings2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Infer } from "next/dist/compiled/superstruct";
 
 interface WorkScheduleDialogProps {
   open: boolean;
@@ -36,7 +37,9 @@ export function WorkScheduleDialog({
   isLoading,
 }: WorkScheduleDialogProps) {
   const form = useForm<WorkScheduleFormValues>({
-    resolver: zodResolver(workScheduleSchema),
+    resolver: zodResolver(
+      workScheduleSchema as Infer<typeof workScheduleSchema>,
+    ),
     defaultValues: {
       name: "",
       setting: {
@@ -47,6 +50,7 @@ export function WorkScheduleDialog({
             work_end: "17:30",
             break_start: "12:00",
             break_end: "13:00",
+            half_day_split: "12:00",
           },
         },
         saturday_config: {
@@ -79,6 +83,7 @@ export function WorkScheduleDialog({
                 work_end: "17:30",
                 break_start: "12:00",
                 break_end: "13:00",
+                half_day_split: "12:00",
               },
             },
             saturday_config: {

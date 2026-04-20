@@ -84,8 +84,6 @@ export function WorkSchedulePage() {
 
     const transformedValues = {
       ...values,
-      apply_from: formatDate(values.apply_from),
-      apply_to: formatDate(values.apply_to),
       setting: {
         ...values.setting,
         saturday_config: saturdayConfig,

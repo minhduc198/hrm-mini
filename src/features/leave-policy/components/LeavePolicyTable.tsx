@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMemo } from "react";
 import type { LeaveType } from "../types";
+import { format } from "date-fns";
 
 interface LeavePolicyTableProps {
   data: LeaveType[];
@@ -117,7 +118,7 @@ export function LeavePolicyTable({
               variant="small"
               className="text-xs tabular-nums text-muted-foreground"
             >
-              {isValidDate ? date.toLocaleDateString("vi-VN") : "Chưa cập nhật"}
+              {isValidDate ? format(date, "dd/MM/yyyy") : "Chưa cập nhật"}
             </Typography>
           );
         },
