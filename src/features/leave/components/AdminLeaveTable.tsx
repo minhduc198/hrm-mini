@@ -75,14 +75,14 @@ export function AdminLeaveTable({
           selectableRows.length > 0 &&
           selectableRows.some((row) => row.getIsSelected());
 
-        return (selectableRows.length > 0 ? (
+        return selectableRows.length > 0 ? (
           <Checkbox
             checked={isAllSelected}
             onChange={table.getToggleAllPageRowsSelectedHandler()}
             aria-label="Select all"
             className="translate-y-[2px]"
           />
-        ) : null);
+        ) : null;
       },
       cell: ({ row }) => (
         <Checkbox
@@ -237,36 +237,27 @@ export function AdminLeaveTable({
         const StatusIcon = status.icon;
 
         return (
-          <Badge
-            variant={status.variant as any}
-            className={cn(
-              "gap-1.5 font-bold shadow-sm px-2 py-0.5",
-              status.variant === "warning" &&
-                "bg-amber-50 text-amber-700 border-amber-200",
-              status.variant === "success" &&
-                "bg-emerald-50 text-emerald-700 border-emerald-200",
-              status.variant === "destructive" &&
-                "bg-rose-50 text-rose-700 border-rose-200",
-              status.variant === "secondary" &&
-                "bg-slate-100 text-slate-700 border-slate-200",
-            )}
-          >
-            <StatusIcon size={12} strokeWidth={3} />
-            {status.label}
-          </Badge>
-        );
-      },
-    },
-    {
-      id: "actions",
-      header: "",
-      cell: ({ row }) => {
-        return (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between min-w-[130px]">
+            <Badge
+              className={cn(
+                "gap-1.5 font-bold shadow-sm px-2 py-0.5",
+                status.variant === "warning" &&
+                  "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100",
+                status.variant === "success" &&
+                  "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
+                status.variant === "destructive" &&
+                  "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100",
+                status.variant === "secondary" &&
+                  "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200",
+              )}
+            >
+              <StatusIcon size={12} strokeWidth={3} />
+              {status.label}
+            </Badge>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/5"
+              className="h-8 w-8 text-slate-500 hover:text-blue-600 shrink-0 ml-2"
               onClick={() => onAction(row.original)}
               title="Xem chi tiết"
             >

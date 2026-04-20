@@ -89,6 +89,25 @@ export function LeavePolicyTable({
         },
       },
       {
+        accessorKey: "allow_hourly",
+        header: "Theo giờ",
+        cell: ({ row }) => {
+          const enabled = row.original.allow_hourly === 1;
+          return (
+            <span
+              className={cn(
+                "inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] uppercase font-bold tracking-wider",
+                enabled
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                  : "bg-slate-50 text-slate-400 border-slate-100",
+              )}
+            >
+              {enabled ? "Có" : "Không"}
+            </span>
+          );
+        },
+      },
+      {
         accessorKey: "is_active",
         header: "Trạng thái",
         cell: ({ row }) => {

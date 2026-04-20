@@ -181,15 +181,38 @@ export function LeaveDetailDialog({
           </div>
 
           {request.approver_note && (
-            <div className="space-y-2 p-3 bg-rose-50/50 border border-rose-100 rounded-lg">
+            <div
+              className={cn(
+                "space-y-2 p-3 rounded-lg border",
+                request.status === "approved"
+                  ? "bg-emerald-50/50 border-emerald-100"
+                  : "bg-rose-50/50 border-rose-100"
+              )}
+            >
               <Typography
                 variant="label"
-                className="text-[12px] text-rose-600 font-semibold tracking-tight flex items-center gap-1.5"
+                className={cn(
+                  "text-[12px] font-semibold tracking-tight flex items-center gap-1.5",
+                  request.status === "approved"
+                    ? "text-emerald-600"
+                    : "text-rose-600"
+                )}
               >
-                <AlertCircle size={12} className="text-rose-400" /> Phản hồi từ
-                quản lý
+                {request.status === "approved" ? (
+                  <CheckCircle2 size={12} className="text-emerald-400" />
+                ) : (
+                  <AlertCircle size={12} className="text-rose-400" />
+                )}
+                Phản hồi từ quản lý
               </Typography>
-              <div className="text-sm text-rose-700 font-medium">
+              <div
+                className={cn(
+                  "text-sm font-medium",
+                  request.status === "approved"
+                    ? "text-emerald-700"
+                    : "text-rose-700"
+                )}
+              >
                 {request.approver_note}
               </div>
             </div>

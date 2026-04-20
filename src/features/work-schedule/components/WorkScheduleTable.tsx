@@ -150,7 +150,11 @@ export function WorkScheduleTable({
               <RadioGroupItem
                 value="active"
                 disabled={row.original.is_active}
-                className={row.original.is_active ? "border-primary bg-primary text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary" : ""}
+                className={
+                  row.original.is_active
+                    ? "border-primary bg-primary text-primary-foreground data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+                    : ""
+                }
               />
             </RadioGroup>
           </div>
