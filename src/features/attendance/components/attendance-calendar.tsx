@@ -139,9 +139,19 @@ export function AttendanceCalendar({
 
                 <div className="flex-1 mt-1">
                   {isCurrentMonth && apiData?.status && (
-                      <div className="flex gap-1 flex-wrap">
-                        {(['on_time', 'late', 'absent'] as const).map(statusKey => {
-                          const count = apiData.status?.[statusKey] || 0;
+                    <div className="flex gap-1 flex-wrap">
+                      {typeof apiData.status === "string" ? (
+                        <div 
+                          className={cn(
+                            "size-1.5 rounded-full ring-1 ring-surface shadow-sm",
+                            apiData.status === 'on_time' ? 'bg-success' : 
+                            apiData.status === 'absent' ? 'bg-danger' : 
+                            'bg-warning' // late, early_leave
+                          )} 
+                        />
+                      ) : typeof apiData.status === 'object' ? (
+                        (['on_time', 'late', 'absent'] as const).map(statusKey => {
+                          const count = (apiData.status as Record<string, number>)?.[statusKey] || 0;
                           const colorClass = 
                             statusKey === 'on_time' ? 'bg-success' : 
                             statusKey === 'late' ? 'bg-warning' : 'bg-danger';
@@ -152,8 +162,9 @@ export function AttendanceCalendar({
                               className={cn("size-1.5 rounded-full ring-1 ring-surface shadow-sm", colorClass)} 
                             />
                           );
-                        })}
-                      </div>
+                        })
+                      ) : null}
+                    </div>
                   )}
                 </div>
                 
