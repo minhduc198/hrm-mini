@@ -1,5 +1,5 @@
-export default function Page() {
-    return <div>
-        leave/personal Page
-    </div>;
+import EmployeeLeavePage from "@/features/leave/pages/EmployeeLeavePage";
+
+export default function PersonalLeavePage() {
+  return <EmployeeLeavePage />;
 }
