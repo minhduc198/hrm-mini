@@ -16,14 +16,7 @@ import { TextareaFieldInput } from "@/components/common/form/TextareaFieldInput"
 import { Typography } from "@/components/ui/typography";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  Clock,
-  Timer,
-  User,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { Calendar, Clock, User, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { AVATAR_COLORS } from "@/features/employee/constants";
@@ -109,10 +102,10 @@ export function LeaveActionDialog({
       <DialogContent
         className={cn(
           "p-0 overflow-hidden rounded-xl border-none shadow-2xl",
-          isBulk ? "sm:max-w-[425px]" : "sm:max-w-[500px]",
+          isBulk ? "sm:max-w-[425px]" : "sm:max-w-[480px]",
         )}
       >
-        <div className="bg-primary/5 p-6 pb-4 border-b border-primary/10">
+        <div className="bg-primary/5 px-6 py-4 border-b border-primary/10">
           <DialogHeader className="space-y-1">
             <div className="flex items-center gap-4">
               <Badge
@@ -123,15 +116,16 @@ export function LeaveActionDialog({
               </Badge>
               {!isBulk && statusInfo && (
                 <Badge
-                  variant={statusInfo.variant as any}
                   className={cn(
-                    "gap-1.5 font-bold shadow-sm",
+                    "gap-1.5 font-bold shadow-sm px-2 py-0.5",
                     statusInfo.variant === "warning" &&
-                      "bg-amber-50 text-amber-700 border-amber-200",
+                      "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100",
                     statusInfo.variant === "success" &&
-                      "bg-emerald-50 text-emerald-700 border-emerald-200",
+                      "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
                     statusInfo.variant === "destructive" &&
-                      "bg-rose-50 text-rose-700 border-rose-200",
+                      "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100",
+                    statusInfo.variant === "secondary" &&
+                      "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200",
                   )}
                 >
                   {StatusIcon && <StatusIcon size={12} strokeWidth={3} />}
@@ -145,7 +139,7 @@ export function LeaveActionDialog({
                 </Badge>
               )}
             </div>
-            <DialogTitle className="text-xl font-bold text-slate-900 pt-2">
+            <DialogTitle className="text-xl font-bold text-slate-900 pt-1">
               {isBulk ? title : request.leave_type?.name}
             </DialogTitle>
             <DialogDescription className="text-slate-500">
@@ -156,14 +150,13 @@ export function LeaveActionDialog({
           </DialogHeader>
         </div>
 
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto bg-white">
+        <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto bg-white">
           {!isBulk && (
             <>
-              {/* Employee Info */}
-              <div className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-100 shadow-sm">
+              <div className="flex items-center gap-4 p-3 bg-slate-50/50 rounded-xl border border-slate-100 shadow-sm">
                 <div
                   className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 overflow-hidden shadow-sm ring-2 ring-white",
+                    "h-10 w-10 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0 overflow-hidden shadow-sm ring-1 ring-white",
                     !user?.avatar && avatarColor,
                   )}
                 >
@@ -178,102 +171,109 @@ export function LeaveActionDialog({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    initials || <User size={18} className="text-slate-400" />
+                    initials || <User size={14} className="text-slate-400" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <Typography
                     variant="small"
-                    className="font-medium text-slate-900 leading-none truncate block text-base"
+                    className="font-bold text-slate-900 leading-tight truncate block text-[14px]"
                   >
                     {user?.name}
                   </Typography>
                   <Typography
                     variant="label"
-                    className="text-[12px] text-muted-foreground mt-1.5 block font-medium"
+                    className="text-[10px] text-muted-foreground mt-0.5 block font-medium"
                   >
                     Mã NV:{" "}
-                    <span className="text-slate-700 font-bold">
-                      {user?.empCode}
-                    </span>
+                    <span className="text-slate-700">{user?.empCode}</span>
                   </Typography>
                 </div>
-              </div>
-
-              {/* Time Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5 flex flex-col">
+                <div className="text-right border-l pl-4 border-slate-200">
                   <Typography
                     variant="label"
-                    className="text-[12px] text-slate-500 font-semibold tracking-wider"
-                  >
-                    Hình thức
-                  </Typography>
-                  <Badge
-                    variant="secondary"
-                    className="bg-slate-100 text-slate-700 font-medium"
-                  >
-                    {scopeMap[request.request_scope]}
-                    {request.half_day_period === "morning" && " (Sáng)"}
-                    {request.half_day_period === "afternoon" && " (Chiều)"}
-                  </Badge>
-                </div>
-                <div className="space-y-1.5">
-                  <Typography
-                    variant="label"
-                    className="text-[12px] text-slate-500 font-semibold tracking-wider"
+                    className="text-[10px] text-slate-500 font-semibold tracking-wider block"
                   >
                     Tổng cộng
                   </Typography>
-                  <div className="text-sm font-bold text-slate-800">
+                  <div className="text-sm font-bold text-slate-900">
                     {request.total_amount}{" "}
                     {request.amount_unit === "days" ? "ngày" : "giờ"}
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Typography
-                  variant="label"
-                  className="text-[12px] text-slate-500 font-semibold tracking-wider"
-                >
-                  Thời gian nghỉ
-                </Typography>
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={14} className="text-blue-500" />
-                      <span className="text-xs text-slate-600 font-medium">
-                        Bắt đầu:
-                      </span>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="space-y-1">
+                    <Typography
+                      variant="label"
+                      className="text-[11px] text-slate-500 font-bold tracking-tight"
+                    >
+                      Hình thức nghỉ
+                    </Typography>
+                    <div className="flex">
+                      <Badge
+                        variant="secondary"
+                        className="bg-slate-100 text-slate-700 font-semibold text-[11px] px-2 py-0"
+                      >
+                        {scopeMap[request.request_scope]}
+                        {request.half_day_period === "morning" && " (Sáng)"}
+                        {request.half_day_period === "afternoon" && " (Chiều)"}
+                      </Badge>
                     </div>
-                    <span className="text-sm font-bold text-slate-800">
-                      {format(new Date(request.start_time), "dd/MM/yyyy")}
-                    </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={14} className="text-slate-400" />
-                      <span className="text-xs text-slate-600 font-medium">
-                        Kết thúc:
-                      </span>
+
+                  <div className="space-y-1 mt-6">
+                    <Typography
+                      variant="label"
+                      className="text-[11px] text-slate-500 font-bold tracking-tight"
+                    >
+                      Lý do nghỉ
+                    </Typography>
+                    <div className="text-[12px] text-slate-600 bg-slate-50/50 p-2 rounded-lg border border-slate-100 italic line-clamp-2">
+                      "{request.reason}"
                     </div>
-                    <span className="text-sm font-bold text-slate-800">
-                      {format(new Date(request.end_time), "dd/MM/yyyy")}
-                    </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <Typography
-                  variant="label"
-                  className="text-[12px] text-slate-500 font-semibold tracking-wider"
-                >
-                  Lý do xin nghỉ
-                </Typography>
-                <div className="text-sm text-slate-700 bg-slate-50/50 p-3 rounded-lg border border-slate-100 italic">
-                  "{request.reason}"
+                <div className="space-y-1">
+                  <Typography
+                    variant="label"
+                    className="text-[11px] text-slate-500 font-bold tracking-tight"
+                  >
+                    Thời gian
+                  </Typography>
+                  <div className="bg-slate-50/80 rounded-lg p-2 border border-slate-100 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Calendar
+                          size={12}
+                          className="text-blue-500 shrink-0"
+                        />
+                        <span className="text-[11px] text-slate-500 font-medium truncate">
+                          Từ:
+                        </span>
+                      </div>
+                      <span className="text-[12px] font-bold text-slate-800">
+                        {format(new Date(request.start_time), "dd/MM/yyyy")}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <Calendar
+                          size={12}
+                          className="text-slate-400 shrink-0"
+                        />
+                        <span className="text-[11px] text-slate-500 font-medium truncate">
+                          Đến:
+                        </span>
+                      </div>
+                      <span className="text-[12px] font-bold text-slate-800">
+                        {format(new Date(request.end_time), "dd/MM/yyyy")}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </>
@@ -298,7 +298,7 @@ export function LeaveActionDialog({
           </Form>
         </div>
 
-        <DialogFooter className="p-6 bg-slate-50/50 border-t border-slate-100 gap-2">
+        <DialogFooter className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 gap-2">
           <Button
             type="button"
             variant="outline"
@@ -323,7 +323,7 @@ export function LeaveActionDialog({
                 <Button
                   type="button"
                   variant="default"
-                  className="flex-1 rounded-xl h-11 bg-emerald-600 hover:bg-emerald-700 gap-1.5 transition-all shadow-lg shadow-emerald-200"
+                  className="flex-1 rounded-xl h-11 gap-1.5"
                   onClick={() => handleSubmit("approved")}
                   isLoading={isLoading}
                 >
@@ -335,11 +335,7 @@ export function LeaveActionDialog({
             <Button
               type="button"
               variant={title?.includes("Từ chối") ? "destructive" : "default"}
-              className={cn(
-                "flex-1 rounded-xl h-11",
-                !title?.includes("Từ chối") &&
-                  "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200",
-              )}
+              className={cn("flex-1 rounded-xl h-11")}
               onClick={() =>
                 handleSubmit(
                   title?.includes("Từ chối") ? "rejected" : "approved",

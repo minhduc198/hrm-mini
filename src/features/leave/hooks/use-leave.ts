@@ -3,6 +3,7 @@ import { queryClient } from "@/lib/query-client";
 import { toast } from "sonner";
 import { handleError } from "@/utils/error-handler";
 import { leaveKeys } from "../query-key";
+import { employeeKeys } from "@/features/employee/query-key/employees.query-key";
 import {
   createLeaveRequest,
   getMyLeaveRequests,
@@ -22,6 +23,7 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
     onSuccess: () => {
       toast.success("Tạo đơn xin nghỉ thành công");
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.detail("me") });
     },
     onError: (error: any) => {
       handleError(error, "Không thể tạo đơn xin nghỉ");
@@ -33,6 +35,7 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
     onSuccess: () => {
       toast.success("Đã từ chối đơn xin nghỉ");
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
+      queryClient.invalidateQueries({ queryKey: employeeKeys.detail("me") });
     },
     onError: (error: any) => {
       handleError(error, "Không thể hủy đơn xin nghỉ");

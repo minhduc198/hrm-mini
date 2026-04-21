@@ -20,7 +20,7 @@ import { LeaveRequest } from "../types";
 
 export default function AdminLeavePage() {
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
+  const debouncedSearch = useDebounce(search, 200);
 
   const [params, setParams] = useState({
     page: 1,
@@ -40,7 +40,7 @@ export default function AdminLeavePage() {
     page: params.page,
     per_page: params.per_page,
     status: params.status === "all" ? undefined : params.status,
-    search: debouncedSearch,
+    name: debouncedSearch,
     start_date: params.start_time
       ? format(new Date(params.start_time), "yyyy-MM-dd")
       : undefined,
@@ -75,18 +75,24 @@ export default function AdminLeavePage() {
     })
     .filter((id): id is number => id !== undefined);
 
-  const handleAction = (values: LeaveActionFormValues & { status?: "approved" | "rejected" }) => {
+  const handleAction = (
+    values: LeaveActionFormValues & { status?: "approved" | "rejected" },
+  ) => {
     if (!actionTarget) return;
 
     const { type, request } = actionTarget;
-    const finalStatus = values.status || (type === "bulk-approve" ? "approved" : "rejected");
+    const finalStatus =
+      values.status || (type === "bulk-approve" ? "approved" : "rejected");
 
     if (type === "detail" && request) {
       if (finalStatus === "approved") {
         approveLeave(
           {
             id: request.id,
-            payload: { status: "approved", approver_note: values.approver_note },
+            payload: {
+              status: "approved",
+              approver_note: values.approver_note,
+            },
           },
           {
             onSuccess: () => setActionTarget(null),
@@ -96,7 +102,10 @@ export default function AdminLeavePage() {
         rejectLeave(
           {
             id: request.id,
-            payload: { status: "rejected", approver_note: values.approver_note },
+            payload: {
+              status: "rejected",
+              approver_note: values.approver_note,
+            },
           },
           {
             onSuccess: () => setActionTarget(null),
