@@ -70,6 +70,8 @@ export interface LeaveType {
   id: number;
   name: string;
   is_paid: number;
+  allow_half_day: number;
+  allow_hourly: number;
 }
 
 export interface LeaveBalance {
