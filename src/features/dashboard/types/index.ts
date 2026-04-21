@@ -6,12 +6,14 @@ export interface AttendanceSummary {
   ot_hours: number;
   days_present: number;
   total_required_workdays: number;
+  unexcused_absent_days: number;
 }
 
 export interface LeaveSummary {
   leave_type: string;
   balance: number;
   used_days: number;
+  is_paid: number;
   pending_days: number;
   remaining: number;
 }

@@ -99,6 +99,18 @@ export function LeaveRequestDialog({
     }
   }, [isPaidRequest, requestScope, setValue]);
 
+  useEffect(() => {
+    if (selectedBalance && isPaidRequest) {
+      const { allow_half_day, allow_hourly } = selectedBalance.leave_type;
+      if (requestScope === "half_day" && allow_half_day !== 1) {
+        setValue("request_scope", "full_day");
+      }
+      if (requestScope === "hourly" && allow_hourly !== 1) {
+        setValue("request_scope", "full_day");
+      }
+    }
+  }, [selectedBalance, requestScope, setValue, isPaidRequest]);
+
   const onSubmit = (values: LeaveRequestFormValues) => {
     const isHourly = values.request_scope === "hourly";
     const isHalfDay = values.request_scope === "half_day";
@@ -227,10 +239,16 @@ export function LeaveRequestDialog({
                 required
                 options={[
                   { label: "Cả ngày", value: "full_day" },
-                  { label: "Nửa ngày", value: "half_day" },
-                  ...(!isPaidRequest
-                    ? [{ label: "Theo giờ", value: "hourly" }]
-                    : []),
+                  ...(isPaidRequest
+                    ? selectedBalance?.leave_type.allow_half_day === 1
+                      ? [{ label: "Nửa ngày", value: "half_day" }]
+                      : []
+                    : [{ label: "Nửa ngày", value: "half_day" }]),
+                  ...(isPaidRequest
+                    ? selectedBalance?.leave_type.allow_hourly === 1
+                      ? [{ label: "Theo giờ", value: "hourly" }]
+                      : []
+                    : [{ label: "Theo giờ", value: "hourly" }]),
                 ]}
               />
 

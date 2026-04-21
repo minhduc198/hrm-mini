@@ -20,9 +20,7 @@ export function LeaveBalanceList({ leaveSummary }: LeaveBalanceListProps) {
       <CardContent className="space-y-4">
         {leaveSummary.length > 0 ? (
           leaveSummary.map((item, index) => {
-            const isUnpaid = item.leave_type
-              .toLowerCase()
-              .includes("không lương");
+            const isUnpaid = item.is_paid === 0;
 
             return (
               <div key={`${item.leave_type}-${index}`} className="space-y-2">
