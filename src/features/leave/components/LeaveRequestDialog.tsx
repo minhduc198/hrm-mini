@@ -23,12 +23,15 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { LeaveType, LeaveBalance } from "../../employee/types";
 import { Infer } from "next/dist/compiled/superstruct";
 
 interface LeaveRequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: (data: any) => void;
+  onSuccess?: (
+    data: CreateLeaveRequestPayload & { leave_type: Partial<LeaveType> },
+  ) => void;
 }
 
 export function LeaveRequestDialog({
@@ -57,42 +60,34 @@ export function LeaveRequestDialog({
   const leaveTypeId = watch("leave_type_id");
   const isPaidRequest = watch("is_paid");
 
-  const isPaidLeave = (type: any) => {
+  const isPaidLeave = (type: LeaveType) => {
     if (type?.is_paid !== undefined) {
-      return (
-        type.is_paid === 1 ||
-        type.is_paid === true ||
-        String(type.is_paid) === "1"
-      );
+      return type.is_paid === 1;
     }
     return !type?.name?.toLowerCase().includes("không lương");
   };
 
-  const isUnpaidLeave = (type: any) => {
+  const isUnpaidLeave = (type: LeaveType) => {
     if (type?.is_paid !== undefined) {
-      return (
-        type.is_paid === 0 ||
-        type.is_paid === false ||
-        String(type.is_paid) === "0"
-      );
+      return type.is_paid === 0;
     }
     return type?.name?.toLowerCase().includes("không lương");
   };
 
   const unpaidLeaveBalance = (employeeData?.leave_balances || []).find(
-    (b: any) => isUnpaidLeave(b.leave_type),
+    (b: LeaveBalance) => isUnpaidLeave(b.leave_type),
   );
 
   const selectedBalance = (employeeData?.leave_balances || []).find(
-    (b: any) => String(b.leave_type.id) === String(leaveTypeId),
+    (b: LeaveBalance) => String(b.leave_type.id) === String(leaveTypeId),
   );
 
   useEffect(() => {
     if (!isPaidRequest && unpaidLeaveBalance) {
       setValue("leave_type_id", unpaidLeaveBalance.leave_type.id);
     } else if (isPaidRequest) {
-      const firstPaid = (employeeData?.leave_balances || []).find((b: any) =>
-        isPaidLeave(b.leave_type),
+      const firstPaid = (employeeData?.leave_balances || []).find(
+        (b: LeaveBalance) => isPaidLeave(b.leave_type),
       );
       if (firstPaid) setValue("leave_type_id", firstPaid.leave_type.id);
     }
@@ -217,8 +212,8 @@ export function LeaveRequestDialog({
                 label="Loại nghỉ phép"
                 required
                 options={(employeeData?.leave_balances || [])
-                  .filter((b: any) => isPaidLeave(b.leave_type))
-                  .map((b: any) => ({
+                  .filter((b: LeaveBalance) => isPaidLeave(b.leave_type))
+                  .map((b: LeaveBalance) => ({
                     label: `${b.leave_type.name} (Còn ${b.remaining_days} ngày)`,
                     value: String(b.leave_type.id),
                   }))}
