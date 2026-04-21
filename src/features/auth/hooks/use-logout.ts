@@ -14,7 +14,7 @@ export function useLogout() {
       }
       // Reset attendance store state
       useAttendanceStore.getState().reset();
-      
+
       await signOut({ callbackUrl: "/" });
     },
     onSettled: () => {
@@ -22,4 +22,3 @@ export function useLogout() {
     },
   });
 }
-

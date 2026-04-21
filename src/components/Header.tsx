@@ -15,11 +15,32 @@ import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Typography } from "./ui/typography";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import Link from "next/link";
+import { useUserStore } from "@/hooks/use-user-store";
 
 export default function Header() {
   const { toggleSidebar } = useSidebar();
-
   const { user } = useAuth();
+
+  const {
+    name: storeName,
+    avatar: storeAvatar,
+    email: storeEmail,
+    setUser,
+  } = useUserStore();
+
+  const displayName = storeName || user?.name || "Loading...";
+  const displayAvatar = storeAvatar || user?.avatar || "";
+
+  useEffect(() => {
+    if (user && (!storeEmail || user.email !== storeEmail)) {
+      setUser({
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+      });
+    }
+  }, [user, storeEmail, setUser]);
+
   const role = user?.role;
 
   const { mutate: handleSignOut } = useLogout();
@@ -39,9 +60,11 @@ export default function Header() {
         <DropdownMenuTrigger asChild>
           <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity pl-1 ml-1 outline-none">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatar || ""} />
+              <AvatarImage src={displayAvatar} />
               <AvatarFallback className="bg-primary-tint text-primary text-[11px] font-semibold">
-                {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+                {displayName !== "Loading..."
+                  ? displayName.charAt(0).toUpperCase()
+                  : "?"}
               </AvatarFallback>
             </Avatar>
             <div className="hidden xl:block text-left">
@@ -49,7 +72,7 @@ export default function Header() {
                 variant="p"
                 className="text-xs font-semibold text-base leading-none"
               >
-                {user?.name || "Loading..."}
+                {displayName}
               </Typography>
               <Typography
                 variant="small"
@@ -71,7 +94,7 @@ export default function Header() {
         >
           <div className="px-3 py-2.5 mb-1">
             <Typography variant="p" className="text-sm font-medium text-base">
-              {user?.name || "Loading..."}
+              {displayName}
             </Typography>
             <Typography
               variant="small"

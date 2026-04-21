@@ -43,7 +43,7 @@ export function DatePickerInput({
   const renderContent = (
     value: any,
     onChange: (val: any) => void,
-    error?: any
+    error?: any,
   ) => (
     <div className={cn("space-y-1.5", className)}>
       {label && (
@@ -51,7 +51,7 @@ export function DatePickerInput({
           htmlFor={name}
           className={cn(
             "text-[12px] font-semibold tracking-wide text-muted-foreground",
-            error && "text-red-500"
+            error && "text-red-500",
           )}
         >
           {label} {required && <span className="text-red-500 ml-0.5">*</span>}
@@ -64,9 +64,10 @@ export function DatePickerInput({
             variant="outline"
             disabled={disabled === true}
             className={cn(
-              "w-full h-10 justify-start text-left font-normal bg-white border-black/40 rounded-lg hover:bg-slate-50 transition-all",
+              "w-full h-10 justify-start text-left font-normal bg-white border-primary/20 rounded-lg hover:bg-slate-50 transition-all",
               !value && "text-muted-foreground",
-              error && "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+              error &&
+                "border-red-500 focus:border-red-500 focus:ring-red-500/10",
             )}
           >
             <CalendarIcon size={14} className="mr-2 text-primary shrink-0" />

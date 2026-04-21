@@ -71,9 +71,6 @@ export function AdminLeaveTable({
         const selectableRows = table
           .getRowModel()
           .rows.filter((row) => row.getCanSelect());
-        const isSomeSelected =
-          selectableRows.length > 0 &&
-          selectableRows.some((row) => row.getIsSelected());
 
         return selectableRows.length > 0 ? (
           <Checkbox
@@ -89,6 +86,7 @@ export function AdminLeaveTable({
           checked={row.getIsSelected()}
           onChange={row.getToggleSelectedHandler()}
           disabled={!row.getCanSelect()}
+          hidden={!row.getCanSelect()}
           aria-label="Select row"
           className="translate-y-[2px]"
         />

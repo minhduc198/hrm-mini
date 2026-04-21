@@ -513,14 +513,6 @@ export default function EmployeeManagePage() {
         isLoading={isToggling}
       />
 
-      <BulkLeaveInitToolbar
-        employees={employees}
-        selectedEmployeeIds={Object.keys(rowSelection)
-          .filter((key) => rowSelection[key])
-          .map((key) => employees[parseInt(key)]?.id)
-          .filter((id) => id !== undefined)}
-        onClearSelection={() => setRowSelection({})}
-      />
     </div>
   );
 }

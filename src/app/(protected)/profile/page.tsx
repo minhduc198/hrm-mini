@@ -19,11 +19,13 @@ import { Infer } from "next/dist/compiled/superstruct";
 import { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useUserStore } from "@/hooks/use-user-store";
 
 export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const setUser = useUserStore((state) => state.setUser);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema as Infer<typeof profileSchema>),
@@ -89,9 +91,14 @@ export default function ProfilePage() {
     }
 
     updateProfile(formData, {
-      onSuccess: () => {
+      onSuccess: (data: any) => {
         setAvatarFile(null);
         form.reset({}, { keepValues: true });
+
+        setUser({
+          name: values.name,
+          avatar: data?.data?.avatar_url || avatarPreview,
+        });
       },
     });
   };
