@@ -1,5 +1,12 @@
 import { routes } from "@/constants/routes";
-import { Users, CalendarDays, Clock, Shield, Settings } from "lucide-react";
+import {
+  Users,
+  CalendarDays,
+  Clock,
+  Shield,
+  Settings,
+  LayoutDashboard,
+} from "lucide-react";
 
 export type Audience = "employee-only" | "admin-only";
 
@@ -18,6 +25,20 @@ export interface NavItem {
 
 export const navItemsConfig: NavItem[] = [
   // --- Management tabs: shown when user has ANY permission in that module ---
+  {
+    key: "dashboard_admin",
+    label: "Dashboard",
+    url: routes.dashboard.admin,
+    icon: LayoutDashboard,
+  },
+  {
+    key: "dashboard_employee",
+    label: "Dashboard",
+    url: routes.dashboard.employee,
+    icon: LayoutDashboard,
+    isEmployeeDefault: true,
+    audience: "employee-only",
+  },
   {
     key: "employees",
     label: "Quản lý nhân viên",

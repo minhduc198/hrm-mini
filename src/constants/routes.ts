@@ -14,6 +14,10 @@ export const routes = {
   },
   permissionManagement: "/permission-management",
   workSettings: "/work-settings",
+  dashboard: {
+    admin: "/dashboard/admin",
+    employee: "/dashboard/employee",
+  },
 } as const;
 
 export type AppRoutes = typeof routes;
