@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface UserState {
   name: string | null;
@@ -11,14 +12,21 @@ interface UserState {
   }) => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
-  name: null,
-  avatar: null,
-  email: null,
-  setUser: (user) =>
-    set((state) => ({
-      name: user.name !== undefined ? user.name : state.name,
-      avatar: user.avatar !== undefined ? user.avatar : state.avatar,
-      email: user.email !== undefined ? user.email : state.email,
-    })),
-}));
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      name: null,
+      avatar: null,
+      email: null,
+      setUser: (user) =>
+        set((state) => ({
+          name: user.name !== undefined ? user.name : state.name,
+          avatar: user.avatar !== undefined ? user.avatar : state.avatar,
+          email: user.email !== undefined ? user.email : state.email,
+        })),
+    }),
+    {
+      name: "user-storage",
+    },
+  ),
+);
