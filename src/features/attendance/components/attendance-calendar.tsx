@@ -10,9 +10,10 @@ import {
   addDays,
   parseISO,
   isSameMonth,
-} from "date-fns";
-import { cn } from "@/lib/utils";
-import { Typography } from "@/components/ui/typography";
+  isSameDay
+} from "date-fns"
+import { cn } from "@/lib/utils"
+import { Typography } from "@/components/ui/typography"
 
 import { AttendanceDayData } from "../types/attendance"
 import { WEEKDAYS, statusMap } from "../constants"
@@ -52,13 +53,18 @@ export function AttendanceCalendar({
 
     return dayInterval.map((date) => {
       const isoString = format(date, "yyyy-MM-dd");
-      const apiDay = data.find((d) => d.work_date === isoString);
-
       return {
         date,
         isoString,
         isCurrentMonth: isSameMonth(date, monthStart),
-        apiData: apiDay,
+        apiData: data.find(d => {
+          try {
+            const apiDate = d.work_date.includes('T') ? parseISO(d.work_date) : new Date(d.work_date);
+            return isSameDay(date, apiDate);
+          } catch (e) {
+            return d.work_date === isoString;
+          }
+        })
       };
     });
   }, [gridStart, monthStart, data]);
@@ -212,19 +218,25 @@ export function AttendanceCalendar({
                           </div>
                         );
                       })() : typeof apiData.status === 'object' ? (
-                        (['on_time', 'late', 'absent'] as const).map(statusKey => {
-                          const count = (apiData.status as Record<string, number>)?.[statusKey] || 0;
-                          const colorClass = 
-                            statusKey === 'on_time' ? 'bg-success' : 
-                            statusKey === 'late' ? 'bg-warning' : 'bg-danger';
-                          
-                          return count > 0 && (
-                            <div 
-                              key={statusKey}
-                              className={cn("size-1.5 rounded-full ring-1 ring-surface shadow-sm", colorClass)} 
-                            />
-                          );
-                        })
+                        <div className="flex gap-1 flex-wrap mt-2">
+                          {(['on_time', 'late', 'leave', 'absent'] as const).map(statusKey => {
+                            const count = (apiData.status as any)?.[statusKey] || 0;
+                            const colorClass = 
+                              statusKey === 'on_time' ? 'bg-success' : 
+                              statusKey === 'late' ? 'bg-warning' : 
+                              statusKey === 'leave' ? 'bg-purple-500' : 'bg-danger';
+                            
+                            const label = statusKey === 'on_time' ? 'Đúng giờ' : statusKey === 'late' ? 'Muộn' : statusKey === 'leave' ? 'Nghỉ phép' : 'Vắng mặt';
+                            
+                            return count > 0 && (
+                              <div 
+                                key={statusKey}
+                                className={cn("size-2 rounded-full ring-1 ring-surface shadow-sm shrink-0", colorClass)} 
+                                title={label}
+                              />
+                            );
+                          })}
+                        </div>
                       ) : null}
                     </div>
                   )}

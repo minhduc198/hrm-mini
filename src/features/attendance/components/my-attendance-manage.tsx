@@ -65,6 +65,8 @@ export function MyAttendanceManage() {
         early_leave_minutes: personalRecord.early_leave_minutes,
         ot_hours: personalRecord.ot_hours,
         note: personalRecord.note,
+        is_completed: personalRecord.is_completed,
+        is_edited: personalRecord.is_edited,
       } : {
         status: undefined,
       }),
