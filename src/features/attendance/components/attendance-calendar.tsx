@@ -135,62 +135,22 @@ export function AttendanceCalendar({
               )}
             >
               <div className={cn("flex flex-col h-full flex-1", !isCurrentMonth && "opacity-30")}>
-                <div className="flex justify-between items-start mb-1.5">
-                  <div className="flex gap-2 items-center">
-                    <div className={cn(
-                      "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
-                      isUserToday && isCurrentMonth 
-                        ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
-                        : !isCurrentMonth 
-                          ? "text-subtle-text" 
-                          : "text-base bg-secondary/5"
-                    )}>
-                      <Typography variant="label" className="inherit">
-                        {format(date, "d")}
-                      </Typography>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 mt-1">
-                    {isCurrentMonth && apiData?.status && (
-                      <div className="flex gap-1 flex-wrap">
-                        {(["on_time", "late", "absent"] as const).map(
-                          (statusKey) => {
-                            const count = apiData.status?.[statusKey] || 0;
-                            const colorClass =
-                              statusKey === "on_time"
-                                ? "bg-success"
-                                : statusKey === "late"
-                                  ? "bg-warning"
-                                  : "bg-danger";
-
-                            return (
-                              count > 0 && (
-                                <div
-                                  key={statusKey}
-                                  className={cn(
-                                    "size-1.5 rounded-full ring-1 ring-surface shadow-sm",
-                                    colorClass,
-                                  )}
-                                />
-                              )
-                            );
-                          },
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-auto pt-1.5 border-t border-line/10">
-                    {isCurrentMonth && apiData && (
-                      <div className="transition-all duration-200">
-                        {renderCellFooter?.(apiData)}
-                      </div>
-                    )}
+                <div className="flex justify-start items-start mb-1.5">
+                  <div className={cn(
+                    "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
+                    isUserToday && isCurrentMonth 
+                      ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
+                      : !isCurrentMonth 
+                        ? "text-subtle-text" 
+                        : "text-base bg-secondary/5 font-semibold text-tx-base"
+                  )}>
+                    <Typography variant="label" className="inherit">
+                      {format(date, "d")}
+                    </Typography>
                   </div>
                 </div>
 
-                <div className="flex-1 mt-1">
+                <div className="flex-1">
                   {isCurrentMonth && apiData?.status && (
                     <div className="flex gap-1 flex-wrap">
                       {typeof apiData.status === "string" ? (() => {
@@ -218,7 +178,7 @@ export function AttendanceCalendar({
                           </div>
                         );
                       })() : typeof apiData.status === 'object' ? (
-                        <div className="flex gap-1 flex-wrap mt-2">
+                        <div className="flex gap-1 flex-wrap mt-1">
                           {(['on_time', 'late', 'leave', 'absent'] as const).map(statusKey => {
                             const count = (apiData.status as any)?.[statusKey] || 0;
                             const colorClass = 

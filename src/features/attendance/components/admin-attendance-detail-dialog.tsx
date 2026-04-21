@@ -16,13 +16,20 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [status, setStatus] = useState<string | undefined>(undefined);
+  const [isEdited, setIsEdited] = useState<boolean | undefined>(undefined);
+  const [isCompleted, setIsCompleted] = useState<boolean | undefined>(undefined);
+  
   const debouncedSearch = useDebounce(search, 300);
 
   const { data: response, isLoading, isFetching } = useGetAttendanceRecords(
     open && day?.id ? Number(day.id) : undefined,
     page,
     debouncedSearch,
-    perPage
+    perPage,
+    status,
+    isEdited,
+    isCompleted
   );
 
   const records = response?.data || [];
@@ -33,10 +40,10 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
     total: 0
   };
 
-  // Reset page khi search hoặc perPage thay đổi
+  // Reset page khi search, perPage hoặc các bộ lọc khác thay đổi
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, perPage]);
+  }, [debouncedSearch, perPage, status, isEdited, isCompleted]);
 
   if (!day) return null;
 
@@ -54,6 +61,12 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
             day={day}
             search={search}
             onSearchChange={setSearch}
+            status={status}
+            onStatusChange={setStatus}
+            isEdited={isEdited}
+            onIsEditedChange={setIsEdited}
+            isCompleted={isCompleted}
+            onIsCompletedChange={setIsCompleted}
             isLoading={isLoading || isSearching}
           />
 

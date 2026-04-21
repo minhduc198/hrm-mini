@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Check, X, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AttendanceRecordDetail } from "../../types/attendance";
-import { statusMap } from "@/features/attendance/constants";
-import { formatTime, formatDurationFromHours } from "@/utils/date-format";
+import { formatTime, formatDurationFromHours, formatDurationFromMinutes } from "@/utils/date-format";
 import { useUpdateAttendanceRecord } from "../../hooks/use-update-attendance-record";
 import { toast } from "sonner";
 
@@ -14,6 +13,12 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface AttendanceDetailRowProps {
   record: AttendanceRecordDetail;
@@ -103,13 +108,13 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
   };
 
   return (
-    <TableRow className="group hover:bg-primary-tint/10 transition-colors h-auto min-h-[64px]">
-      <TableCell className="py-3 px-3 sticky left-0 z-20 bg-white group-hover:bg-[#f8fafd] transition-colors after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line/30 text-center border-b border-line-subtle">
+    <TableRow className="hover:bg-transparent transition-colors h-auto min-h-[64px]">
+      <TableCell className="py-3 px-3 sticky left-0 z-20 bg-white transition-colors after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line/30 text-center border-b border-line-subtle">
         <Typography variant="label-sm" className="font-bold text-primary tabular-nums whitespace-nowrap">
           {record.user.empCode}
         </Typography>
       </TableCell>
-      <TableCell className="py-3 px-4 bg-white group-hover:bg-[#f8fafd] transition-colors border-l border-b border-line-subtle">
+      <TableCell className="py-3 px-4 bg-white transition-colors border-l border-b border-line-subtle">
         <Typography variant="label" className="font-bold text-tx-base whitespace-nowrap">
           {record.user.name}
         </Typography>
@@ -118,8 +123,8 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       {/* --- Giờ vào --- */}
       <TableCell 
         className={cn(
-          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px]",
-          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-primary-tint/20",
+          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
+          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_in" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("check_in", record.check_in)}
@@ -170,8 +175,8 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       {/* --- Giờ ra --- */}
       <TableCell 
         className={cn(
-          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px]",
-          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-primary-tint/20",
+          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
+          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_out" ? "bg-primary-tint/30" : ""
         )}
          onClick={() => handleStartEdit("check_out", record.check_out)}
@@ -221,19 +226,19 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
         )}
       </TableCell>
 
-      <TableCell className="py-3 px-4 text-center border-l border-b border-line-subtle bg-subtle/5">
+      <TableCell className="py-3 px-4 text-center border-l border-b border-line-subtle bg-white">
         <Typography variant="label-sm" className="font-bold text-tx-base tabular-nums">
           {formatDurationFromHours(record.total_hours)}
         </Typography>
       </TableCell>
 
-      <TableCell className="py-3 px-3 border-l border-b border-line-subtle align-middle">
-        <div className="flex flex-col gap-1.5 items-center justify-center w-full">
+      <TableCell className="py-3 px-3 border-l border-b border-line-subtle align-middle bg-white">
+        <div className="flex flex-row flex-wrap gap-1.5 items-center justify-center min-w-[160px]">
           {/* --- Group 1: Công & Thiếu --- */}
           {Number(record.total_hours) >= 8 && (
-             <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm w-full max-w-[150px] justify-center">
-                <div className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                <Typography variant="label-xs" className="font-bold tracking-tight">Đủ công</Typography>
+             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-emerald-100 bg-emerald-50/50 text-emerald-600 transition-colors hover:bg-emerald-50">
+                <div className="size-1 rounded-full bg-emerald-500" />
+                <Typography variant="label-xs" className="font-bold tracking-tight text-emerald-600">Đủ công</Typography>
              </div>
           )}
 
@@ -243,25 +248,25 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
             
             if (lr.status === 'approved') {
               return (
-                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-purple-100 bg-purple-50 text-purple-600 shadow-sm w-full max-w-[150px] justify-center">
-                  <Check size={12} strokeWidth={3} className="shrink-0" />
-                  <Typography variant="label-xs" className="font-bold tracking-tight">Phép {timeRange}</Typography>
+                <div key={lr.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-purple-100 bg-purple-50/50 text-purple-600 transition-colors hover:bg-purple-50">
+                  <Check size={10} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight text-purple-600">Phép {timeRange}</Typography>
                 </div>
               );
             }
             if (lr.status === 'pending') {
               return (
-                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-amber-100 bg-amber-50 text-amber-600 shadow-sm w-full max-w-[150px] justify-center">
-                  <Clock size={12} strokeWidth={3} className="shrink-0" />
-                  <Typography variant="label-xs" className="font-bold tracking-tight">Đơn {timeRange} (Chờ duyệt)</Typography>
+                <div key={lr.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-amber-100 bg-amber-50/50 text-amber-600 transition-colors hover:bg-amber-50">
+                  <Clock size={10} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight text-amber-600">Đơn {timeRange} (Chờ)</Typography>
                 </div>
               );
             }
             if (lr.status === 'rejected') {
               return (
-                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-rose-100 bg-rose-50 text-rose-600 shadow-sm w-full max-w-[150px] justify-center">
-                  <X size={12} strokeWidth={3} className="shrink-0" />
-                  <Typography variant="label-xs" className="font-bold tracking-tight">Đơn {timeRange} bị từ chối</Typography>
+                <div key={lr.id} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-rose-100 bg-rose-50/50 text-rose-600 transition-colors hover:bg-rose-50">
+                  <X size={10} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight text-rose-600">Đơn {timeRange} bị từ chối</Typography>
                 </div>
               );
             }
@@ -269,20 +274,16 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
           })}
 
           {/* --- Group 3: Sub-text Details (Pills) --- */}
-          {(record.late_minutes > 0 || record.early_leave_minutes > 0) && (
-            <div className="flex flex-col gap-1 w-full items-center">
-               {record.late_minutes > 0 && (
-                 <div className="inline-flex items-center px-2.5 py-1.5 rounded-full border border-amber-100 bg-amber-50 text-amber-600 shadow-sm w-full max-w-[150px] justify-center">
-                   <Clock size={12} strokeWidth={3} className="shrink-0 mr-1" />
-                   <Typography variant="label-xs" className="font-bold tracking-tight">Vào muộn {record.late_minutes}p</Typography>
-                 </div>
-               )}
-               {record.early_leave_minutes > 0 && (
-                 <div className="inline-flex items-center px-2.5 py-1.5 rounded-full border border-orange-100 bg-orange-50 text-orange-600 shadow-sm w-full max-w-[150px] justify-center">
-                   <Clock size={12} strokeWidth={3} className="shrink-0 mr-1" />
-                   <Typography variant="label-xs" className="font-bold tracking-tight">Về sớm {record.early_leave_minutes}p</Typography>
-                 </div>
-               )}
+          {record.late_minutes > 0 && (
+            <div className="inline-flex items-center px-2 py-0.5 rounded-full border border-amber-100 bg-amber-50/50 text-amber-600 transition-colors hover:bg-amber-50">
+              <Clock size={10} strokeWidth={3} className="shrink-0 mr-0.5" />
+              <Typography variant="label-xs" className="font-bold tracking-tight text-amber-600">Vào muộn {formatDurationFromMinutes(record.late_minutes, true)}</Typography>
+            </div>
+          )}
+          {record.early_leave_minutes > 0 && (
+            <div className="inline-flex items-center px-2 py-0.5 rounded-full border border-orange-100 bg-orange-50/50 text-orange-600 transition-colors hover:bg-orange-50">
+              <Clock size={10} strokeWidth={3} className="shrink-0 mr-0.5" />
+              <Typography variant="label-xs" className="font-bold tracking-tight text-orange-600">Về sớm {formatDurationFromMinutes(record.early_leave_minutes, true)}</Typography>
             </div>
           )}
         </div>
@@ -290,13 +291,13 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
 
       <TableCell 
         className={cn(
-          "py-3 px-4 border-l border-b border-line-subtle cursor-pointer transition-all",
-          editingCell === "note" ? "bg-primary-tint/30" : "hover:bg-primary-tint/20"
+          "py-3 px-4 border-l border-b border-line-subtle cursor-pointer transition-all bg-white w-[250px] min-w-[250px] max-w-[250px]",
+          editingCell === "note" ? "bg-primary-tint/30" : "hover:bg-transparent"
         )}
         onClick={() => handleStartEdit("note", record.note)}
       >
         {editingCell === "note" ? (
-          <div className="flex items-center gap-2 p-1.5 bg-white border border-primary-border rounded-xl shadow-sm h-9" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-2 p-1.5 bg-white border border-primary-border rounded-xl shadow-sm h-9 w-full" onClick={e => e.stopPropagation()}>
             <Input 
               value={editValue}
               onChange={e => setEditValue(e.target.value)}
@@ -325,12 +326,27 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
             </div>
           </div>
         ) : (
-          <Typography variant="label-sm" className={cn(
-            "font-medium truncate",
-            record.note ? "text-tx-base" : "text-muted/40 italic"
-          )} title={record.note || ""}>
-            {record.note || "Thêm ghi chú..."}
-          </Typography>
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-full">
+                  <Typography variant="label-sm" className={cn(
+                    "font-medium truncate block w-full",
+                    record.note ? "text-tx-base" : "text-muted/40 italic"
+                  )}>
+                    {record.note || "Thêm ghi chú..."}
+                  </Typography>
+                </div>
+              </TooltipTrigger>
+              {record.note && (
+                <TooltipContent side="top" align="start" className="max-w-[300px] break-words">
+                  <Typography variant="label-xs" className="text-white">
+                    {record.note}
+                  </Typography>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         )}
       </TableCell>
     </TableRow>

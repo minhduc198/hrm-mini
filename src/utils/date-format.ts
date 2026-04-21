@@ -48,16 +48,19 @@ export const formatDurationFromHours = (hoursVal: string | number | null | undef
 /**
  * Định dạng số phút (vd: 311) thành dạng text "X.X giờ" hoặc "Y phút"
  */
-export const formatDurationFromMinutes = (minutesVal: string | number | null | undefined): string => {
-  if (!minutesVal) return "0 phút";
+export const formatDurationFromMinutes = (
+  minutesVal: string | number | null | undefined, 
+  short = false
+): string => {
+  if (!minutesVal) return short ? "0p" : "0 phút";
   const numMinutes = typeof minutesVal === "string" ? parseInt(minutesVal, 10) : minutesVal;
-  if (isNaN(numMinutes) || numMinutes <= 0) return "0 phút";
+  if (isNaN(numMinutes) || numMinutes <= 0) return short ? "0p" : "0 phút";
   
   if (numMinutes < 60) {
-    return `${numMinutes} phút`;
+    return short ? `${numMinutes}p` : `${numMinutes} phút`;
   }
   
   const hoursDecimal = numMinutes / 60;
   const roundedHours = Math.round(hoursDecimal * 10) / 10;
-  return `${roundedHours} giờ`;
+  return short ? `${roundedHours}h` : `${roundedHours} giờ`;
 };
