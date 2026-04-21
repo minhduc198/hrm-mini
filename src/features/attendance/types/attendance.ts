@@ -80,6 +80,19 @@ export interface CheckOutResponse {
   data: MyAttendanceRecord
 }
 
+export interface LeaveRequestBasic {
+  id: number;
+  leave_type: {
+    id: number;
+    name: string;
+    is_paid: number;
+  };
+  request_scope: string;
+  start_time: string;
+  end_time: string;
+  status: 'pending' | 'approved' | 'rejected' | string;
+}
+
 export interface AttendanceRecordDetail {
   id: number;
   work_date: string;
@@ -98,6 +111,7 @@ export interface AttendanceRecordDetail {
     name: string;
     empCode: string;
   };
+  leave_requests?: LeaveRequestBasic[];
 }
 
 export interface AttendanceRecordDetailResponse {

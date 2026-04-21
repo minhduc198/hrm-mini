@@ -36,7 +36,7 @@ export function AttendanceDetailHeader({ day, search, onSearchChange, isLoading 
           </div>
           <div className="w-full md:w-[340px] shrink-0">
             <SearchInput
-              placeholder="Tìm theo tên hoặc mã NV..."
+              placeholder="Tìm kiếm nhân viên"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               onClear={() => onSearchChange("")}

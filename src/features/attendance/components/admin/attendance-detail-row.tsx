@@ -2,13 +2,18 @@ import { useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, X } from "lucide-react";
+import { Loader2, Check, X, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AttendanceRecordDetail } from "../../types/attendance";
 import { statusMap } from "@/features/attendance/constants";
 import { formatTime, formatDurationFromHours } from "@/utils/date-format";
 import { useUpdateAttendanceRecord } from "../../hooks/use-update-attendance-record";
 import { toast } from "sonner";
+
+import {
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
 
 interface AttendanceDetailRowProps {
   record: AttendanceRecordDetail;
@@ -18,8 +23,14 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
   const { mutate: updateRecord, isPending: isUpdating } = useUpdateAttendanceRecord();
   const [editingCell, setEditingCell] = useState<"check_in" | "check_out" | "note" | null>(null);
   const [editValue, setEditValue] = useState("");
+  const normalizedStatus = typeof record.status === "string" ? record.status.toLowerCase() : "";
+  const isLeaveRestricted = normalizedStatus === "leave" || record.leave_requests?.some(lr => lr.status === "approved");
 
   const handleStartEdit = (field: "check_in" | "check_out" | "note", value: string | null) => {
+    if (isLeaveRestricted && (field === "check_in" || field === "check_out")) {
+      toast.info("Không thể chỉnh sửa giờ cho nhân viên đã có đơn nghỉ phép được duyệt");
+      return;
+    }
     setEditingCell(field);
     
     if ((field === "check_in" || field === "check_out") && value) {
@@ -51,6 +62,26 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
         toast.error("Định dạng giờ không hợp lệ (00:00 - 23:59)");
         return;
       }
+
+      // Kiểm tra Logic: Giờ ra phải sau giờ vào
+      if (editValue) {
+        const otherField = editingCell === "check_in" ? "check_out" : "check_in";
+        const otherValueFull = record[otherField];
+        
+        if (otherValueFull) {
+          const otherTime = otherValueFull.includes(" ") ? otherValueFull.split(" ")[1].substring(0, 5) : otherValueFull.substring(0, 5);
+          
+          if (editingCell === "check_in" && editValue >= otherTime) {
+            toast.error("Giờ vào phải trước giờ ra (" + otherTime + ")");
+            return;
+          }
+          if (editingCell === "check_out" && editValue <= otherTime) {
+            toast.error("Giờ ra phải sau giờ vào (" + otherTime + ")");
+            return;
+          }
+        }
+      }
+
       if (editValue) {
         const time = editValue.length === 5 ? `${editValue}:00` : editValue;
         // Ghép ngày với giờ theo định dạng YYYY-MM-DD HH:mm:ss
@@ -71,38 +102,36 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
     setEditValue("");
   };
 
-  const normalizedStatus = typeof record.status === "string" ? record.status.toLowerCase() : "";
-  const mappedStatus = normalizedStatus ? statusMap[normalizedStatus as keyof typeof statusMap] : null;
-
   return (
-    <tr className="group hover:bg-primary-tint/10 transition-colors border-b border-line-subtle last:border-0 h-16">
-      <td className="py-2 px-3 sticky left-0 z-20 bg-white group-hover:bg-[#f8fafd] transition-colors after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line/30 text-center">
+    <TableRow className="group hover:bg-primary-tint/10 transition-colors h-auto min-h-[64px]">
+      <TableCell className="py-3 px-3 sticky left-0 z-20 bg-white group-hover:bg-[#f8fafd] transition-colors after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line/30 text-center border-b border-line-subtle">
         <Typography variant="label-sm" className="font-bold text-primary tabular-nums whitespace-nowrap">
           {record.user.empCode}
         </Typography>
-      </td>
-      <td className="py-2 px-4 bg-white group-hover:bg-[#f8fafd] transition-colors border-l border-line-subtle">
+      </TableCell>
+      <TableCell className="py-3 px-4 bg-white group-hover:bg-[#f8fafd] transition-colors border-l border-b border-line-subtle">
         <Typography variant="label" className="font-bold text-tx-base whitespace-nowrap">
           {record.user.name}
         </Typography>
-      </td>
+      </TableCell>
 
       {/* --- Giờ vào --- */}
-      <td 
+      <TableCell 
         className={cn(
-          "py-2 px-4 text-center border-l border-line-subtle cursor-pointer transition-all w-[160px] min-w-[160px]",
-          editingCell === "check_in" ? "bg-primary-tint/30" : "hover:bg-primary-tint/20"
+          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px]",
+          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-primary-tint/20",
+          editingCell === "check_in" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("check_in", record.check_in)}
       >
         {editingCell === "check_in" ? (
-          <div className="flex items-center gap-1 p-0.5 bg-white border border-primary-border rounded-lg shadow-sm animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-0.5 p-1 bg-white border border-primary-border rounded-lg shadow-sm h-9" onClick={e => e.stopPropagation()}>
             <Input 
               type="text" 
               value={editValue}
               onChange={e => handleTimeChange(e.target.value)}
               placeholder="00:00"
-              className="h-6 w-16 border-none bg-transparent focus-visible:ring-0 text-[13px] p-0 text-center font-bold text-primary"
+              className="h-full w-full border-none bg-transparent focus-visible:ring-0 text-[12px] p-0 text-center font-bold text-primary"
               autoFocus
               disabled={isUpdating}
               onKeyDown={e => {
@@ -115,18 +144,18 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
                 <Loader2 className="h-3 w-3 animate-spin text-primary" />
               ) : (
                 <>
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-success hover:bg-success/10 rounded-md" onClick={handleSaveEdit}>
+                  <button onClick={handleSaveEdit} className="p-1 text-success hover:bg-success/10 rounded-md transition-colors" title="Lưu">
                     <Check size={12} strokeWidth={3} />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-danger hover:bg-danger/10 rounded-md" onClick={handleCancelEdit}>
+                  </button>
+                  <button onClick={handleCancelEdit} className="p-1 text-danger hover:bg-danger/10 rounded-md transition-colors" title="Hủy">
                     <X size={12} strokeWidth={3} />
-                  </Button>
+                  </button>
                 </>
               )}
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-0.5">
+          <div className="flex flex-col items-center justify-center h-full">
             {record.check_in ? (
               <Typography variant="label-sm" className="font-extrabold text-primary tabular-nums">
                 {formatTime(record.check_in, false)}
@@ -136,24 +165,25 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
             )}
           </div>
         )}
-      </td>
+      </TableCell>
 
       {/* --- Giờ ra --- */}
-      <td 
+      <TableCell 
         className={cn(
-          "py-2 px-4 text-center border-l border-line-subtle cursor-pointer transition-all w-[160px] min-w-[160px]",
-          editingCell === "check_out" ? "bg-primary-tint/30" : "hover:bg-primary-tint/20"
+          "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px]",
+          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-primary-tint/20",
+          editingCell === "check_out" ? "bg-primary-tint/30" : ""
         )}
          onClick={() => handleStartEdit("check_out", record.check_out)}
       >
         {editingCell === "check_out" ? (
-          <div className="flex items-center gap-1 p-0.5 bg-white border border-primary-border rounded-lg shadow-sm animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-0.5 p-1 bg-white border border-primary-border rounded-lg shadow-sm h-9" onClick={e => e.stopPropagation()}>
             <Input 
               type="text" 
               value={editValue}
               onChange={e => handleTimeChange(e.target.value)}
               placeholder="00:00"
-              className="h-6 w-16 border-none bg-transparent focus-visible:ring-0 text-[13px] p-0 text-center font-bold text-primary"
+              className="h-full w-full border-none bg-transparent focus-visible:ring-0 text-[12px] p-0 text-center font-bold text-primary"
               autoFocus
               disabled={isUpdating}
               onKeyDown={e => {
@@ -166,18 +196,18 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
                 <Loader2 className="h-3 w-3 animate-spin text-primary" />
               ) : (
                 <>
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-success hover:bg-success/10 rounded-md" onClick={handleSaveEdit}>
+                  <button onClick={handleSaveEdit} className="p-1 text-success hover:bg-success/10 rounded-md transition-colors" title="Lưu">
                     <Check size={12} strokeWidth={3} />
-                  </Button>
-                  <Button size="icon" variant="ghost" className="h-5 w-5 text-danger hover:bg-danger/10 rounded-md" onClick={handleCancelEdit}>
+                  </button>
+                  <button onClick={handleCancelEdit} className="p-1 text-danger hover:bg-danger/10 rounded-md transition-colors" title="Hủy">
                     <X size={12} strokeWidth={3} />
-                  </Button>
+                  </button>
                 </>
               )}
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-0.5">
+          <div className="flex flex-col items-center justify-center h-full">
             {record.check_out ? (
               <Typography variant="label-sm" className="font-extrabold text-primary tabular-nums">
                 {formatTime(record.check_out, false)}
@@ -189,39 +219,84 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
             )}
           </div>
         )}
-      </td>
+      </TableCell>
 
-      <td className="py-2 px-4 text-center border-l border-line-subtle bg-subtle/5">
+      <TableCell className="py-3 px-4 text-center border-l border-b border-line-subtle bg-subtle/5">
         <Typography variant="label-sm" className="font-bold text-tx-base tabular-nums">
           {formatDurationFromHours(record.total_hours)}
         </Typography>
-      </td>
+      </TableCell>
 
-      <td className="py-2 px-4 text-center border-l border-line-subtle">
-        {mappedStatus ? (
-          <div className={cn(
-            "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full border shadow-sm w-[140px] bg-white mx-auto",
-            mappedStatus.color
-          )}>
-            <mappedStatus.icon size={13} strokeWidth={2.5} className="shrink-0" />
-            <Typography variant="label-xs" className="font-bold tracking-tight text-inherit">
-              {mappedStatus.label}
-            </Typography>
-          </div>
-        ) : (
-          <Typography variant="tiny" className="opacity-40">—</Typography>
-        )}
-      </td>
+      <TableCell className="py-3 px-3 border-l border-b border-line-subtle align-middle">
+        <div className="flex flex-col gap-1.5 items-center justify-center w-full">
+          {/* --- Group 1: Công & Thiếu --- */}
+          {Number(record.total_hours) >= 8 && (
+             <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm w-full max-w-[150px] justify-center">
+                <div className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                <Typography variant="label-xs" className="font-bold tracking-tight">Đủ công</Typography>
+             </div>
+          )}
 
-      <td 
+          {/* --- Group 2: Đơn nghỉ phép --- */}
+          {record.leave_requests?.map((lr) => {
+            const timeRange = `${formatTime(lr.start_time, false)} - ${formatTime(lr.end_time, false)}`;
+            
+            if (lr.status === 'approved') {
+              return (
+                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-purple-100 bg-purple-50 text-purple-600 shadow-sm w-full max-w-[150px] justify-center">
+                  <Check size={12} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight">Phép {timeRange}</Typography>
+                </div>
+              );
+            }
+            if (lr.status === 'pending') {
+              return (
+                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-amber-100 bg-amber-50 text-amber-600 shadow-sm w-full max-w-[150px] justify-center">
+                  <Clock size={12} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight">Đơn {timeRange} (Chờ duyệt)</Typography>
+                </div>
+              );
+            }
+            if (lr.status === 'rejected') {
+              return (
+                <div key={lr.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border border-rose-100 bg-rose-50 text-rose-600 shadow-sm w-full max-w-[150px] justify-center">
+                  <X size={12} strokeWidth={3} className="shrink-0" />
+                  <Typography variant="label-xs" className="font-bold tracking-tight">Đơn {timeRange} bị từ chối</Typography>
+                </div>
+              );
+            }
+            return null;
+          })}
+
+          {/* --- Group 3: Sub-text Details (Pills) --- */}
+          {(record.late_minutes > 0 || record.early_leave_minutes > 0) && (
+            <div className="flex flex-col gap-1 w-full items-center">
+               {record.late_minutes > 0 && (
+                 <div className="inline-flex items-center px-2.5 py-1.5 rounded-full border border-amber-100 bg-amber-50 text-amber-600 shadow-sm w-full max-w-[150px] justify-center">
+                   <Clock size={12} strokeWidth={3} className="shrink-0 mr-1" />
+                   <Typography variant="label-xs" className="font-bold tracking-tight">Vào muộn {record.late_minutes}p</Typography>
+                 </div>
+               )}
+               {record.early_leave_minutes > 0 && (
+                 <div className="inline-flex items-center px-2.5 py-1.5 rounded-full border border-orange-100 bg-orange-50 text-orange-600 shadow-sm w-full max-w-[150px] justify-center">
+                   <Clock size={12} strokeWidth={3} className="shrink-0 mr-1" />
+                   <Typography variant="label-xs" className="font-bold tracking-tight">Về sớm {record.early_leave_minutes}p</Typography>
+                 </div>
+               )}
+            </div>
+          )}
+        </div>
+      </TableCell>
+
+      <TableCell 
         className={cn(
-          "py-2 px-4 border-l border-line-subtle cursor-pointer transition-all",
+          "py-3 px-4 border-l border-b border-line-subtle cursor-pointer transition-all",
           editingCell === "note" ? "bg-primary-tint/30" : "hover:bg-primary-tint/20"
         )}
         onClick={() => handleStartEdit("note", record.note)}
       >
         {editingCell === "note" ? (
-          <div className="flex items-center gap-2 p-1.5 bg-white border border-primary-border rounded-xl shadow-sm animate-in fade-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-2 p-1.5 bg-white border border-primary-border rounded-xl shadow-sm h-9" onClick={e => e.stopPropagation()}>
             <Input 
               value={editValue}
               onChange={e => setEditValue(e.target.value)}
@@ -251,13 +326,13 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
           </div>
         ) : (
           <Typography variant="label-sm" className={cn(
-            "font-medium truncate max-w-[200px]",
+            "font-medium truncate",
             record.note ? "text-tx-base" : "text-muted/40 italic"
           )} title={record.note || ""}>
             {record.note || "Thêm ghi chú..."}
           </Typography>
         )}
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }

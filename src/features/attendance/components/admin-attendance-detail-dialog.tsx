@@ -49,7 +49,7 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] sm:max-w-7xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-[10px] border-none shadow-2xl bg-surface transition-all duration-300 flex flex-col focus:outline-none focus:ring-0">
+      <DialogContent className="w-[95vw] sm:max-w-6xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-[10px] border-none shadow-2xl bg-surface transition-all duration-300 flex flex-col focus:outline-none focus:ring-0">
           <AttendanceDetailHeader 
             day={day}
             search={search}
