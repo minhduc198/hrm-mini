@@ -238,8 +238,9 @@ export function AttendanceCalendar({
                   )}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
         </div>
       </div>
     </div>
