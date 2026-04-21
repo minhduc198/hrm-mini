@@ -4,7 +4,11 @@ import { CalendarDays } from "lucide-react";
 import { Typography } from "@/components/ui/typography";
 import { GenerateButton } from "./generate-button";
 
-export function AttendanceEmptyState() {
+interface AttendanceEmptyStateProps {
+  isAdmin?: boolean;
+}
+
+export function AttendanceEmptyState({ isAdmin = true }: AttendanceEmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full p-8 text-center animate-in fade-in zoom-in duration-500">
       <div className="relative mb-6">
@@ -19,11 +23,16 @@ export function AttendanceEmptyState() {
       </Typography>
       
       <Typography variant="p" className="mb-8 text-tx-muted max-w-md mx-auto">
-        Hệ thống chưa tìm thấy dữ liệu chấm công cho tháng này. 
-        Hãy nhấn nút bên dưới để tự động sinh lịch làm việc cho 3 tháng tới.
+        {isAdmin 
+          ? "Hệ thống chưa tìm thấy dữ liệu chấm công cho tháng này. Hãy nhấn nút bên dưới để tự động sinh lịch làm việc cho 3 tháng tới."
+          : "Hệ thống chưa có lịch làm việc cho tháng này. Vui lòng thông báo cho quản trị viên để khởi tạo lịch sớm nhất."
+        }
       </Typography>
 
-      <GenerateButton className="h-12 px-8 rounded-2xl text-base shadow-lg hover:shadow-primary/20 transition-all hover:scale-105" />
+      {isAdmin && (
+        <GenerateButton className="h-12 px-8 rounded-2xl text-base shadow-lg hover:shadow-primary/20 transition-all hover:scale-105" />
+      )}
     </div>
   );
 }
+

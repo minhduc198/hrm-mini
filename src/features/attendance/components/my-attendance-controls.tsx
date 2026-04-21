@@ -3,9 +3,9 @@
 import { AttendanceLegend } from "./attendance-legend";
 import { MonthNavigator } from "./month-navigator";
 
-export function AttendanceControls() {
+export function MyAttendanceControls() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-col md:flex-row items-center gap-4">
       <MonthNavigator />
       <AttendanceLegend />
     </div>

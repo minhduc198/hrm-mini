@@ -14,13 +14,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Typography } from "@/components/ui/typography";
 
-import { AttendanceDayData } from "../types/attendance";
-import { WEEKDAYS } from "../constants";
+import { AttendanceDayData } from "../types/attendance"
+import { WEEKDAYS, statusMap } from "../constants"
 
 interface AttendanceCalendarProps {
   data: AttendanceDayData[];
   currentDate?: Date;
-  onDateClick?: (date: string) => void;
+  onDateClick?: (day: AttendanceDayData) => void;
   renderCellFooter?: (day: AttendanceDayData) => React.ReactNode;
   className?: string;
 }
@@ -99,60 +99,49 @@ export function AttendanceCalendar({
               : index % 7 >= 5;
             const isUserToday = isToday(date);
 
-            return (
-              <div
-                key={isoString}
-                onClick={() => isCurrentMonth && onDateClick?.(isoString)}
-                className={cn(
-                  "min-h-[110px] p-2.5 flex flex-col relative transition-all duration-200 border-b border-r border-line",
-                  "last:border-r-0",
-
-                  !isCurrentMonth &&
-                    "bg-subtle/50 select-none pointer-events-none",
-
-                  isCurrentMonth &&
-                    (isWeekend
-                      ? "bg-holiday-pattern" // Màu họa tiết gạch gạch cho ngày nghỉ
-                      : "bg-surface hover:bg-primary-tint/30"), // Màu nền cho ngày làm việc
-
-                  isCurrentMonth && "cursor-pointer group hover:z-10",
-
-                  isUserToday &&
-                    isCurrentMonth &&
-                    "bg-primary-tint/20 z-10 shadow-[inset_0_0_0_1px_rgba(27,79,138,0.2)]",
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex flex-col h-full flex-1",
-                    !isCurrentMonth && "opacity-30",
-                  )}
-                >
-                  <div className="flex justify-between items-start mb-1.5">
-                    <div className="flex flex-col gap-1">
-                      <div
-                        className={cn(
-                          "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
-                          isUserToday && isCurrentMonth
-                            ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105"
-                            : !isCurrentMonth
-                              ? "text-subtle-text"
-                              : "text-base bg-secondary/5",
-                        )}
-                      >
-                        <Typography variant="label" className="inherit">
-                          {format(date, "d")}
-                        </Typography>
-                      </div>
-
-                      {isUserToday && isCurrentMonth && (
-                        <Typography
-                          variant="tiny"
-                          className="text-primary font-bold uppercase tracking-tight leading-none"
-                        >
-                          Hôm nay
-                        </Typography>
-                      )}
+          return (
+            <div
+              key={isoString}
+              onClick={() => {
+                if (isCurrentMonth) {
+                  const dayPayload: AttendanceDayData = apiData ?? {
+                    work_date: isoString,
+                    day_type: index % 7 >= 5 ? "weekend" : "workday",
+                  };
+                  onDateClick?.(dayPayload);
+                }
+              }}
+              className={cn(
+                "min-h-[110px] p-2.5 flex flex-col relative transition-all duration-200 border-b border-r border-line",
+                "last:border-r-0", 
+                
+                !isCurrentMonth && "bg-subtle/50 select-none pointer-events-none",
+                
+                isCurrentMonth && (
+                  isWeekend 
+                    ? "bg-holiday-pattern" // Màu họa tiết gạch gạch cho ngày nghỉ
+                    : "bg-surface hover:bg-primary-tint/30" // Màu nền cho ngày làm việc
+                ),
+                
+                isCurrentMonth && "cursor-pointer group hover:z-10",
+                
+                isUserToday && isCurrentMonth && "bg-primary-tint/20 z-10 shadow-[inset_0_0_0_1px_rgba(27,79,138,0.2)]"
+              )}
+            >
+              <div className={cn("flex flex-col h-full flex-1", !isCurrentMonth && "opacity-30")}>
+                <div className="flex justify-between items-start mb-1.5">
+                  <div className="flex gap-2 items-center">
+                    <div className={cn(
+                      "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
+                      isUserToday && isCurrentMonth 
+                        ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
+                        : !isCurrentMonth 
+                          ? "text-subtle-text" 
+                          : "text-base bg-secondary/5"
+                    )}>
+                      <Typography variant="label" className="inherit">
+                        {format(date, "d")}
+                      </Typography>
                     </div>
                   </div>
 
@@ -193,6 +182,60 @@ export function AttendanceCalendar({
                       </div>
                     )}
                   </div>
+                </div>
+
+                <div className="flex-1 mt-1">
+                  {isCurrentMonth && apiData?.status && (
+                    <div className="flex gap-1 flex-wrap">
+                      {typeof apiData.status === "string" ? (() => {
+                        const normalizedStatus = apiData.status.toLowerCase();
+                        return (
+                          <div className="flex items-center gap-1.5 px-0.5">
+                            <div 
+                              className={cn(
+                                "size-1.5 rounded-full ring-1 ring-surface shadow-sm shrink-0",
+                                normalizedStatus === 'on_time' ? 'bg-success' : 
+                                normalizedStatus === 'absent' ? 'bg-danger' : 
+                                normalizedStatus === 'leave' ? 'bg-purple-500' :
+                                'bg-warning' // late, early_leave
+                              )} 
+                            />
+                            <Typography variant="label-xs" className={cn(
+                              "font-bold tracking-tight",
+                              normalizedStatus === 'on_time' ? 'text-success' : 
+                              normalizedStatus === 'absent' ? 'text-danger' : 
+                              normalizedStatus === 'leave' ? 'text-purple-600' :
+                              'text-warning'
+                            )}>
+                              {statusMap[normalizedStatus as keyof typeof statusMap]?.label || apiData.status}
+                            </Typography>
+                          </div>
+                        );
+                      })() : typeof apiData.status === 'object' ? (
+                        (['on_time', 'late', 'absent'] as const).map(statusKey => {
+                          const count = (apiData.status as Record<string, number>)?.[statusKey] || 0;
+                          const colorClass = 
+                            statusKey === 'on_time' ? 'bg-success' : 
+                            statusKey === 'late' ? 'bg-warning' : 'bg-danger';
+                          
+                          return count > 0 && (
+                            <div 
+                              key={statusKey}
+                              className={cn("size-1.5 rounded-full ring-1 ring-surface shadow-sm", colorClass)} 
+                            />
+                          );
+                        })
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-auto pt-1.5 border-t border-line/10">
+                  {isCurrentMonth && apiData && (
+                    <div className="transition-all duration-200">
+                      {renderCellFooter?.(apiData)}
+                    </div>
+                  )}
                 </div>
               </div>
             );
