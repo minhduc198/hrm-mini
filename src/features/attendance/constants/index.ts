@@ -6,7 +6,6 @@ export const ATTENDANCE_CONFIG = {
   DEFAULT_GENERATE_MONTHS: 3,
 };
 
-
 export const ATTENDANCE_STATUS_LABELS = {
   ON_TIME: "Đúng giờ",
   LATE: "Muộn",
@@ -29,3 +28,11 @@ export const dayTypeMap = {
     weekend: { label: "Cuối tuần", icon: Coffee, color: "text-slate-600 bg-slate-100" },
     holiday: { label: "Ngày lễ", icon: CalendarDays, color: "text-purple-600 bg-purple-50" },
 };
+
+export const exportAttendanceStatuses = [
+  ...Object.entries(statusMap).map(([id, data]) => ({
+    id,
+    label: data.label,
+  })),
+  { id: "auto_checkout", label: "Hệ thống Checkout" },
+];
