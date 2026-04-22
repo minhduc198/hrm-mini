@@ -48,7 +48,9 @@ export function StatisticsCards({
               variant="h3"
               className="text-2xl font-bold text-primary"
             >
-              {attendance?.total_hours || 0}h
+              {(attendance?.total_hours || 0) >= 1 
+                ? `${(attendance?.total_hours || 0).toFixed(1)}h`
+                : `${Math.round((attendance?.total_hours || 0) * 60)} phút`}
             </Typography>
             <Typography
               variant="tiny"
@@ -57,6 +59,8 @@ export function StatisticsCards({
               / {attendance?.total_required_hours}h mục tiêu
             </Typography>
           </div>
+
+
           <div className="mt-3 h-2 w-full bg-primary/10 rounded-full overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-all duration-500"
