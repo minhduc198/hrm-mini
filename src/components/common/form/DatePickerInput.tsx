@@ -93,10 +93,6 @@ export function DatePickerInput({
             }}
             disabled={disabled}
             className="p-3"
-            classNames={{
-              today:
-                "border border-primary bg-primary/5 text-primary font-bold rounded-md",
-            }}
           />
         </PopoverContent>
       </Popover>

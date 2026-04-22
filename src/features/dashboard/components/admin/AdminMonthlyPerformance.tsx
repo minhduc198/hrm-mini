@@ -25,12 +25,25 @@ export function AdminMonthlyPerformance({ monthly }: AdminMonthlyPerformanceProp
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <MonthlyMetric
-            label="Tổng giờ làm"
-            value={monthly?.total_working_hours || 0}
-            unit="h"
-            description="Toàn bộ công ty"
-          />
+          {monthly && (
+            <MonthlyMetric
+              label="Tổng giờ làm"
+              value={monthly.total_working_hours >= 1 
+                ? Number(monthly.total_working_hours.toFixed(1))
+                : Math.round(monthly.total_working_hours * 60)}
+              unit={monthly.total_working_hours >= 1 ? "h" : "phút"}
+              description="Toàn bộ công ty"
+            />
+          )}
+          {!monthly && (
+            <MonthlyMetric
+              label="Tổng giờ làm"
+              value={0}
+              unit="h"
+              description="Toàn bộ công ty"
+            />
+          )}
+
           <MonthlyMetric
             label="Tổng giờ OT"
             value={monthly?.total_ot_hours || 0}

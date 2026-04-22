@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp } from "lucide-react";
-import { WorkingTrend } from "../types";
 import { Typography } from "@/components/ui/typography";
 import {
   BarChart,
@@ -12,6 +11,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { WorkingTrend } from "../../types";
 
 interface WorkingTrendChartProps {
   trends: WorkingTrend[];
@@ -105,7 +105,19 @@ export function WorkingTrendChart({ trends }: WorkingTrendChartProps) {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: "#94a3b8", fontSize: 10 }}
+                  domain={[
+                    0,
+                    (dataMax: number) => {
+                      const maxRequired = Math.max(
+                        ...trends.map((t) => t.total_required_hours),
+                        0,
+                      );
+                      return Math.max(dataMax, maxRequired, 40);
+                    },
+                  ]}
                 />
+
+
                 <Tooltip
                   content={<CustomTooltip />}
                   cursor={{ fill: "rgba(0, 0, 0, 0.02)", radius: 8 }}
@@ -116,23 +128,13 @@ export function WorkingTrendChart({ trends }: WorkingTrendChartProps) {
                   barSize={32}
                   animationDuration={1500}
                 >
-                  {trends.map((entry, index) => {
-                    const ratio =
-                      entry.total_required_hours > 0
-                        ? entry.total_hours / entry.total_required_hours
-                        : 0;
-                    let color = "#10b981";
-                    if (ratio < 0.3) color = "#fb7185";
-                    else if (ratio < 0.8) color = "#fbbf24";
-
-                    return (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={color}
-                        fillOpacity={0.8}
-                      />
-                    );
-                  })}
+                  {trends.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill="var(--primary)"
+                      fillOpacity={0.8}
+                    />
+                  ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
