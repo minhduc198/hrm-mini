@@ -39,3 +39,42 @@ export interface EmployeeStatistics {
   request_summary: RequestSummary;
   working_trend: WorkingTrend[];
 }
+
+export interface TodayOverview {
+  total_employees: number;
+  present: number;
+  absent: number;
+  on_leave: number;
+  late: number;
+  early_leave: number;
+}
+
+export interface AdminPendingActions {
+  leave_requests: number;
+}
+
+export interface MonthlyOverview {
+  total_working_hours: number;
+  total_ot_hours: number;
+  total_late_minutes: number;
+}
+
+export interface LateEmployee {
+  user_id: number;
+  total_late_minutes: number;
+  occurrences: number;
+  user: {
+    id: number;
+    name: string;
+    empCode: string;
+    avatar: string | null;
+  };
+}
+
+export interface AdminStatistics {
+  today: TodayOverview;
+  pending_actions: AdminPendingActions;
+  monthly_overview: MonthlyOverview;
+  top_late_employees: LateEmployee[];
+  timestamp: string;
+}

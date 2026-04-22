@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Palmtree, Calendar, Hourglass } from "lucide-react";
-import { LeaveSummary } from "../types";
+import { LeaveSummary } from "../../types";
 import { cn } from "@/lib/utils";
 
 interface LeaveBalanceListProps {

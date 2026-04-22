@@ -6,9 +6,9 @@ import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePersonalStatistics } from "../hooks/use-dashboard";
 
 // Sub-components
-import { StatisticsCards } from "../components/StatisticsCards";
-import { WorkingTrendChart } from "../components/WorkingTrendChart";
-import { LeaveBalanceList } from "../components/LeaveBalanceList";
+import { StatisticsCards } from "../components/employee/StatisticsCards";
+import { LeaveBalanceList } from "../components/employee/LeaveBalanceList";
+import { WorkingTrendChart } from "../components/employee/WorkingTrendChart";
 
 export default function EmployeeDashboardPage() {
   const { user } = useAuth();
@@ -27,9 +27,9 @@ export default function EmployeeDashboardPage() {
       />
 
       {/* Overview Statistics Cards */}
-      <StatisticsCards 
-        attendance={stats?.attendance_summary} 
-        requests={stats?.request_summary} 
+      <StatisticsCards
+        attendance={stats?.attendance_summary}
+        requests={stats?.request_summary}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
