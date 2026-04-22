@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, UserCheck, AlertTriangle, MessageSquare } from "lucide-react";
-import { AttendanceSummary, RequestSummary } from "../types";
+import { AttendanceSummary, RequestSummary } from "../../types";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
@@ -10,10 +10,20 @@ interface StatisticsCardsProps {
   requests?: RequestSummary;
 }
 
+const formatDuration = (minutes: number) => {
+  if (minutes >= 60) {
+    return { value: (minutes / 60).toFixed(1), label: "Giờ" };
+  }
+  return { value: minutes, label: "Phút" };
+};
+
 export function StatisticsCards({
   attendance,
   requests,
 }: StatisticsCardsProps) {
+  const lateFmt = formatDuration(attendance?.late_minutes || 0);
+  const earlyFmt = formatDuration(attendance?.early_leave_minutes || 0);
+
   const hourPercentage = attendance
     ? Math.min(
         Math.round(
@@ -179,13 +189,13 @@ export function StatisticsCards({
                     : "text-slate-700",
                 )}
               >
-                {attendance?.late_minutes || 0}
+                {lateFmt.value}
               </Typography>
               <Typography
                 variant="tiny"
                 className="text-[10px] text-muted-foreground"
               >
-                Phút đi muộn
+                {lateFmt.label} đi muộn
               </Typography>
             </div>
             <div>
@@ -198,13 +208,13 @@ export function StatisticsCards({
                     : "text-slate-700",
                 )}
               >
-                {attendance?.early_leave_minutes || 0}
+                {earlyFmt.value}
               </Typography>
               <Typography
                 variant="tiny"
                 className="text-[10px] text-muted-foreground"
               >
-                Phút về sớm
+                {earlyFmt.label} về sớm
               </Typography>
             </div>
           </div>

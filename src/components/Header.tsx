@@ -112,10 +112,6 @@ export default function Header() {
               <CircleUser size={15} /> Edit profile
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-muted focus:bg-page focus:text-base">
-            <Settings size={15} /> Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator className="bg-line my-1" />
           <DropdownMenuItem
             onSelect={() => handleSignOut()}
             className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer text-sm text-danger hover:text-danger focus:bg-danger-bg focus:text-danger"
