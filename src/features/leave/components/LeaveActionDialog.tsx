@@ -20,6 +20,9 @@ import { Calendar, Clock, User, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { AVATAR_COLORS } from "@/features/employee/constants";
+import { Can } from "@/components/common/auth/Can";
+
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
 function getInitials(name: string) {
   if (!name) return "";
@@ -64,6 +67,9 @@ export function LeaveActionDialog({
   title,
   description,
 }: LeaveActionDialogProps) {
+  const { hasPermission } = useAuth();
+  const canDecide = hasPermission("leave_request.decide");
+
   const form = useForm<LeaveActionFormValues>({
     resolver: zodResolver(leaveActionSchema),
     defaultValues: {
@@ -279,23 +285,25 @@ export function LeaveActionDialog({
             </>
           )}
 
-          <Form {...form}>
-            <form className="space-y-4">
-              <TextareaFieldInput
-                name="approver_note"
-                label={
-                  isBulk ? "Ghi chú phê duyệt hàng loạt" : "Ghi chú phản hồi"
-                }
-                placeholder={
-                  isPending
-                    ? "Nhập ghi chú phê duyệt hoặc lý do từ chối..."
-                    : "Không có ghi chú"
-                }
-                className="bg-white"
-                readOnly={!isPending && !isBulk}
-              />
-            </form>
-          </Form>
+          {canDecide && (
+            <Form {...form}>
+              <form className="space-y-4">
+                <TextareaFieldInput
+                  name="approver_note"
+                  label={
+                    isBulk ? "Ghi chú phê duyệt hàng loạt" : "Ghi chú phản hồi"
+                  }
+                  placeholder={
+                    isPending
+                      ? "Nhập ghi chú phê duyệt hoặc lý do từ chối..."
+                      : "Không có ghi chú"
+                  }
+                  className="bg-white"
+                  readOnly={!isPending && !isBulk}
+                />
+              </form>
+            </Form>
+          )}
         </div>
 
         <DialogFooter className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 gap-2">
@@ -310,41 +318,45 @@ export function LeaveActionDialog({
           </Button>
           {!isBulk ? (
             isPending && (
-              <div className="flex-[2] flex gap-2">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="flex-1 rounded-xl h-11 gap-1.5"
-                  onClick={() => handleSubmit("rejected")}
-                  isLoading={isLoading}
-                >
-                  Từ chối
-                </Button>
-                <Button
-                  type="button"
-                  variant="default"
-                  className="flex-1 rounded-xl h-11 gap-1.5"
-                  onClick={() => handleSubmit("approved")}
-                  isLoading={isLoading}
-                >
-                  Phê duyệt
-                </Button>
-              </div>
+              <Can permission="leave_request.decide">
+                <div className="flex-[2] flex gap-2">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="flex-1 rounded-xl h-11 gap-1.5"
+                    onClick={() => handleSubmit("rejected")}
+                    isLoading={isLoading}
+                  >
+                    Từ chối
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="flex-1 rounded-xl h-11 gap-1.5"
+                    onClick={() => handleSubmit("approved")}
+                    isLoading={isLoading}
+                  >
+                    Phê duyệt
+                  </Button>
+                </div>
+              </Can>
             )
           ) : (
-            <Button
-              type="button"
-              variant={title?.includes("Từ chối") ? "destructive" : "default"}
-              className={cn("flex-1 rounded-xl h-11")}
-              onClick={() =>
-                handleSubmit(
-                  title?.includes("Từ chối") ? "rejected" : "approved",
-                )
-              }
-              isLoading={isLoading}
-            >
-              Xác nhận {title?.includes("Từ chối") ? "từ chối" : "phê duyệt"}
-            </Button>
+            <Can permission="leave_request.decide">
+              <Button
+                type="button"
+                variant={title?.includes("Từ chối") ? "destructive" : "default"}
+                className={cn("flex-1 rounded-xl h-11")}
+                onClick={() =>
+                  handleSubmit(
+                    title?.includes("Từ chối") ? "rejected" : "approved",
+                  )
+                }
+                isLoading={isLoading}
+              >
+                Xác nhận {title?.includes("Từ chối") ? "từ chối" : "phê duyệt"}
+              </Button>
+            </Can>
           )}
         </DialogFooter>
       </DialogContent>

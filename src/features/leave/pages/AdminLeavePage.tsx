@@ -17,6 +17,7 @@ import { LeaveActionDialog } from "../components/LeaveActionDialog";
 import { useAdminLeave } from "../hooks/use-admin-leave";
 import { LeaveActionFormValues } from "../schemas/admin";
 import { LeaveRequest } from "../types";
+import { Can } from "@/components/common/auth/Can";
 
 export default function AdminLeavePage() {
   const [search, setSearch] = useState("");
@@ -194,133 +195,149 @@ export default function AdminLeavePage() {
         description="Phê duyệt hoặc từ chối các yêu cầu nghỉ phép của nhân viên toàn hệ thống."
         actions={
           <div className="flex items-center gap-2">
-            {selectedCount > 0 && (
-              <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 animate-in fade-in slide-in-from-right-4">
-                <Typography
-                  variant="small"
-                  className="text-slate-600 font-medium"
-                >
-                  Đã chọn{" "}
-                  <span className="font-bold text-primary">
-                    {selectedCount}
-                  </span>{" "}
-                  đơn
-                </Typography>
-                <div className="w-[1px] h-4 bg-slate-200 mx-1" />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1.5 px-3"
-                  onClick={() => setActionTarget({ type: "bulk-approve" })}
-                >
-                  <CheckCircle2 size={14} /> Duyệt
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 gap-1.5 px-3"
-                  onClick={() => setActionTarget({ type: "bulk-reject" })}
-                >
-                  <XCircle size={14} /> Từ chối
-                </Button>
-              </div>
-            )}
+            <Can permission="leave_request.decide">
+              {selectedCount > 0 && (
+                <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 animate-in fade-in slide-in-from-right-4">
+                  <Typography
+                    variant="small"
+                    className="text-slate-600 font-medium"
+                  >
+                    Đã chọn{" "}
+                    <span className="font-bold text-primary">
+                      {selectedCount}
+                    </span>{" "}
+                    đơn
+                  </Typography>
+                  <div className="w-[1px] h-4 bg-slate-200 mx-1" />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 gap-1.5 px-3"
+                    onClick={() => setActionTarget({ type: "bulk-approve" })}
+                  >
+                    <CheckCircle2 size={14} /> Duyệt
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50 gap-1.5 px-3"
+                    onClick={() => setActionTarget({ type: "bulk-reject" })}
+                  >
+                    <XCircle size={14} /> Từ chối
+                  </Button>
+                </div>
+              )}
+            </Can>
           </div>
         }
       />
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="w-full md:max-w-md">
-            <SearchInput
-              placeholder="Tìm theo tên hoặc mã nhân viên..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClear={() => setSearch("")}
-              isLoading={isLoading}
-            />
+      <Can
+        permission="leave_request.view"
+        fallback={
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-primary/20">
+            <Typography variant="h4" className="text-muted-foreground mb-2">
+              Không có quyền truy cập
+            </Typography>
+            <Typography variant="small" className="text-muted-foreground/60 text-center max-w-md">
+              Bạn không có quyền xem danh sách đơn xin nghỉ của toàn bộ nhân viên. Vui lòng liên hệ quản trị viên để được hỗ trợ.
+            </Typography>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5">
-            <SelectFieldInput
-              className="w-[180px]"
-              value={params.status}
-              onValueChange={(status) => setParams((p) => ({ ...p, status }))}
-              options={[
-                { label: "Tất cả trạng thái", value: "all" },
-                { label: "Đang chờ duyệt", value: "pending" },
-                { label: "Đã phê duyệt", value: "approved" },
-                { label: "Từ chối", value: "rejected" },
-              ]}
-              placeholder="Trạng thái"
-            />
-
-            <div className="flex items-center gap-2">
-              <DatePickerInput
-                className="h-10 w-[140px]"
-                placeholder="Từ ngày"
-                value={params.start_time}
-                onChange={(date) =>
-                  setParams((p) => ({
-                    ...p,
-                    start_time: date || undefined,
-                  }))
-                }
-              />
-              <DatePickerInput
-                className="h-10 w-[140px]"
-                placeholder="Đến ngày"
-                value={params.end_time}
-                onChange={(date) =>
-                  setParams((p) => ({
-                    ...p,
-                    end_time: date || undefined,
-                  }))
-                }
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="w-full md:max-w-md">
+              <SearchInput
+                placeholder="Tìm theo tên hoặc mã nhân viên..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onClear={() => setSearch("")}
+                isLoading={isLoading}
               />
             </div>
 
-            {hasFilter && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReset}
-                className="h-10 px-3 text-muted-foreground hover:text-rose-500 hover:bg-rose-50 transition-colors gap-1.5 rounded-xl border border-dashed border-border/60 hover:border-rose-200"
-              >
-                <RotateCcw size={14} />
-                Xóa lọc
-              </Button>
-            )}
+            <div className="flex flex-wrap items-center gap-2.5">
+              <SelectFieldInput
+                className="w-[180px]"
+                value={params.status}
+                onValueChange={(status) => setParams((p) => ({ ...p, status }))}
+                options={[
+                  { label: "Tất cả trạng thái", value: "all" },
+                  { label: "Đang chờ duyệt", value: "pending" },
+                  { label: "Đã phê duyệt", value: "approved" },
+                  { label: "Từ chối", value: "rejected" },
+                ]}
+                placeholder="Trạng thái"
+              />
+
+              <div className="flex items-center gap-2">
+                <DatePickerInput
+                  className="h-10 w-[140px]"
+                  placeholder="Từ ngày"
+                  value={params.start_time}
+                  onChange={(date) =>
+                    setParams((p) => ({
+                      ...p,
+                      start_time: date || undefined,
+                    }))
+                  }
+                />
+                <DatePickerInput
+                  className="h-10 w-[140px]"
+                  placeholder="Đến ngày"
+                  value={params.end_time}
+                  onChange={(date) =>
+                    setParams((p) => ({
+                      ...p,
+                      end_time: date || undefined,
+                    }))
+                  }
+                />
+              </div>
+
+              {hasFilter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleReset}
+                  className="h-10 px-3 text-muted-foreground hover:text-rose-500 hover:bg-rose-50 transition-colors gap-1.5 rounded-xl border border-dashed border-border/60 hover:border-rose-200"
+                >
+                  <RotateCcw size={14} />
+                  Xóa lọc
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        className={cn(
-          "transition-opacity duration-200",
-          isLoading ? "opacity-60 pointer-events-none" : "opacity-100",
-        )}
-      >
-        <AdminLeaveTable
-          data={data?.data || []}
-          onAction={(request) => setActionTarget({ type: "detail", request })}
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-        />
-
-        {data && data.total > 0 && (
-          <TablePagination
-            currentPage={params.page}
-            totalPage={data.last_page}
-            totalItems={data.total}
-            perPage={params.per_page}
-            onPageChange={(page) => setParams((p) => ({ ...p, page }))}
-            onPerPageChange={(per_page) =>
-              setParams((p) => ({ ...p, per_page, page: 1 }))
-            }
+        <div
+          className={cn(
+            "transition-opacity duration-200",
+            isLoading ? "opacity-60 pointer-events-none" : "opacity-100",
+          )}
+        >
+          <AdminLeaveTable
+            data={data?.data || []}
+            onAction={(request) => setActionTarget({ type: "detail", request })}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
           />
-        )}
-      </div>
+
+          {data && data.total > 0 && (
+            <TablePagination
+              currentPage={params.page}
+              totalPage={data.last_page}
+              totalItems={data.total}
+              perPage={params.per_page}
+              onPageChange={(page) => setParams((p) => ({ ...p, page }))}
+              onPerPageChange={(per_page) =>
+                setParams((p) => ({ ...p, per_page, page: 1 }))
+              }
+            />
+          )}
+        </div>
+      </Can>
 
       <LeaveActionDialog
         open={!!actionTarget}
