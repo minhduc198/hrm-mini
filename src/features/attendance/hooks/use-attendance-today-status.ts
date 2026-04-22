@@ -3,7 +3,7 @@ import { useGetMyAttendance } from "./use-get-my-attendance";
 import { format } from "date-fns";
 
 export function useAttendanceTodayStatus() {
-  const { data: attendanceHistory, isLoading } = useGetMyAttendance();
+  const { data: attendanceHistory, isLoading, isFetching } = useGetMyAttendance();
   
   const todayStr = format(new Date(), "yyyy-MM-dd");
   
@@ -20,13 +20,14 @@ export function useAttendanceTodayStatus() {
 
     return {
       isCheckedIn: !!todayRecord,
-      isCompleted: todayRecord?.is_completed ?? false,
+      isCompleted: todayRecord?.is_completed === true,
       todayRecord: todayRecord || null
     };
   }, [attendanceHistory, todayStr]);
 
   return { 
     ...result,
-    isLoading
+    isLoading,
+    isFetching
   };
 }
