@@ -15,7 +15,7 @@ interface EmployeeActionsProps {
 }
 
 export function EmployeeActions({ onLeaveRequestSuccess }: EmployeeActionsProps) {
-  const { isCheckedIn, isCompleted, isLoading: isStatusLoading } = useAttendanceTodayStatus();
+  const { isCheckedIn, isCompleted, isLoading: isStatusLoading, isFetching } = useAttendanceTodayStatus();
   const { mutate: performCheckIn, isPending: isCheckingIn } = useCheckIn();
   const { mutate: performCheckOut, isPending: isCheckingOut } = useCheckOut();
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
@@ -35,16 +35,18 @@ export function EmployeeActions({ onLeaveRequestSuccess }: EmployeeActionsProps)
     }
   };
 
+  const isAnyLoading = isCheckingIn || isCheckingOut || isStatusLoading || isFetching;
+
   return (
     <div className="flex items-center gap-3">
       {/* Check-in/out Toggle Button */}
       <Button
         onClick={handleCheckInOut}
-        isLoading={isCheckingIn || isCheckingOut || isStatusLoading}
+        isLoading={isAnyLoading}
         disabled={isCompleted}
         variant={isCompleted ? "outline" : isCheckedIn ? "outline" : "default"}
         className={cn(
-          "h-11 px-4 md:px-6 flex items-center gap-2.5 transition-all duration-300 rounded-xl shadow-sm",
+          "h-11 w-[130px] md:w-[150px] flex items-center justify-center gap-2.5 transition-all duration-300 rounded-xl shadow-sm",
           isCompleted
             ? "bg-white text-base border-primary-border shadow-sm opacity-100 cursor-not-allowed"
             : isCheckedIn 
@@ -54,17 +56,17 @@ export function EmployeeActions({ onLeaveRequestSuccess }: EmployeeActionsProps)
       >
         {isCompleted ? (
           <>
-            <CheckCircle size={18} className="text-success animate-in fade-in zoom-in duration-300" />
+            {!isAnyLoading && <CheckCircle size={18} className="text-success animate-in fade-in zoom-in duration-300" />}
             <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Hoàn thành</span>
           </>
         ) : isCheckedIn ? (
           <>
-            <Square size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />
+            {!isAnyLoading && <Square size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />}
             <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Check out</span>
           </>
         ) : (
           <>
-            <Play size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />
+            {!isAnyLoading && <Play size={18} fill="currentColor" strokeWidth={0} className="animate-in fade-in zoom-in duration-300" />}
             <span className="font-bold text-[11px] md:text-sm tracking-wide capitalize">Check in</span>
           </>
         )}

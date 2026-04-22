@@ -8,11 +8,10 @@ import { checkIn } from "../api/check-in";
 export function useCheckIn() {
   return useMutation({
     mutationFn: checkIn,
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       toast.success(res.message || "Check-in thành công");
 
-      queryClient.invalidateQueries({ queryKey: attendanceKeys.all });
-      queryClient.invalidateQueries({ queryKey: attendanceKeys.my() });
+      await queryClient.invalidateQueries({ queryKey: attendanceKeys.all });
     },
     onError: (error) => {
       handleError(error, "Lỗi khi thực hiện check-in");

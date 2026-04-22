@@ -8,11 +8,10 @@ import { checkOut } from "../api/check-out";
 export function useCheckOut() {
   return useMutation({
     mutationFn: checkOut,
-    onSuccess: (res) => {
+    onSuccess: async (res) => {
       toast.success(res.message || "Check-out thành công");
 
-      queryClient.invalidateQueries({ queryKey: attendanceKeys.all });
-      queryClient.invalidateQueries({ queryKey: attendanceKeys.my() });
+      await queryClient.invalidateQueries({ queryKey: attendanceKeys.all });
     },
     onError: (error) => {
       handleError(error, "Lỗi khi thực hiện check-out");
