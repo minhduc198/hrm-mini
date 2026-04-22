@@ -45,7 +45,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           <button
             type="button"
             onClick={onClear}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-subtle-text hover:text-destructive transition-colors"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-subtle-text hover:text-primary transition-colors"
           >
             <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5" strokeWidth={2.5} />
           </button>

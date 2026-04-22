@@ -4,7 +4,7 @@ import { attendanceKeys } from "../queryKeys/attendance";
 
 export function useGetMyAttendance() {
   return useQuery({
-    queryKey: attendanceKeys.my(),
+    queryKey: attendanceKeys.myList({}),
     queryFn: getMyAttendanceHistory,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

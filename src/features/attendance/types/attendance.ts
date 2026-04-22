@@ -9,13 +9,18 @@ export interface AttendanceDayData {
   holiday_name?: string | null;
   note?: string | null;
   total_employees?: number;
+  total_hours?: string;
+  late_minutes?: number;
+  early_leave_minutes?: number;
+  ot_hours?: string;
+  is_completed?: boolean;
+  is_edited?: boolean;
   status?: {
     on_time: number;
     late: number;
     absent: number;
+    leave: number;
   } | string;
-  late_minutes?: number;
-  [key: string]: any;
 }
 
 export interface WorkMonthBE {
@@ -32,6 +37,7 @@ export interface GenerateAttendanceResponse {
   message: string;
   data: WorkMonthBE[];
 }
+
 export interface CheckInData {
   user_id: number;
   work_date: string;
@@ -63,7 +69,6 @@ export interface MyAttendanceRecord {
   is_completed: boolean;
   is_edited: boolean;
   note: string | null;
-  process_at: string | null;
 }
 
 export interface MyAttendanceResponse {
@@ -75,3 +80,52 @@ export interface CheckOutResponse {
   data: MyAttendanceRecord
 }
 
+export interface LeaveRequestBasic {
+  id: number;
+  leave_type: {
+    id: number;
+    name: string;
+    is_paid: number;
+  };
+  request_scope: string;
+  start_time: string;
+  end_time: string;
+  status: 'pending' | 'approved' | 'rejected' | string;
+}
+
+export interface AttendanceRecordDetail {
+  id: number;
+  work_date: string;
+  check_in: string | null;
+  check_out: string | null;
+  total_hours: string;
+  late_minutes: number;
+  early_leave_minutes: number;
+  ot_hours: string;
+  status: string;
+  is_completed: boolean;
+  is_edited: boolean;
+  note: string | null;
+  user: {
+    id: number;
+    name: string;
+    empCode: string;
+  };
+  leave_requests?: LeaveRequestBasic[];
+}
+
+export interface AttendanceRecordDetailResponse {
+  data: AttendanceRecordDetail[];
+  meta?: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
+export interface UpdateAttendanceData {
+  check_in?: string | null;
+  check_out?: string | null;
+  note?: string | null;
+}

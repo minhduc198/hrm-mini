@@ -8,15 +8,24 @@ import { format } from "date-fns"
 import { useAttendanceStore } from "@/features/attendance/stores/attendance"  
 import { AttendanceEmptyState } from "./attendance-empty-state"
 import { useGetAttendance } from "../hooks/use-get-attendance"
+import { useGetAttendanceRecords } from "../hooks/use-get-attendance-records"
 import { AttendanceDayData } from "../types/attendance"
+import { AdminAttendanceDetailDialog } from "./admin-attendance-detail-dialog"
 
 export function AttendanceManage() {
   const { viewDate } = useAttendanceStore();
-  const { data: attendanceData, isLoading } = useGetAttendance();
+  const { data: monthData, isLoading: isLoadingMonth } = useGetAttendance();
+  const { data: attendanceResponse, isLoading: isLoadingRecords } = useGetAttendanceRecords();
   
+  const [selectedDay, setSelectedDay] = React.useState<AttendanceDayData | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+
   const handleDateClick = (day: AttendanceDayData) => {
-    // Logic cho sự kiện click ngày (nếu cần trong tương lai)
+    setSelectedDay(day);
+    setIsDetailOpen(true);
   };
+
+  const isLoading = isLoadingMonth || isLoadingRecords;
 
   if (isLoading) {
     return (
@@ -30,7 +39,35 @@ export function AttendanceManage() {
   }
 
   const viewMonthStr = format(viewDate, "yyyy-MM");
-  const hasDataForCurrentMonth = attendanceData?.some(d => d.work_date?.startsWith(viewMonthStr));
+  const records = attendanceResponse?.data || [];
+
+  // Group and aggregate records by date
+  const dailySummary = records.reduce((acc, record) => {
+    const date = record.work_date;
+    if (!acc[date]) {
+      acc[date] = { on_time: 0, late: 0, absent: 0, leave: 0 };
+    }
+
+    const status = record.status?.toLowerCase();
+    if (status === 'on_time') acc[date].on_time++;
+    else if (['late', 'early_leave', 'late_early_leave'].includes(status)) acc[date].late++;
+    else if (status === 'leave') acc[date].leave++;
+    else if (status === 'absent') acc[date].absent++;
+
+    return acc;
+  }, {} as Record<string, { on_time: number; late: number; absent: number; leave: number }>);
+
+  // Merge summary into calendar data
+  const calendarData = (monthData || []).map(day => {
+    const summary = dailySummary[day.work_date];
+    return {
+      ...day,
+      status: summary || undefined,
+      total_employees: summary ? Object.values(summary).reduce((a, b) => a + b, 0) : 0
+    };
+  });
+
+  const hasDataForCurrentMonth = calendarData.some(d => d.work_date?.startsWith(viewMonthStr));
 
   if (!hasDataForCurrentMonth) {
     return <AttendanceEmptyState />;
@@ -39,24 +76,15 @@ export function AttendanceManage() {
   return (
     <div className="flex-1 min-h-0 flex flex-col animate-in fade-in duration-500">
       <AttendanceCalendar 
-        data={attendanceData || []}
+        data={calendarData}
         currentDate={viewDate}
         className="h-full"
         onDateClick={handleDateClick}
-        renderCellFooter={(day) => {
-          if (!day?.total_employees || day.total_employees === 0) return null;
-          
-          return (
-            <div className="flex items-center gap-1 select-none">
-              <Typography variant="label-sm" className="text-primary/70">
-                {day.total_employees}
-              </Typography>
-              <Typography variant="label-sm" className="text-tx-muted">
-                nhân viên
-              </Typography>
-            </div>
-          );
-        }}
+      />
+      <AdminAttendanceDetailDialog
+        day={selectedDay}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
       />
     </div>
   );

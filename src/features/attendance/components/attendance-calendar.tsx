@@ -10,9 +10,10 @@ import {
   addDays,
   parseISO,
   isSameMonth,
-} from "date-fns";
-import { cn } from "@/lib/utils";
-import { Typography } from "@/components/ui/typography";
+  isSameDay
+} from "date-fns"
+import { cn } from "@/lib/utils"
+import { Typography } from "@/components/ui/typography"
 
 import { AttendanceDayData } from "../types/attendance"
 import { WEEKDAYS, statusMap } from "../constants"
@@ -52,13 +53,18 @@ export function AttendanceCalendar({
 
     return dayInterval.map((date) => {
       const isoString = format(date, "yyyy-MM-dd");
-      const apiDay = data.find((d) => d.work_date === isoString);
-
       return {
         date,
         isoString,
         isCurrentMonth: isSameMonth(date, monthStart),
-        apiData: apiDay,
+        apiData: data.find(d => {
+          try {
+            const apiDate = d.work_date.includes('T') ? parseISO(d.work_date) : new Date(d.work_date);
+            return isSameDay(date, apiDate);
+          } catch (e) {
+            return d.work_date === isoString;
+          }
+        })
       };
     });
   }, [gridStart, monthStart, data]);
@@ -129,62 +135,22 @@ export function AttendanceCalendar({
               )}
             >
               <div className={cn("flex flex-col h-full flex-1", !isCurrentMonth && "opacity-30")}>
-                <div className="flex justify-between items-start mb-1.5">
-                  <div className="flex gap-2 items-center">
-                    <div className={cn(
-                      "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
-                      isUserToday && isCurrentMonth 
-                        ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
-                        : !isCurrentMonth 
-                          ? "text-subtle-text" 
-                          : "text-base bg-secondary/5"
-                    )}>
-                      <Typography variant="label" className="inherit">
-                        {format(date, "d")}
-                      </Typography>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 mt-1">
-                    {isCurrentMonth && apiData?.status && (
-                      <div className="flex gap-1 flex-wrap">
-                        {(["on_time", "late", "absent"] as const).map(
-                          (statusKey) => {
-                            const count = apiData.status?.[statusKey] || 0;
-                            const colorClass =
-                              statusKey === "on_time"
-                                ? "bg-success"
-                                : statusKey === "late"
-                                  ? "bg-warning"
-                                  : "bg-danger";
-
-                            return (
-                              count > 0 && (
-                                <div
-                                  key={statusKey}
-                                  className={cn(
-                                    "size-1.5 rounded-full ring-1 ring-surface shadow-sm",
-                                    colorClass,
-                                  )}
-                                />
-                              )
-                            );
-                          },
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-auto pt-1.5 border-t border-line/10">
-                    {isCurrentMonth && apiData && (
-                      <div className="transition-all duration-200">
-                        {renderCellFooter?.(apiData)}
-                      </div>
-                    )}
+                <div className="flex justify-start items-start mb-1.5">
+                  <div className={cn(
+                    "size-7 flex items-center justify-center rounded-lg tabular-nums transition-all",
+                    isUserToday && isCurrentMonth 
+                      ? "bg-primary text-primary-fg shadow-lg shadow-primary/30 scale-105" 
+                      : !isCurrentMonth 
+                        ? "text-subtle-text" 
+                        : "text-base bg-secondary/5 font-semibold text-tx-base"
+                  )}>
+                    <Typography variant="label" className="inherit">
+                      {format(date, "d")}
+                    </Typography>
                   </div>
                 </div>
 
-                <div className="flex-1 mt-1">
+                <div className="flex-1">
                   {isCurrentMonth && apiData?.status && (
                     <div className="flex gap-1 flex-wrap">
                       {typeof apiData.status === "string" ? (() => {
@@ -212,19 +178,25 @@ export function AttendanceCalendar({
                           </div>
                         );
                       })() : typeof apiData.status === 'object' ? (
-                        (['on_time', 'late', 'absent'] as const).map(statusKey => {
-                          const count = (apiData.status as Record<string, number>)?.[statusKey] || 0;
-                          const colorClass = 
-                            statusKey === 'on_time' ? 'bg-success' : 
-                            statusKey === 'late' ? 'bg-warning' : 'bg-danger';
-                          
-                          return count > 0 && (
-                            <div 
-                              key={statusKey}
-                              className={cn("size-1.5 rounded-full ring-1 ring-surface shadow-sm", colorClass)} 
-                            />
-                          );
-                        })
+                        <div className="flex gap-1 flex-wrap mt-1">
+                          {(['on_time', 'late', 'leave', 'absent'] as const).map(statusKey => {
+                            const count = (apiData.status as any)?.[statusKey] || 0;
+                            const colorClass = 
+                              statusKey === 'on_time' ? 'bg-success' : 
+                              statusKey === 'late' ? 'bg-warning' : 
+                              statusKey === 'leave' ? 'bg-purple-500' : 'bg-danger';
+                            
+                            const label = statusKey === 'on_time' ? 'Đúng giờ' : statusKey === 'late' ? 'Muộn' : statusKey === 'leave' ? 'Nghỉ phép' : 'Vắng mặt';
+                            
+                            return count > 0 && (
+                              <div 
+                                key={statusKey}
+                                className={cn("size-2 rounded-full ring-1 ring-surface shadow-sm shrink-0", colorClass)} 
+                                title={label}
+                              />
+                            );
+                          })}
+                        </div>
                       ) : null}
                     </div>
                   )}
