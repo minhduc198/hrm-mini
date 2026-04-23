@@ -1,6 +1,9 @@
 "use client";
+import { Can } from "@/components/common/auth/Can";
+import { ExportExcelButton } from "@/components/common/button/ExportExcelButton";
 import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
-import { format } from "date-fns";
+import { PageHeader } from "@/components/common/layout/page-header";
+import { TablePagination } from "@/components/common/table/Pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,26 +14,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Typography } from "@/components/ui/typography";
+import { BulkLeaveInitToolbar } from "@/features/employee/components/BulkLeaveInitToolbar";
 import { EmployeeDialog } from "@/features/employee/components/EmployeeDialog";
 import { EmployeeTable } from "@/features/employee/components/EmployeeTable";
-import { BulkLeaveInitToolbar } from "@/features/employee/components/BulkLeaveInitToolbar";
-import { PageHeader } from "@/components/common/layout/page-header";
-import { TablePagination } from "@/components/common/table/Pagination";
-import { ExportExcelButton } from "@/components/common/button/ExportExcelButton";
 import { useEmployees } from "@/features/employee/hooks/use-employees";
-import { getListEmployee } from "@/features/employee/services";
 import {
   AddEmployeeValues,
   EditEmployeeValues,
 } from "@/features/employee/schemas";
+import { getListEmployee } from "@/features/employee/services";
 import { Employee, StatusFilter } from "@/features/employee/types";
+import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
+import { ExcelColumn } from "@/types/common";
+import { format } from "date-fns";
 import {
   CalendarDays,
   Loader2,
   Search,
-  ShieldCheck,
   UserCheck,
   UserPlus,
   Users,
@@ -38,10 +40,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { ExcelColumn } from "@/types/common";
 import { Role } from "../auth/types/auth";
-import { Can } from "@/components/common/auth/Can";
-import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 
 export default function EmployeeManagePage() {
   const [search, setSearch] = useState("");
@@ -144,7 +143,9 @@ export default function EmployeeManagePage() {
         width: 20,
         render: (row) => {
           const date = new Date(row.created_at);
-          return !isNaN(date.getTime()) ? format(date, "dd/MM/yyyy") : "Chưa cập nhật";
+          return !isNaN(date.getTime())
+            ? format(date, "dd/MM/yyyy")
+            : "Chưa cập nhật";
         },
       },
       {
@@ -224,10 +225,12 @@ export default function EmployeeManagePage() {
       });
     }
 
+    const { leave_balances: _balances, ...employeeInfo } = values;
+
     updateEmployee(
       {
         id,
-        ...values,
+        ...employeeInfo,
       },
       {
         onSuccess: () => setEditTarget(null),
@@ -512,7 +515,6 @@ export default function EmployeeManagePage() {
         onConfirm={handleToggleActive}
         isLoading={isToggling}
       />
-
     </div>
   );
 }
