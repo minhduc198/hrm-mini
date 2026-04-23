@@ -30,6 +30,7 @@ export const navItemsConfig: NavItem[] = [
     label: "Dashboard",
     url: routes.dashboard.admin,
     icon: LayoutDashboard,
+    audience: "admin-only",
   },
   {
     key: "dashboard_employee",
@@ -72,6 +73,7 @@ export const navItemsConfig: NavItem[] = [
     label: "Cấu hình làm việc và loại nghỉ",
     url: routes.workSettings,
     icon: Settings,
+    audience: "admin-only",
   },
   // --- Employee default personal tabs: shown to all employees by default ---
   {
