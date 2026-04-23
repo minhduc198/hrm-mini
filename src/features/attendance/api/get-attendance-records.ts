@@ -10,9 +10,12 @@ export const getAttendanceRecords = async (
   is_edited?: boolean,
   is_completed?: boolean
 ): Promise<AttendanceRecordDetailResponse> => {
+  const isNotCheckedIn = status === "not_checked_in";
+  
   const response = await api.get<AttendanceRecordDetailResponse>("/attendances", { 
     params: { 
-      calendar_day_id, 
+      calendar_day_id: isNotCheckedIn ? undefined : calendar_day_id, 
+      work_date: isNotCheckedIn ? calendar_day_id : undefined,
       page, 
       search, 
       per_page,
