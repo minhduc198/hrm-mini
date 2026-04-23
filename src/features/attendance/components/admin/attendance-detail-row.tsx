@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Typography } from "@/components/ui/typography";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, X, Clock } from "lucide-react";
+import { Loader2, Check, X, Clock, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AttendanceRecordDetail } from "../../types/attendance";
 import { formatTime, formatDurationFromHours, formatDurationFromMinutes } from "@/utils/date-format";
@@ -120,9 +120,25 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
         </Typography>
       </TableCell>
       <TableCell className="py-3 px-4 bg-white transition-colors border-l border-b border-line-subtle">
-        <Typography variant="label" className="font-bold text-tx-base whitespace-nowrap">
-          {record.user.name}
-        </Typography>
+        <div className="flex items-center gap-2">
+          <Typography variant="label" className="font-bold text-tx-base whitespace-nowrap">
+            {record.user.name}
+          </Typography>
+          {record.is_edited && (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="cursor-help p-0.5 rounded-md hover:bg-indigo-50 transition-colors">
+                    <Pencil size={11} className="text-indigo-500 shrink-0" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-tx-base border-tx-base">
+                  <Typography variant="tiny" className="text-white">Dữ liệu đã được chỉnh sửa thủ công</Typography>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       </TableCell>
 
       {/* --- Giờ vào --- */}
@@ -245,6 +261,14 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
                 <div className="size-1 rounded-full bg-emerald-500" />
                 <Typography variant="label-xs" className="font-bold tracking-tight text-emerald-600">Đủ công</Typography>
              </div>
+          )}
+
+          {/* --- Group 1.1: Đúng giờ --- */}
+          {record.check_in && record.late_minutes === 0 && (
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-emerald-100 bg-emerald-50/50 text-emerald-600 transition-colors hover:bg-emerald-50">
+               <Check size={10} strokeWidth={3} className="shrink-0" />
+               <Typography variant="label-xs" className="font-bold tracking-tight text-emerald-600">Đúng giờ</Typography>
+            </div>
           )}
 
           {/* --- Group 2: Đơn nghỉ phép --- */}
