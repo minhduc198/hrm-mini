@@ -8,9 +8,16 @@ import { Check } from "lucide-react";
  */
 const Checkbox = React.forwardRef<
   HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, checked, ...props }, ref) => {
+  React.InputHTMLAttributes<HTMLInputElement> & {
+    onCheckedChange?: (checked: boolean) => void;
+  }
+>(({ className, checked, onCheckedChange, onChange, ...props }, ref) => {
   const isChecked = !!checked;
+
+  const handleInternalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+    onCheckedChange?.(e.target.checked);
+  };
 
   return (
     <div className="relative inline-flex items-center group cursor-pointer">
@@ -18,6 +25,7 @@ const Checkbox = React.forwardRef<
         type="checkbox"
         ref={ref}
         checked={isChecked}
+        onChange={handleInternalChange}
         className={cn(
           "peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10",
           className,
