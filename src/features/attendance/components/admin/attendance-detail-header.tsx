@@ -2,7 +2,7 @@ import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Typography } from "@/components/ui/typography";
 import { SearchInput } from "@/components/common/form/search-input";
 import { AttendanceDayData } from "../../types/attendance";
-import { dayTypeMap } from "@/features/attendance/constants";
+import { ADMIN_ATTENDANCE_STATUS_TABS, dayTypeMap } from "@/features/attendance/constants";
 import { formatFullDate } from "@/utils/date-format";
 import { Calendar, LucideIcon, AlertCircle, Edit3 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -73,26 +73,23 @@ export function AttendanceDetailHeader({
           {/* Status Tabs - Performance Metric */}
           <div className="flex-1 w-full overflow-x-auto no-scrollbar scroll-smooth">
             <Tabs 
-              value={status && ["on_time", "late", "early_leave", "late_early_leave", "leave", "absent"].includes(status) ? status : (status === "auto_checkout" ? "" : "all")} 
+              value={status && ADMIN_ATTENDANCE_STATUS_TABS.some(t => t.value === status) ? status : (status === "auto_checkout" ? "" : "all")} 
               onValueChange={(val) => onStatusChange(val === "all" ? undefined : val)}
               className="w-full"
             >
               <TabsList className="bg-white/50 border border-line-subtle p-1 h-9 rounded-xl shadow-inner-sm overflow-hidden">
-                <TabsTrigger value="all" className="text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm">
-                  Tất cả
-                </TabsTrigger>
-                <TabsTrigger value="on_time" className="text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm">
-                  Đúng giờ
-                </TabsTrigger>
-                <TabsTrigger value="late" className="text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700 data-[state=active]:shadow-sm whitespace-nowrap">
-                  Đi muộn/Về sớm
-                </TabsTrigger>
-                <TabsTrigger value="leave" className="text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700 data-[state=active]:shadow-sm">
-                  Nghỉ phép
-                </TabsTrigger>
-                <TabsTrigger value="absent" className="text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:bg-rose-50 data-[state=active]:text-rose-700 data-[state=active]:shadow-sm">
-                  Vắng mặt
-                </TabsTrigger>
+                {ADMIN_ATTENDANCE_STATUS_TABS.map((tab) => (
+                  <TabsTrigger 
+                    key={tab.value}
+                    value={tab.value} 
+                    className={cn(
+                      "text-[11px] font-bold px-3 py-1 rounded-lg data-[state=active]:shadow-sm transition-all",
+                      tab.className
+                    )}
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>

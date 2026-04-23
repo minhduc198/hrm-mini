@@ -36,3 +36,12 @@ export const exportAttendanceStatuses = [
   })),
   { id: "auto_checkout", label: "Hệ thống Checkout" },
 ];
+
+export const ADMIN_ATTENDANCE_STATUS_TABS = [
+  { value: "all", label: "Đã check-in", className: "data-[state=active]:bg-white data-[state=active]:text-primary" },
+  { value: "on_time", label: "Đúng giờ", className: "data-[state=active]:bg-emerald-50 data-[state=active]:text-emerald-700" },
+  { value: "late", label: "Đi muộn/Về sớm", className: "data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700" },
+  { value: "leave", label: "Nghỉ phép", className: "data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700" },
+  { value: "absent", label: "Vắng mặt", className: "data-[state=active]:bg-rose-50 data-[state=active]:text-rose-700" },
+  { value: "not_checked_in", label: "Chưa check-in", className: "data-[state=active]:bg-indigo-50 data-[state=active]:text-indigo-700" },
+] as const;
