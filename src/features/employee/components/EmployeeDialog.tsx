@@ -109,7 +109,7 @@ function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
   );
 }
 
-function LeaveManagementContent() {
+function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
   const { control, watch } = useFormContext();
   const { fields } = useFieldArray({
     control,
@@ -117,95 +117,147 @@ function LeaveManagementContent() {
   });
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-100/60">
-        <div className="flex items-center gap-2">
-          <CalendarDays size={14} className="text-primary" />
-          <Typography
-            variant="label"
-            className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider"
-          >
-            Danh sách hạn mức nghỉ phép
-          </Typography>
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-100/60">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={14} className="text-primary" />
+            <Typography
+              variant="label"
+              className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider"
+            >
+              Danh sách hạn mức nghỉ phép
+            </Typography>
+          </div>
         </div>
-      </div>
 
-      {fields.length === 0 ? (
-        <div className="py-10 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-          <Typography variant="small" className="text-muted-foreground italic">
-            Chưa có dữ liệu nghỉ phép
-          </Typography>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {fields.map((field, index) => {
-            return (
-              <div
-                key={field.id}
-                className="p-4 pb-10 rounded-xl border border-slate-200/60 bg-white"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm">
-                      <CalendarDays size={18} />
-                    </div>
-                    <div className="space-y-0.5">
-                      <Typography
-                        variant="h4"
-                        className="text-[14px] font-bold text-slate-800"
-                      >
-                        {(field as any).leave_type?.name}
-                      </Typography>
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+        {fields.length === 0 ? (
+          <div className="py-10 text-center bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+            <Typography
+              variant="small"
+              className="text-muted-foreground italic"
+            >
+              Chưa có dữ liệu nghỉ phép
+            </Typography>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {fields.map((field, index) => {
+              const leaveType = (field as any).leave_type;
+              if (leaveType?.is_paid === 0) return null;
+
+              return (
+                <div
+                  key={field.id}
+                  className="p-4 pb-10 rounded-xl border border-slate-200/60 bg-white"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm">
+                        <CalendarDays size={18} />
+                      </div>
+                      <div className="space-y-0.5">
                         <Typography
-                          variant="small"
-                          className="text-[10px] text-emerald-600 font-medium uppercase tracking-widest leading-none"
+                          variant="h4"
+                          className="text-[14px] font-bold text-slate-800"
                         >
-                          Năm {(field as any).year}
+                          {leaveType?.name}
                         </Typography>
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                          <Typography
+                            variant="small"
+                            className="text-[10px] text-emerald-600 font-medium uppercase tracking-widest leading-none"
+                          >
+                            Năm {(field as any).year}
+                          </Typography>
+                        </div>
                       </div>
                     </div>
+                    <div className="text-right">
+                      <Typography
+                        variant="h4"
+                        className="text-xl font-bold text-primary tabular-nums leading-none"
+                      >
+                        {(() => {
+                          const bal =
+                            watch(`leave_balances.${index}.balance`) || 0;
+                          const used =
+                            watch(`leave_balances.${index}.used_days`) || 0;
+                          return Math.max(0, Number(bal) - Number(used));
+                        })()}
+                      </Typography>
+                      <Typography
+                        variant="small"
+                        className="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter transition-colors"
+                      >
+                        Ngày khả dụng
+                      </Typography>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <Typography
-                      variant="h4"
-                      className="text-xl font-bold text-primary tabular-nums leading-none"
-                    >
-                      {(() => {
-                        const bal =
-                          watch(`leave_balances.${index}.balance`) || 0;
-                        const used =
-                          watch(`leave_balances.${index}.used_days`) || 0;
-                        return Math.max(0, Number(bal) - Number(used));
-                      })()}
-                    </Typography>
-                    <Typography
-                      variant="small"
-                      className="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter transition-colors"
-                    >
-                      Ngày khả dụng
-                    </Typography>
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <TextFieldNumber
-                    name={`leave_balances.${index}.balance`}
-                    label="Tổng hạn mức"
-                    placeholder="0"
-                    className="h-10 text-sm bg-white border-slate-200 focus:border-primary/40"
-                  />
-                  <TextFieldNumber
-                    name={`leave_balances.${index}.used_days`}
-                    label="Số ngày đã nghỉ"
-                    placeholder="0"
-                    className="h-10 text-sm bg-white border-slate-200 focus:border-primary/40"
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <TextFieldNumber
+                      name={`leave_balances.${index}.balance`}
+                      label="Tổng hạn mức"
+                      placeholder="0"
+                      className="h-10 text-sm bg-white border-slate-200 focus:border-primary/40"
+                    />
+                    <TextFieldNumber
+                      name={`leave_balances.${index}.used_days`}
+                      label="Số ngày đã nghỉ"
+                      placeholder="0"
+                      className="h-10 text-sm bg-white border-slate-200 focus:border-primary/40"
+                    />
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {employee?.attendance_stats && (
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center gap-2 pb-2 border-b border-slate-100/60">
+            <Typography
+              variant="label"
+              className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider"
+            >
+              Thống kê chuyên cần
+            </Typography>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl border border-slate-200/60 bg-slate-50/30 flex flex-col items-center justify-center text-center space-y-1">
+              <Typography
+                variant="h4"
+                className="text-2xl font-bold text-slate-700"
+              >
+                {employee.attendance_stats.unpaid_leave_days || 0}
+              </Typography>
+              <Typography
+                variant="small"
+                className="text-[10px] text-slate-500 font-bold uppercase tracking-tight"
+              >
+                Nghỉ không lương
+              </Typography>
+            </div>
+            <div className="p-4 rounded-xl border border-red-100 bg-red-50/30 flex flex-col items-center justify-center text-center space-y-1">
+              <Typography
+                variant="h4"
+                className="text-2xl font-bold text-red-600"
+              >
+                {employee.attendance_stats.unexcused_absent_days || 0}
+              </Typography>
+              <Typography
+                variant="small"
+                className="text-[10px] text-red-500 font-bold uppercase tracking-tight"
+              >
+                Nghỉ không xin phép
+              </Typography>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -381,7 +433,7 @@ export function EmployeeDialog({
                     value="leave"
                     className="pb-4 focus-visible:outline-none mt-0"
                   >
-                    <LeaveManagementContent />
+                    <LeaveManagementContent employee={employee} />
                   </TabsContent>
                 </div>
               </Tabs>

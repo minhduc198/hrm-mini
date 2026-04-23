@@ -11,15 +11,8 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 import { cn } from "@/lib/utils";
-import {
-  AlertCircle,
-  CalendarDays,
-  CheckCircle2,
-  Loader2,
-  RefreshCw,
-} from "lucide-react";
+import { AlertCircle, CalendarDays, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { Switch } from "@/components/ui/switch";
 
 import { Employee } from "@/features/employee/types";
 

@@ -15,6 +15,11 @@ export interface Employee {
     name: string;
   } | null;
   leave_balances?: LeaveBalance[];
+  attendance_stats?: {
+    paid_leave_days: number;
+    unpaid_leave_days: number;
+    unexcused_absent_days: number;
+  };
   created_at: string;
   updated_at: string;
 }
