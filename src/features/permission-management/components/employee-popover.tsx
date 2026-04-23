@@ -13,6 +13,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { mapEmployeeToUserResponse } from "../adapters/permission";
 import { Loader2 } from "lucide-react";
 import { UserAvatar } from "@/components/common/avatar/user-avatar";
+import { useNumberParam, useParam } from "@/hooks/use-param";
 
 const INITIAL_LIMIT = 6;
 
@@ -171,8 +172,8 @@ export function EmployeePopover({
   isOpen,
   onClose,
 }: EmployeePopoverProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [limit, setLimit] = useState(INITIAL_LIMIT);
+  const [searchQuery, setSearchQuery] = useParam("popover_search", "");
+  const [limit, setLimit] = useNumberParam("popover_limit", INITIAL_LIMIT);
   const debouncedSearch = useDebounce(searchQuery, 300);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -212,7 +213,7 @@ export function EmployeePopover({
   };
 
   const handleLoadMore = () => {
-    setLimit(prev => prev + INITIAL_LIMIT);
+    setLimit(limit + INITIAL_LIMIT);
   };
 
   useEffect(() => {

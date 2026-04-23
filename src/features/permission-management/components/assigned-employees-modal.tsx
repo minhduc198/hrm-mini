@@ -9,6 +9,7 @@ import { UserAPIResponse } from "../types/permission";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { UserAvatar } from "@/components/common/avatar/user-avatar";
 import { useState, useMemo } from "react";
+import { useParam } from "@/hooks/use-param";
 import { SearchInput } from "@/components/common/form/search-input";
 
 interface AssignedEmployeesModalProps {
@@ -25,7 +26,7 @@ export function AssignedEmployeesModal({
   onClose,
 }: AssignedEmployeesModalProps) {
   const isMobile = useIsMobile();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useParam("assigned_search", "");
 
   const filteredEmployees = useMemo(() => {
     if (!searchQuery.trim()) return selectedEmployees;

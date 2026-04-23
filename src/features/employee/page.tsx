@@ -40,18 +40,22 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useNumberParam, useParam } from "@/hooks/use-param";
 import { Role } from "../auth/types/auth";
 
 export default function EmployeeManagePage() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useParam("search", "");
   const debouncedSearch = useDebounce(search, 500);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useParam<StatusFilter>(
+    "status",
+    "all" as StatusFilter,
+  );
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Employee | null>(null);
   const [confirmToggleTarget, setConfirmToggleTarget] =
     useState<Employee | null>(null);
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useNumberParam("page", 1);
+  const [perPage, setPerPage] = useNumberParam("per_page", 10);
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 

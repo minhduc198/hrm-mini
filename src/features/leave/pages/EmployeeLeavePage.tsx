@@ -5,6 +5,7 @@ import { Typography } from "@/components/ui/typography";
 import { EmployeeActions } from "@/features/attendance/components/employee-actions";
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";
+import { useNumberParam } from "@/hooks/use-param";
 import { LeaveDetailDialog } from "../components/LeaveDetailDialog";
 import { LeaveHistoryTable } from "../components/LeaveHistoryTable";
 import { useLeave } from "../hooks/use-leave";
@@ -12,8 +13,8 @@ import { LeaveRequest } from "../types";
 
 export default function EmployeeLeavePage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useNumberParam("page", 1);
+  const [perPage, setPerPage] = useNumberParam("per_page", 10);
 
   const [selectedRequest, setSelectedRequest] = useState<LeaveRequest | null>(
     null,
