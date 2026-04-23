@@ -38,9 +38,7 @@ export function useLogin() {
       const role = session?.user?.role;
 
       const destination =
-        role === "admin"
-          ? routes.employeeManagement
-          : routes.attendance.personal;
+        role === "admin" ? routes.dashboard.admin : routes.dashboard.employee;
 
       router.replace(destination);
     },
