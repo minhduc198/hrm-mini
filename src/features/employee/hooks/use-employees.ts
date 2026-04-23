@@ -47,7 +47,7 @@ export function useEmployees(params: GetListEmployeeParams) {
       const previousData = queryClient.getQueryData(employeeKeys.list(params));
 
       if (previousData) {
-        queryClient.setQueryData(employeeKeys.list(params), (old: any) => {
+        queryClient.setQueryData(employeeKeys.list(params), (old: { data: Employee[] } | undefined) => {
           if (!old || !old.data) return old;
           return {
             ...old,
@@ -59,7 +59,7 @@ export function useEmployees(params: GetListEmployeeParams) {
       }
       return { previousData };
     },
-    onError: (err, _, context: any) => {
+    onError: (err, _, context: { previousData?: unknown } | undefined) => {
       if (context?.previousData) {
         queryClient.setQueryData(
           employeeKeys.list(params),
@@ -83,7 +83,7 @@ export function useEmployees(params: GetListEmployeeParams) {
       const previousData = queryClient.getQueryData(employeeKeys.list(params));
 
       if (previousData) {
-        queryClient.setQueryData(employeeKeys.list(params), (old: any) => {
+        queryClient.setQueryData(employeeKeys.list(params), (old: { data: Employee[] } | undefined) => {
           if (!old || !old.data) return old;
           return {
             ...old,
@@ -95,7 +95,7 @@ export function useEmployees(params: GetListEmployeeParams) {
       }
       return { previousData };
     },
-    onError: (err, _, context: any) => {
+    onError: (err, _, context: { previousData?: unknown } | undefined) => {
       if (context?.previousData) {
         queryClient.setQueryData(
           employeeKeys.list(params),

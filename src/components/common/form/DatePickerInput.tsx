@@ -41,9 +41,9 @@ export function DatePickerInput({
   const isFormMode = !!formContext && !!name;
 
   const renderContent = (
-    value: any,
-    onChange: (val: any) => void,
-    error?: any,
+    value: string | Date | null | undefined,
+    onChange: (val: string | null) => void,
+    error?: { message?: string },
   ) => (
     <div className={cn("space-y-1.5", className)}>
       {label && (

@@ -162,7 +162,7 @@ export function LeaveHistoryTable({
       header: "Trạng thái",
       cell: ({ row }) => {
         const rawStatus = row.original.status;
-        const status = (statusMap as any)[rawStatus] || statusMap.rejected;
+        const status = statusMap[rawStatus as LeaveStatus] || statusMap.rejected;
         const StatusIcon = status.icon;
         return (
           <div className="flex items-center justify-between min-w-[130px]">

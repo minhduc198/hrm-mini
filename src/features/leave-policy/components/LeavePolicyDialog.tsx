@@ -22,7 +22,14 @@ import { Infer } from "next/dist/compiled/superstruct";
 interface LeavePolicyDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: {
+    name: string;
+    is_paid: number;
+    default_days: number;
+    allow_half_day: number;
+    allow_hourly: number;
+    is_active: number;
+  }) => void;
   initialData?: LeaveType | null;
   isLoading?: boolean;
 }

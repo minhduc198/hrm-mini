@@ -30,7 +30,7 @@ interface DataTableProps<TData, TValue> {
   onRowSelectionChange?: React.Dispatch<
     React.SetStateAction<Record<string, boolean>>
   >;
-  enableRowSelection?: ((row: any) => boolean) | boolean;
+  enableRowSelection?: ((row: import("@tanstack/react-table").Row<TData>) => boolean) | boolean;
 }
 
 export function DataTable<TData, TValue>({

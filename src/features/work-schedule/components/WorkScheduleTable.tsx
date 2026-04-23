@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Calendar, Clock, Pencil, UserCheck, UserX } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useMemo } from "react";
 import { DataTable } from "@/components/common/table/DataTable";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";

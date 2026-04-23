@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // DEBUG — remove after confirming
     console.log("[RBAC] role:", role, "| permissions:", permissions, "| moduleSet:", [...modules]);
     return modules;
-  }, [permissions]);
+  }, [permissions, role]);
 
   // ── Derived booleans & check functions ──────────────────────────────────
 

@@ -12,7 +12,7 @@ import { Typography } from "@/components/ui/typography";
 import { useLeavePolicy } from "@/features/leave-policy/hooks/use-leave-policy";
 import { cn } from "@/lib/utils";
 import { AlertCircle, CalendarDays, CheckCircle2, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import { Employee } from "@/features/employee/types";
 
@@ -38,14 +38,14 @@ export function BulkLeaveInitModal({
     isInitializing: isPending,
   } = useLeavePolicy();
   const [processedTypes, setProcessedTypes] = useState<number[]>([]);
-  const [shouldReset, setShouldReset] = useState(false);
+  const shouldReset = false;
 
   const paidLeaveTypes =
     leaveTypes?.filter((type) => type.is_paid && type.is_active) || [];
 
   const currentYear = new Date().getFullYear();
 
-  const isAlreadyInitialized = (typeId: number) => {
+  const isAlreadyInitialized = useCallback((typeId: number) => {
     return employees
       .filter((emp) => selectedEmployeeIds.includes(emp.id))
       .some((emp) =>
@@ -53,7 +53,7 @@ export function BulkLeaveInitModal({
           (lb) => lb.leave_type.id === typeId && lb.year === currentYear,
         ),
       );
-  };
+  }, [employees, selectedEmployeeIds, currentYear]);
 
   const handleInit = (typeId: number) => {
     initBalance(

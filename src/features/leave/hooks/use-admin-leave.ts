@@ -35,7 +35,7 @@ export function useAdminLeave(params: {
       toast.success("Đã duyệt đơn nghỉ phép");
       queryClient.invalidateQueries({ queryKey: leaveKeys.admin() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       handleError(error, "Không thể duyệt đơn");
     },
   });
@@ -47,7 +47,7 @@ export function useAdminLeave(params: {
       toast.success("Đã từ chối đơn nghỉ phép");
       queryClient.invalidateQueries({ queryKey: leaveKeys.admin() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       handleError(error, "Không thể từ chối đơn");
     },
   });
@@ -59,7 +59,7 @@ export function useAdminLeave(params: {
       toast.success(`Đã ${statusText} các đơn đã chọn`);
       queryClient.invalidateQueries({ queryKey: leaveKeys.admin() });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       handleError(error, "Không thể cập nhật trạng thái");
     },
   });

@@ -14,7 +14,7 @@ export interface NavItem {
   key: string;
   label: string;
   url: string;
-  icon: any;
+  icon: React.ElementType;
   /** Module name used for module-level access check ("employee", "leave") */
   module?: string;
   /** Specific permission used for exact action-level access check */

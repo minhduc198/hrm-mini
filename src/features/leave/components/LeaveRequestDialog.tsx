@@ -25,7 +25,6 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { LeaveType, LeaveBalance } from "../../employee/types";
 import { Infer } from "next/dist/compiled/superstruct";
-import { emit } from "process";
 
 interface LeaveRequestDialogProps {
   open: boolean;
@@ -147,8 +146,10 @@ export function LeaveRequestDialog({
         reset();
 
         const enrichedData = {
-          ...data,
+          ...(data as Record<string, unknown>),
           leave_type: selectedBalance?.leave_type || { name: "N/A" },
+        } as unknown as CreateLeaveRequestPayload & {
+          leave_type: Partial<LeaveType>;
         };
 
         if (onSuccess) onSuccess(enrichedData);

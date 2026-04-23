@@ -38,7 +38,7 @@ export const addEmployeeSchema = z
     password: z.string().min(6, "Tối thiểu 6 ký tự"),
     password_confirmation: z.string(),
   })
-  .refine((d: any) => d.password === d.password_confirmation, {
+  .refine((d: { password?: string; password_confirmation?: string }) => d.password === d.password_confirmation, {
     message: "Mật khẩu xác nhận không khớp",
     path: ["password_confirmation"],
   });
@@ -100,7 +100,7 @@ export const changePasswordSchema = z
     new_password: z.string().min(6, "Tối thiểu 6 ký tự"),
     new_password_confirmation: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
   })
-  .refine((data: any) => data.new_password === data.new_password_confirmation, {
+  .refine((data: { new_password?: string; new_password_confirmation?: string }) => data.new_password === data.new_password_confirmation, {
     message: "Mật khẩu xác nhận không khớp",
     path: ["new_password_confirmation"],
   });

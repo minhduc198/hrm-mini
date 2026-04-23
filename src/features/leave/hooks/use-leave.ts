@@ -25,7 +25,7 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail("me") });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       handleError(error, "Không thể tạo đơn xin nghỉ");
     },
   });
@@ -37,7 +37,7 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail("me") });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       handleError(error, "Không thể hủy đơn xin nghỉ");
     },
   });

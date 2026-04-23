@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { useAttendanceStore } from "../stores/attendance";
 import { useGenerateAttendance } from "../hooks/use-generate-attendance";
 import { Loader2, CalendarPlus } from "lucide-react";
 import { cn } from "@/lib/utils";

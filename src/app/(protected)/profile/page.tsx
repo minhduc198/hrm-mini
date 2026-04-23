@@ -91,13 +91,13 @@ export default function ProfilePage() {
     }
 
     updateProfile(formData, {
-      onSuccess: (data: any) => {
+      onSuccess: (data: import("@/features/employee/types").Employee) => {
         setAvatarFile(null);
         form.reset({}, { keepValues: true });
 
         setUser({
           name: values.name,
-          avatar: data?.data?.avatar_url || avatarPreview,
+          avatar: data?.avatar_url || avatarPreview,
         });
       },
     });

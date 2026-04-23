@@ -22,7 +22,6 @@ export function LeavePolicyTable({
   onEdit,
   onDelete,
   onToggleActive,
-  isLoading,
 }: LeavePolicyTableProps) {
   const columns = useMemo<ColumnDef<LeaveType>[]>(
     () => [

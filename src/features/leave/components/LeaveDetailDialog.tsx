@@ -77,7 +77,7 @@ export function LeaveDetailDialog({
                 Chi tiết đơn
               </Badge>
               <Badge
-                variant={status.variant as any}
+                variant={status.variant as import("@/components/ui/badge").BadgeProps["variant"]}
                 className={cn(
                   "gap-1.5 font-bold shadow-sm",
                   status.variant === "warning" &&
@@ -176,7 +176,7 @@ export function LeaveDetailDialog({
               nghỉ
             </Typography>
             <div className="text-sm text-slate-700 leading-relaxed bg-slate-50/50 p-3 rounded-lg border border-slate-100 italic">
-              "{request.reason}"
+              &quot;{request.reason}&quot;
             </div>
           </div>
 
