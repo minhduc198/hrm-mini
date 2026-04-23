@@ -8,6 +8,7 @@ import { AttendanceRecordDetail } from "../../types/attendance";
 import { formatTime, formatDurationFromHours, formatDurationFromMinutes } from "@/utils/date-format";
 import { useUpdateAttendanceRecord } from "../../hooks/use-update-attendance-record";
 import { toast } from "sonner";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
 import {
   TableRow,
@@ -25,6 +26,8 @@ interface AttendanceDetailRowProps {
 }
 
 export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
+  const { hasPermission } = useAuth();
+  const canEdit = hasPermission("attendance.edit");
   const { mutate: updateRecord, isPending: isUpdating } = useUpdateAttendanceRecord();
   const [editingCell, setEditingCell] = useState<"check_in" | "check_out" | "note" | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -32,6 +35,8 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
   const isLeaveRestricted = normalizedStatus === "leave" || record.leave_requests?.some(lr => lr.status === "approved");
 
   const handleStartEdit = (field: "check_in" | "check_out" | "note", value: string | null) => {
+    if (!canEdit) return;
+    
     if (isLeaveRestricted && (field === "check_in" || field === "check_out")) {
       toast.info("Không thể chỉnh sửa giờ cho nhân viên đã có đơn nghỉ phép được duyệt");
       return;
@@ -124,7 +129,7 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       <TableCell 
         className={cn(
           "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
-          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          (isLeaveRestricted || !canEdit) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_in" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("check_in", record.check_in)}
@@ -176,7 +181,7 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       <TableCell 
         className={cn(
           "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
-          isLeaveRestricted ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          (isLeaveRestricted || !canEdit) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_out" ? "bg-primary-tint/30" : ""
         )}
          onClick={() => handleStartEdit("check_out", record.check_out)}
@@ -291,8 +296,9 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
 
       <TableCell 
         className={cn(
-          "py-3 px-4 border-l border-b border-line-subtle cursor-pointer transition-all bg-white w-[250px] min-w-[250px] max-w-[250px]",
-          editingCell === "note" ? "bg-primary-tint/30" : "hover:bg-transparent"
+          "py-3 px-4 border-l border-b border-line-subtle transition-all bg-white w-[250px] min-w-[250px] max-w-[250px]",
+          !canEdit ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          editingCell === "note" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("note", record.note)}
       >
