@@ -3,8 +3,10 @@ import { UserAPIResponse, ModuleAPIResponse } from "../types/permission";
 
 type PermissionMatrixState = {
   modules: ModuleAPIResponse[];
+  initialModules: ModuleAPIResponse[];
   isLoading: boolean;
   isSaving: boolean;
+  isDirty: boolean;
 };
 
 type PermissionMatrixActions = {
@@ -13,6 +15,7 @@ type PermissionMatrixActions = {
   setSaving: (saving: boolean) => void;
   addEmployeeToPermission: (permissionId: string, employee: UserAPIResponse) => void;
   removeEmployeeFromPermission: (permissionId: string, employeeId: string) => void;
+  setDirty: (isDirty: boolean) => void;
   reset: () => void;
 };
 
@@ -20,21 +23,26 @@ export type PermissionMatrixStore = PermissionMatrixState & PermissionMatrixActi
 
 const initialState: PermissionMatrixState = {
   modules: [],
+  initialModules: [],
   isLoading: false,
   isSaving: false,
+  isDirty: false,
 };
 
 export const usePermissionMatrixStore = create<PermissionMatrixStore>((set) => ({
   ...initialState,
 
-  setModules: (modules) => set({ modules }),
+  setModules: (modules) => set({ modules, initialModules: JSON.parse(JSON.stringify(modules)), isDirty: false }),
 
   setLoading: (isLoading) => set({ isLoading }),
 
   setSaving: (isSaving) => set({ isSaving }),
 
+  setDirty: (isDirty) => set({ isDirty }),
+
   addEmployeeToPermission: (permissionId, employee) =>
     set((state) => ({
+      isDirty: true,
       modules: state.modules.map((module) => ({
         ...module,
         permissions: module.permissions.map((perm) =>
@@ -52,6 +60,7 @@ export const usePermissionMatrixStore = create<PermissionMatrixStore>((set) => (
 
   removeEmployeeFromPermission: (permissionId, employeeId) =>
     set((state) => ({
+      isDirty: true,
       modules: state.modules.map((module) => ({
         ...module,
         permissions: module.permissions.map((perm) =>
