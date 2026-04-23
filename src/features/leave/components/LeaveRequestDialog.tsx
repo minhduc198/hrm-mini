@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { LeaveType, LeaveBalance } from "../../employee/types";
 import { Infer } from "next/dist/compiled/superstruct";
+import { emit } from "process";
 
 interface LeaveRequestDialogProps {
   open: boolean;
@@ -93,14 +94,9 @@ export function LeaveRequestDialog({
     }
   }, [isPaidRequest, unpaidLeaveBalance, setValue, employeeData]);
 
-  useEffect(() => {
-    if (isPaidRequest && requestScope === "hourly") {
-      setValue("request_scope", "full_day");
-    }
-  }, [isPaidRequest, requestScope, setValue]);
 
   useEffect(() => {
-    if (selectedBalance && isPaidRequest) {
+    if (selectedBalance) {
       const { allow_half_day, allow_hourly } = selectedBalance.leave_type;
       if (requestScope === "half_day" && allow_half_day !== 1) {
         setValue("request_scope", "full_day");
@@ -109,7 +105,7 @@ export function LeaveRequestDialog({
         setValue("request_scope", "full_day");
       }
     }
-  }, [selectedBalance, requestScope, setValue, isPaidRequest]);
+  }, [selectedBalance, requestScope, setValue]);
 
   const onSubmit = (values: LeaveRequestFormValues) => {
     const isHourly = values.request_scope === "hourly";
@@ -239,16 +235,12 @@ export function LeaveRequestDialog({
                 required
                 options={[
                   { label: "Cả ngày", value: "full_day" },
-                  ...(isPaidRequest
-                    ? selectedBalance?.leave_type.allow_half_day === 1
-                      ? [{ label: "Nửa ngày", value: "half_day" }]
-                      : []
-                    : [{ label: "Nửa ngày", value: "half_day" }]),
-                  ...(isPaidRequest
-                    ? selectedBalance?.leave_type.allow_hourly === 1
-                      ? [{ label: "Theo giờ", value: "hourly" }]
-                      : []
-                    : [{ label: "Theo giờ", value: "hourly" }]),
+                  ...(selectedBalance?.leave_type.allow_half_day === 1
+                    ? [{ label: "Nửa ngày", value: "half_day" }]
+                    : []),
+                  ...(selectedBalance?.leave_type.allow_hourly === 1
+                    ? [{ label: "Theo giờ", value: "hourly" }]
+                    : []),
                 ]}
               />
 
