@@ -1,6 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Pencil, ShieldCheck, User } from "lucide-react";
 import { useMemo } from "react";
+import Image from "next/image";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { DataTable } from "@/components/common/table/DataTable";
 import { ToggleButton } from "@/components/common/form/ToggleButton";
@@ -85,9 +86,11 @@ export function EmployeeTable({
                 )}
               >
                 {emp.avatar_url ? (
-                  <img
+                  <Image
                     src={emp.avatar_url}
                     alt="avatar"
+                    width={32}
+                    height={32}
                     className="w-full h-full object-cover"
                   />
                 ) : (

@@ -12,6 +12,7 @@ import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarDays, Pencil, UserPlus } from "lucide-react";
+import Image from "next/image";
 import { useEffect } from "react";
 import {
   FormProvider,
@@ -52,7 +53,7 @@ interface EmployeeDialogProps {
   employee?: Employee | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: import("../schemas").AddEmployeeValues | import("../schemas").EditEmployeeValues) => void | Promise<void>;
 }
 
 function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
@@ -143,7 +144,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {fields.map((field, index) => {
-              const leaveType = (field as any).leave_type;
+              const leaveType = (field as unknown as { leave_type: import("../../leave-policy/types").LeaveType }).leave_type;
               if (leaveType?.is_paid === 0) return null;
 
               return (
@@ -169,7 +170,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
                             variant="small"
                             className="text-[10px] text-emerald-600 font-medium uppercase tracking-widest leading-none"
                           >
-                            Năm {(field as any).year}
+                            Năm {(field as unknown as { year: number }).year}
                           </Typography>
                         </div>
                       </div>
@@ -357,9 +358,11 @@ export function EmployeeDialog({
                 )}
               >
                 {employee.avatar_url ? (
-                  <img
+                  <Image
                     src={employee.avatar_url}
                     alt="avatar"
+                    width={32}
+                    height={32}
                     className="w-full h-full object-cover"
                   />
                 ) : (

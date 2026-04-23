@@ -11,7 +11,7 @@ import { useAttendanceTodayStatus } from "../hooks/use-attendance-today-status";
 import { LeaveRequestDialog } from "@/features/leave/components/LeaveRequestDialog";
 
 interface EmployeeActionsProps {
-  onLeaveRequestSuccess?: (data: any) => void;
+  onLeaveRequestSuccess?: (data: unknown) => void;
 }
 
 export function EmployeeActions({ onLeaveRequestSuccess }: EmployeeActionsProps) {

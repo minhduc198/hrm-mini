@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { AVATAR_COLORS } from "@/features/employee/constants";
 import { Can } from "@/components/common/auth/Can";
+import Image from "next/image";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
@@ -167,13 +168,15 @@ export function LeaveActionDialog({
                   )}
                 >
                   {user?.avatar ? (
-                    <img
+                    <Image
                       src={
                         user.avatar.startsWith("http")
                           ? user.avatar
                           : `${process.env.NEXT_PUBLIC_STORAGE_URL || "http://localhost:8000/storage/"}${user.avatar}`
                       }
                       alt={user.name}
+                      width={40}
+                      height={40}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -238,7 +241,7 @@ export function LeaveActionDialog({
                       Lý do nghỉ
                     </Typography>
                     <div className="text-[12px] text-slate-600 bg-slate-50/50 p-2 rounded-lg border border-slate-100 italic line-clamp-2">
-                      "{request.reason}"
+                      &quot;{request.reason}&quot;
                     </div>
                   </div>
                 </div>

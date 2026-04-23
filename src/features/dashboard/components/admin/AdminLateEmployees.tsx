@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Badge } from "@/components/ui/badge";
 import { UserCheck } from "lucide-react";
+import Image from "next/image";
 import { LateEmployee } from "../../types";
 import { formatDuration } from "../../utils/format";
 
@@ -30,9 +31,11 @@ export function AdminLateEmployees({ employees }: AdminLateEmployeesProps) {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold uppercase overflow-hidden">
                       {emp.user.avatar ? (
-                        <img
+                        <Image
                           src={emp.user.avatar}
                           alt={emp.user.name}
+                          width={40}
+                          height={40}
                           className="w-full h-full object-cover"
                         />
                       ) : (

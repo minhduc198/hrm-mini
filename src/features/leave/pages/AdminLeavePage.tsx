@@ -64,7 +64,7 @@ export default function AdminLeavePage() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, statusFilter, startTime, endTime]);
+  }, [debouncedSearch, statusFilter, startTime, endTime, setPage]);
 
   const selectedCount = Object.keys(rowSelection).length;
   const selectedIds = Object.keys(rowSelection)

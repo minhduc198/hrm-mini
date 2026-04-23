@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AttendanceDayData } from "../types/attendance";
 import { useGetAttendanceRecords } from "../hooks/use-get-attendance-records";
@@ -52,7 +52,7 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
   // Reset page khi search, perPage hoặc các bộ lọc khác thay đổi
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, perPage, status, isEdited, isCompleted]);
+  }, [debouncedSearch, perPage, status, isEdited, isCompleted, setPage]);
 
   if (!day) return null;
 

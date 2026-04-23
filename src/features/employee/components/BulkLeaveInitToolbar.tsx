@@ -9,7 +9,7 @@ import { BulkLeaveInitModal } from "./BulkLeaveInitModal";
 import { Can } from "@/components/common/auth/Can";
 
 interface BulkLeaveInitToolbarProps {
-  employees: any[];
+  employees: import("../types").Employee[];
   selectedEmployeeIds: number[];
   onClearSelection: () => void;
 }

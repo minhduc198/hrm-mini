@@ -24,7 +24,7 @@ import { Infer } from "next/dist/compiled/superstruct";
 interface WorkScheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: import("../schemas").WorkScheduleFormValues) => void;
   initialData?: RuleWorkSetting | null;
   isLoading?: boolean;
 }

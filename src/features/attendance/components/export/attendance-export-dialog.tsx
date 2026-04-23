@@ -58,7 +58,6 @@ export function AttendanceExportDialog({
   const exportType = form.watch("type");
   const fromDate = form.watch("from_date");
   const toDate = form.watch("to_date");
-  const { isValid, errors } = form.formState;
 
   // Reset form khi mở modal
   React.useEffect(() => {
@@ -70,14 +69,14 @@ export function AttendanceExportDialog({
         month: new Date(),
       });
     }
-  }, [open, form.reset]);
+  }, [open, form]);
 
   // Tự động trigger validate lại to_date khi fromDate thay đổi (chỉ khi toDate đã có giá trị)
   React.useEffect(() => {
     if (exportType === "range" && fromDate && toDate) {
       form.trigger("to_date");
     }
-  }, [fromDate, exportType, form.trigger, toDate]);
+  }, [fromDate, exportType, form, toDate]);
 
   const onFormSubmit = (values: AttendanceExportFormValues) => {
     console.log('values: ', values);

@@ -13,11 +13,11 @@ export function useUpdateAttendanceRecord() {
     onSuccess: (updatedRecord) => {
       queryClient.setQueriesData(
         { queryKey: attendanceKeys.records() },
-        (oldData: any) => {
+        (oldData: { data: { id: number }[] } | undefined) => {
           if (!oldData || !oldData.data) return oldData;
           return {
             ...oldData,
-            data: oldData.data.map((item: any) => 
+            data: oldData.data.map((item) => 
               item.id === updatedRecord.id ? updatedRecord : item
             )
           };
@@ -28,9 +28,9 @@ export function useUpdateAttendanceRecord() {
       
       toast.success("Cập nhật chấm công thành công");
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật";
-      toast.error(message);
+    onError: (error: unknown) => {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Có lỗi xảy ra khi cập nhật";
+      toast.error(message as string);
     },
   });
 }

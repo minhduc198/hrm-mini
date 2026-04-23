@@ -88,7 +88,7 @@ export default function EmployeeManagePage() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch, statusFilter, setPage]);
 
   const isInitialLoading = listQueryEmployee.isLoading;
 
@@ -229,7 +229,8 @@ export default function EmployeeManagePage() {
       });
     }
 
-    const { leave_balances: _balances, ...employeeInfo } = values;
+    const employeeInfo = { ...values };
+    delete (employeeInfo as Record<string, unknown>).leave_balances;
 
     updateEmployee(
       {
@@ -485,7 +486,7 @@ export default function EmployeeManagePage() {
         mode="add"
         open={addOpen}
         onOpenChange={setAddOpen}
-        onSubmit={handleAdd}
+        onSubmit={handleAdd as (values: import("@/features/employee/schemas").AddEmployeeValues | import("@/features/employee/schemas").EditEmployeeValues) => void | Promise<void>}
       />
       <EmployeeDialog
         mode="edit"
@@ -494,7 +495,7 @@ export default function EmployeeManagePage() {
         onOpenChange={(open) => !open && setEditTarget(null)}
         onSubmit={(values) => {
           if (editTarget) {
-            handleEdit(editTarget.id, values);
+            handleEdit(editTarget.id, values as import("@/features/employee/schemas").EditEmployeeValues);
           }
         }}
       />

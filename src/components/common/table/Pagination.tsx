@@ -41,8 +41,6 @@ export function TablePagination({
   totalItems,
   className,
 }: TablePaginationProps) {
-  if (totalPage <= 0) return null;
-
   const pages = useMemo(() => {
     const result: (number | "start" | "end")[] = [];
     const maxVisible = 5;
@@ -63,6 +61,8 @@ export function TablePagination({
 
     return result;
   }, [currentPage, totalPage]);
+
+  if (totalPage <= 0) return null;
 
   const showPerPage = !!onPerPageChange && !!perPage;
 

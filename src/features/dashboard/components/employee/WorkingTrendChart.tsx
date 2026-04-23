@@ -17,7 +17,7 @@ interface WorkingTrendChartProps {
   trends: WorkingTrend[];
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: WorkingTrend }[] }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload as WorkingTrend;
     return (

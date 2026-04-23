@@ -61,7 +61,7 @@ export function AttendanceCalendar({
           try {
             const apiDate = d.work_date.includes('T') ? parseISO(d.work_date) : new Date(d.work_date);
             return isSameDay(date, apiDate);
-          } catch (e) {
+          } catch {
             return d.work_date === isoString;
           }
         })
@@ -180,7 +180,8 @@ export function AttendanceCalendar({
                       })() : typeof apiData.status === 'object' ? (
                         <div className="flex gap-1 flex-wrap mt-1">
                           {(['on_time', 'late', 'leave', 'absent'] as const).map(statusKey => {
-                            const count = (apiData.status as any)?.[statusKey] || 0;
+                            const statusObj = apiData.status as Record<string, number>;
+                            const count = statusObj[statusKey] || 0;
                             const colorClass = 
                               statusKey === 'on_time' ? 'bg-success' : 
                               statusKey === 'late' ? 'bg-warning' : 

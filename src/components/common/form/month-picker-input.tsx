@@ -49,7 +49,6 @@ export function MonthPickerInput({
       render={({ field, fieldState: { error } }) => {
         const date = field.value ? new Date(field.value) : new Date();
         const currentYear = getYear(date);
-        const currentMonth = getMonth(date);
 
         const handlePrevYear = () => {
           field.onChange(setYear(date, currentYear - 1).toISOString());

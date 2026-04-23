@@ -18,7 +18,7 @@ export function useGetAttendanceRecords(
       return response;
     },
     placeholderData: (previousData, previousQuery) => {
-      const previousFilters = previousQuery?.queryKey[2] as any;
+      const previousFilters = previousQuery?.queryKey[2] as Record<string, unknown> | undefined;
       const currentFilters = { calendar_day_id, status, is_edited, is_completed };
       
       // Chỉ giữ lại dữ liệu cũ nếu đang ở cùng một ngày VÀ cùng bộ lọc (chỉ search hoặc chuyển trang)

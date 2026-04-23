@@ -16,7 +16,7 @@ export const workShiftSchema = z
     half_day_split: z.string().default("12:00"),
   })
   .refine(
-    (data: any) =>
+    (data: { work_start: string; work_end: string }) =>
       timeToMinutes(data.work_end) - timeToMinutes(data.work_start) >= 60,
     {
       message: "Giờ tan làm phải sau giờ vào làm ít nhất 1 tiếng",
@@ -24,7 +24,7 @@ export const workShiftSchema = z
     },
   )
   .refine(
-    (data: any) =>
+    (data: { work_start: string; work_end: string; break_start: string; break_end: string }) =>
       timeToMinutes(data.break_start) >= timeToMinutes(data.work_start) &&
       timeToMinutes(data.break_end) <= timeToMinutes(data.work_end),
     {
@@ -33,7 +33,7 @@ export const workShiftSchema = z
     },
   )
   .refine(
-    (data: any) =>
+    (data: { break_start: string; break_end: string }) =>
       timeToMinutes(data.break_start) < timeToMinutes(data.break_end),
     {
       message: "Bắt đầu nghỉ trưa phải trước kết thúc nghỉ trưa",
@@ -48,7 +48,7 @@ export const saturdayConfigSchema = z
     reference_type: z.enum(["on", "off"]).optional().nullable(),
   })
   .refine(
-    (data: any) => {
+    (data: { type: string; reference_date?: string | null; reference_type?: string | null }) => {
       if (data.type === "bi_weekly") {
         return !!data.reference_date && !!data.reference_type;
       }
@@ -60,7 +60,7 @@ export const saturdayConfigSchema = z
     },
   )
   .refine(
-    (data: any) => {
+    (data: { type: string; reference_date?: string | null }) => {
       if (data.type === "bi_weekly" && data.reference_date) {
         const date = new Date(data.reference_date);
         const today = new Date();

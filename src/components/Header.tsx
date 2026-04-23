@@ -1,6 +1,6 @@
 "use client";
-import { ChevronDown, CircleUser, LogOut, Menu, Settings } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronDown, CircleUser, LogOut, Menu } from "lucide-react";
+import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import {

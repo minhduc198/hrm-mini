@@ -67,11 +67,11 @@ export function ExportExcelButton<T>({
       });
 
       data.forEach((row, index) => {
-        const rowData: Record<string, any> = {};
+        const rowData: Record<string, unknown> = {};
         columns.forEach((col) => {
-          rowData[col.key] = col.render
+          rowData[col.key as string] = col.render
             ? col.render(row)
-            : (row as any)[col.key];
+            : (row as Record<string, unknown>)[col.key as string];
         });
         const addedRow = worksheet.addRow(rowData);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { Search01Icon, UserGroupIcon, Add01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Input } from "@/components/ui/input";
@@ -34,7 +34,6 @@ function PopoverContent({
   hasMore,
   onLoadMore,
   handleSelect,
-  onClose,
 }: {
   selectedEmployees: UserAPIResponse[];
   searchQuery: string;
@@ -44,7 +43,6 @@ function PopoverContent({
   hasMore: boolean;
   onLoadMore: () => void;
   handleSelect: (emp: UserAPIResponse) => void;
-  onClose: () => void;
 }) {
   return (
     <div className="flex flex-col bg-surface">
@@ -184,12 +182,12 @@ export function EmployeePopover({
       preSelectedCountRef.current = selectedEmployees.length;
       setLimit(INITIAL_LIMIT);
     }
-  }, [isOpen]); 
+  }, [isOpen, selectedEmployees.length, setLimit]); 
   
   // Reset limit when search query changes
   useEffect(() => {
     setLimit(INITIAL_LIMIT);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, setLimit]);
 
   const { listQueryEmployee } = useEmployees({
     name: debouncedSearch || undefined,
@@ -248,7 +246,6 @@ export function EmployeePopover({
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
             handleSelect={handleSelect}
-            onClose={onClose}
           />
         </div>
       </>
@@ -270,7 +267,6 @@ export function EmployeePopover({
         hasMore={hasMore}
         onLoadMore={handleLoadMore}
         handleSelect={handleSelect}
-        onClose={onClose}
       />
       {/* Arrow */}
       <div className="absolute right-[10px] top-[-6px] w-3 h-3 bg-surface border-l border-t border-line rotate-45" />

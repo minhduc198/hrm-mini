@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import {
@@ -37,7 +39,7 @@ interface AdminLeaveTableProps {
   data: LeaveRequest[];
   onAction: (request: LeaveRequest) => void;
   rowSelection: Record<string, boolean>;
-  onRowSelectionChange: (selection: any) => void;
+  onRowSelectionChange: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
 }
 
 const statusMap: Record<
@@ -45,7 +47,7 @@ const statusMap: Record<
   {
     label: string;
     variant: string;
-    icon: any;
+    icon: React.ElementType;
   }
 > = {
   pending: { label: "Chờ duyệt", variant: "warning", icon: Clock },
@@ -120,13 +122,15 @@ export function AdminLeaveTable({
                 )}
               >
                 {user?.avatar ? (
-                  <img
+                  <Image
                     src={
                       user.avatar.startsWith("http")
                         ? user.avatar
                         : `${process.env.NEXT_PUBLIC_STORAGE_URL || "http://localhost:8000/storage/"}${user.avatar}`
                     }
                     alt={user.name}
+                    width={36}
+                    height={36}
                     className="h-full w-full object-cover"
                   />
                 ) : (
