@@ -36,8 +36,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(destination, request.url));
   }
 
-  // Role-based routing: prevent admin from accessing employee-only routes
+  // Role-based routing: prevent unauthorized access to specific dashboards and settings
   if (role === "admin") {
+    // Admin cannot access employee dashboard
+    if (pathname === routes.dashboard.employee) {
+      return NextResponse.redirect(new URL(routes.dashboard.admin, request.url));
+    }
+
+    // Prevent admin from accessing employee-only routes
     if (pathname.startsWith(routes.attendance.personal)) {
       return NextResponse.redirect(
         new URL(routes.attendance.manage, request.url),
@@ -45,6 +51,20 @@ export async function middleware(request: NextRequest) {
     }
     if (pathname.startsWith(routes.leave.personal)) {
       return NextResponse.redirect(new URL(routes.leave.manage, request.url));
+    }
+  } else {
+    // Non-admin (Employee) cannot access admin dashboard
+    if (pathname === routes.dashboard.admin) {
+      return NextResponse.redirect(
+        new URL(routes.dashboard.employee, request.url),
+      );
+    }
+
+    // Non-admin (Employee) cannot access work settings
+    if (pathname.startsWith(routes.workSettings)) {
+      return NextResponse.redirect(
+        new URL(routes.dashboard.employee, request.url),
+      );
     }
   }
 
