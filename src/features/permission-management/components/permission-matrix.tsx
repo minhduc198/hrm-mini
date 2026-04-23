@@ -4,6 +4,7 @@ import { usePermissionMatrix } from "../hooks/use-permission-matrix";
 import { ModuleSection } from "./module-section";
 import { Button } from "@/components/ui/button";
 import { Shield, Save, Loader2 } from "lucide-react";
+import { PermissionSaveDialog } from "./permission-save-dialog";
 import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
 import { PageHeader } from "@/components/common/layout/page-header";
 import { cn } from "@/lib/utils";
@@ -11,9 +12,13 @@ import { cn } from "@/lib/utils";
 export function PermissionMatrix() {
   const { 
     modules, 
+    initialModules,
     handleAddEmployee, 
     handleRemoveEmployee, 
     handleSave, 
+    confirmSave,
+    showSaveConfirm,
+    setShowSaveConfirm,
     isSaving,
     isLoading,
     isDirty,
@@ -25,6 +30,7 @@ export function PermissionMatrix() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Navigation Confirmation Dialog */}
       <ConfirmDialog
         open={showConfirm}
         onOpenChange={(open) => !open && cancelNavigation()}
@@ -35,6 +41,18 @@ export function PermissionMatrix() {
         onConfirm={confirmNavigation}
         variant="danger"
       />
+
+      {/* Detailed Save Confirmation Dialog */}
+      <PermissionSaveDialog
+        open={showSaveConfirm}
+        onOpenChange={setShowSaveConfirm}
+        modules={modules}
+        initialModules={initialModules}
+        onConfirm={confirmSave}
+        isLoading={isSaving}
+      />
+
+
       <PageHeader
         title="Quản lý phân quyền"
         description="Cấu hình quyền truy cập cho nhân viên một cách trực quan"

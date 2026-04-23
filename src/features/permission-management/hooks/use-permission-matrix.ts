@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { UserAPIResponse } from "../types/permission";
 import { useSavePermissions } from "./use-save-permissions";
 import { useGetPermissions } from "./use-get-permissions";
@@ -9,8 +9,10 @@ import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
 
 export function usePermissionMatrix() {
   const { data: permissionList, isLoading, error } = useGetPermissions();
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
 
   const modules = usePermissionMatrixStore((state) => state.modules);
+  const initialModules = usePermissionMatrixStore((state) => state.initialModules);
   const isDirty = usePermissionMatrixStore((state) => state.isDirty);
   const setModules = usePermissionMatrixStore((state) => state.setModules);
   const addEmployeeToPermission = usePermissionMatrixStore(
@@ -44,11 +46,16 @@ export function usePermissionMatrix() {
     [removeEmployeeFromPermission]
   );
 
-  const handleSave = useCallback(async () => {
+  const handleSave = useCallback(() => {
+    setShowSaveConfirm(true);
+  }, []);
+
+  const confirmSave = useCallback(async () => {
     const payload = mapPermissionsToAssignPayload(modules);
 
     try {
       await saveMutation.mutateAsync(payload);
+      setShowSaveConfirm(false);
     } catch {
       // Error already handled in useSavePermissions
     }
@@ -56,9 +63,13 @@ export function usePermissionMatrix() {
 
   return {
     modules,
+    initialModules,
     handleAddEmployee,
     handleRemoveEmployee,
     handleSave,
+    confirmSave,
+    showSaveConfirm,
+    setShowSaveConfirm,
     isSaving: saveMutation.isPending,
     isLoading,
     isDirty,

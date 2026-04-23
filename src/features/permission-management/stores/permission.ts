@@ -3,6 +3,7 @@ import { UserAPIResponse, ModuleAPIResponse } from "../types/permission";
 
 type PermissionMatrixState = {
   modules: ModuleAPIResponse[];
+  initialModules: ModuleAPIResponse[];
   isLoading: boolean;
   isSaving: boolean;
   isDirty: boolean;
@@ -22,6 +23,7 @@ export type PermissionMatrixStore = PermissionMatrixState & PermissionMatrixActi
 
 const initialState: PermissionMatrixState = {
   modules: [],
+  initialModules: [],
   isLoading: false,
   isSaving: false,
   isDirty: false,
@@ -30,7 +32,7 @@ const initialState: PermissionMatrixState = {
 export const usePermissionMatrixStore = create<PermissionMatrixStore>((set) => ({
   ...initialState,
 
-  setModules: (modules) => set({ modules, isDirty: false }),
+  setModules: (modules) => set({ modules, initialModules: JSON.parse(JSON.stringify(modules)), isDirty: false }),
 
   setLoading: (isLoading) => set({ isLoading }),
 
