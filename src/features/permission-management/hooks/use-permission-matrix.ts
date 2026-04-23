@@ -5,10 +5,13 @@ import { useGetPermissions } from "./use-get-permissions";
 import { usePermissionMatrixStore } from "../stores/permission";
 import { mapPermissionsToAssignPayload } from "../adapters/permission";
 
+import { useUnsavedChanges } from "@/hooks/use-unsaved-changes";
+
 export function usePermissionMatrix() {
   const { data: permissionList, isLoading, error } = useGetPermissions();
 
   const modules = usePermissionMatrixStore((state) => state.modules);
+  const isDirty = usePermissionMatrixStore((state) => state.isDirty);
   const setModules = usePermissionMatrixStore((state) => state.setModules);
   const addEmployeeToPermission = usePermissionMatrixStore(
     (state) => state.addEmployeeToPermission
@@ -19,7 +22,8 @@ export function usePermissionMatrix() {
 
   const saveMutation = useSavePermissions();
 
-  // Sync fetched data to Zustand store
+  const { showConfirm, confirmNavigation, cancelNavigation } = useUnsavedChanges(isDirty);
+
   useEffect(() => {
     if (permissionList) {
       setModules(permissionList);
@@ -57,6 +61,10 @@ export function usePermissionMatrix() {
     handleSave,
     isSaving: saveMutation.isPending,
     isLoading,
+    isDirty,
+    showConfirm,
+    confirmNavigation,
+    cancelNavigation,
     error: error as Error | null,
   };
 }

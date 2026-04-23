@@ -1,8 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils";
-
+import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { navItemsConfig } from "./sidebar-items";
 import {
   Sidebar,
@@ -17,7 +17,6 @@ import {
 import { Typography } from "./ui/typography";
 
 export function AppSidebar() {
-  const router = useRouter();
   const path = usePathname();
   const {
     user,
@@ -102,10 +101,8 @@ export function AppSidebar() {
               return (
                 <SidebarMenuItem key={item.key}>
                   <SidebarMenuButton
-                    onClick={() => {
-                      router.push(item.url);
-                      setOpenMobile(false);
-                    }}
+                    asChild
+                    isActive={currentActive}
                     className={cn(
                       "flex items-center gap-2.5 px-3 py-[9px] rounded-lg text-[13px] w-full text-left transition-colors h-auto",
                       "group-data-[collapsible=icon]:!w-9 group-data-[collapsible=icon]:!h-9 group-data-[collapsible=icon]: group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:mx-auto",
@@ -114,23 +111,28 @@ export function AppSidebar() {
                         : "text-white hover:bg-white/[0.08] hover:text-white/85",
                     )}
                   >
-                    <Icon
-                      size={16}
-                      strokeWidth={1.75}
-                      className="flex-shrink-0"
-                    />
-                    <Typography
-                      variant="p"
-                      as="span"
-                      className={cn(
-                        "flex-1 font-inherit leading-normal group-data-[collapsible=icon]:hidden truncate py-0.5",
-                        {
-                          "text-white": !currentActive,
-                        },
-                      )}
+                    <Link 
+                      href={item.url} 
+                      onClick={() => setOpenMobile(false)}
                     >
-                      {item.label}
-                    </Typography>
+                      <Icon
+                        size={16}
+                        strokeWidth={1.75}
+                        className="flex-shrink-0"
+                      />
+                      <Typography
+                        variant="p"
+                        as="span"
+                        className={cn(
+                          "flex-1 font-inherit leading-normal group-data-[collapsible=icon]:hidden truncate py-0.5",
+                          {
+                            "text-white": !currentActive,
+                          },
+                        )}
+                      >
+                        {item.label}
+                      </Typography>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );
