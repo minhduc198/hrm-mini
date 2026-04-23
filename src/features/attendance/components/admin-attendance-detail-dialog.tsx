@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AttendanceDayData } from "../types/attendance";
 import { useGetAttendanceRecords } from "../hooks/use-get-attendance-records";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useNumberParam, useParam } from "@/hooks/use-param";
 import { AttendanceDetailHeader } from "./admin/attendance-detail-header";
 import { AttendanceDetailTable } from "./admin/attendance-detail-table";
 
@@ -13,12 +14,20 @@ interface Props {
 }
 
 export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
-  const [status, setStatus] = useState<string | undefined>(undefined);
-  const [isEdited, setIsEdited] = useState<boolean | undefined>(undefined);
-  const [isCompleted, setIsCompleted] = useState<boolean | undefined>(undefined);
+  const [search, setSearch] = useParam("search", "");
+  const [page, setPage] = useNumberParam("page", 1);
+  const [perPage, setPerPage] = useNumberParam("per_page", 10);
+  
+  const [statusStr, setStatus] = useParam("status", "");
+  const status = statusStr === "" ? undefined : statusStr;
+  
+  const [isEditedStr, setIsEditedStr] = useParam("isEdited", "");
+  const isEdited = isEditedStr === "" ? undefined : isEditedStr === "true";
+  const setIsEdited = (val: boolean | undefined) => setIsEditedStr(val === undefined ? "" : String(val));
+  
+  const [isCompletedStr, setIsCompletedStr] = useParam("isCompleted", "");
+  const setIsCompleted = (val: boolean | undefined) => setIsCompletedStr(val === undefined ? "" : String(val));
+  const isCompleted = isCompletedStr === "" ? undefined : isCompletedStr === "true";
   
   const debouncedSearch = useDebounce(search, 300);
 
@@ -62,7 +71,7 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
             search={search}
             onSearchChange={setSearch}
             status={status}
-            onStatusChange={setStatus}
+            onStatusChange={(val) => setStatus(val ?? null)}
             isEdited={isEdited}
             onIsEditedChange={setIsEdited}
             isCompleted={isCompleted}

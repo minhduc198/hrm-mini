@@ -36,6 +36,7 @@ export const generateMockAttendanceData = (
         on_time: Math.floor(Math.random() * 3) + 1,
         late: Math.floor(Math.random() * 2),
         absent: Math.floor(Math.random() * 2),
+        leave: Math.floor(Math.random() * 2),
       } : undefined
     };
   });

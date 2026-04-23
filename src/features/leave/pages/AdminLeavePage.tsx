@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar, CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNumberParam, useParam } from "@/hooks/use-param";
 import { AdminLeaveTable } from "../components/AdminLeaveTable";
 import { LeaveActionDialog } from "../components/LeaveActionDialog";
 import { useAdminLeave } from "../hooks/use-admin-leave";
@@ -20,16 +21,14 @@ import { LeaveRequest } from "../types";
 import { Can } from "@/components/common/auth/Can";
 
 export default function AdminLeavePage() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useParam("search", "");
   const debouncedSearch = useDebounce(search, 200);
 
-  const [params, setParams] = useState({
-    page: 1,
-    per_page: 10,
-    status: "all",
-    start_time: undefined as string | undefined,
-    end_time: undefined as string | undefined,
-  });
+  const [page, setPage] = useNumberParam("page", 1);
+  const [perPage, setPerPage] = useNumberParam("per_page", 10);
+  const [statusFilter, setStatusFilter] = useParam("status", "all");
+  const [startTime, setStartTime] = useParam("start_time", "");
+  const [endTime, setEndTime] = useParam("end_time", "");
 
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({});
   const [actionTarget, setActionTarget] = useState<{
@@ -38,15 +37,15 @@ export default function AdminLeavePage() {
   } | null>(null);
 
   const currentFilters = {
-    page: params.page,
-    per_page: params.per_page,
-    status: params.status === "all" ? undefined : params.status,
+    page: page,
+    per_page: perPage,
+    status: statusFilter === "all" ? undefined : statusFilter,
     name: debouncedSearch,
-    start_date: params.start_time
-      ? format(new Date(params.start_time), "yyyy-MM-dd")
+    start_date: startTime
+      ? format(new Date(startTime), "yyyy-MM-dd")
       : undefined,
-    end_date: params.end_time
-      ? format(new Date(params.end_time), "yyyy-MM-dd")
+    end_date: endTime
+      ? format(new Date(endTime), "yyyy-MM-dd")
       : undefined,
   };
 
@@ -64,8 +63,8 @@ export default function AdminLeavePage() {
   const isLoading = adminListQuery.isLoading;
 
   useEffect(() => {
-    setParams((p) => ({ ...p, page: 1 }));
-  }, [debouncedSearch, params.status, params.start_time, params.end_time]);
+    setPage(1);
+  }, [debouncedSearch, statusFilter, startTime, endTime]);
 
   const selectedCount = Object.keys(rowSelection).length;
   const selectedIds = Object.keys(rowSelection)
@@ -146,13 +145,11 @@ export default function AdminLeavePage() {
 
   const handleReset = () => {
     setSearch("");
-    setParams({
-      page: 1,
-      per_page: 10,
-      status: "all",
-      start_time: undefined,
-      end_time: undefined,
-    });
+    setPage(1);
+    setPerPage(10);
+    setStatusFilter("all");
+    setStartTime("");
+    setEndTime("");
   };
 
   const dialogConfig = (() => {
@@ -183,9 +180,9 @@ export default function AdminLeavePage() {
 
   const hasFilter =
     search !== "" ||
-    params.status !== "all" ||
-    params.start_time ||
-    params.end_time;
+    statusFilter !== "all" ||
+    startTime !== "" ||
+    endTime !== "";
 
   return (
     <div className="space-y-6">
@@ -260,8 +257,8 @@ export default function AdminLeavePage() {
             <div className="flex flex-wrap items-center gap-2.5">
               <SelectFieldInput
                 className="w-[180px]"
-                value={params.status}
-                onValueChange={(status) => setParams((p) => ({ ...p, status }))}
+                value={statusFilter}
+                onValueChange={(v) => setStatusFilter(v)}
                 options={[
                   { label: "Tất cả trạng thái", value: "all" },
                   { label: "Đang chờ duyệt", value: "pending" },
@@ -275,24 +272,14 @@ export default function AdminLeavePage() {
                 <DatePickerInput
                   className="h-10 w-[140px]"
                   placeholder="Từ ngày"
-                  value={params.start_time}
-                  onChange={(date) =>
-                    setParams((p) => ({
-                      ...p,
-                      start_time: date || undefined,
-                    }))
-                  }
+                  value={startTime || undefined}
+                  onChange={(date) => setStartTime(date || "")}
                 />
                 <DatePickerInput
                   className="h-10 w-[140px]"
                   placeholder="Đến ngày"
-                  value={params.end_time}
-                  onChange={(date) =>
-                    setParams((p) => ({
-                      ...p,
-                      end_time: date || undefined,
-                    }))
-                  }
+                  value={endTime || undefined}
+                  onChange={(date) => setEndTime(date || "")}
                 />
               </div>
 
@@ -326,14 +313,15 @@ export default function AdminLeavePage() {
 
           {data && data.total > 0 && (
             <TablePagination
-              currentPage={params.page}
+              currentPage={page}
               totalPage={data.last_page}
               totalItems={data.total}
-              perPage={params.per_page}
-              onPageChange={(page) => setParams((p) => ({ ...p, page }))}
-              onPerPageChange={(per_page) =>
-                setParams((p) => ({ ...p, per_page, page: 1 }))
-              }
+              perPage={perPage}
+              onPageChange={(p) => setPage(p)}
+              onPerPageChange={(size) => {
+                setPerPage(size);
+                setPage(1);
+              }}
             />
           )}
         </div>
