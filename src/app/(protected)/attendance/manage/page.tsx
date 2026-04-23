@@ -5,6 +5,8 @@ import { CalendarClock } from "lucide-react";
 
 import { MonthNavigator } from "@/features/attendance/components/month-navigator";
 import { AttendanceExportButton } from "@/features/attendance/components/export/attendance-export-button";
+import { Can } from "@/components/common/auth/Can";
+import { Typography } from "@/components/ui/typography";
 
 export default function AttendanceManagePage() {
   return (
@@ -16,12 +18,28 @@ export default function AttendanceManagePage() {
         actions={<AttendanceControls />}
       />
       
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <MonthNavigator />
-        <AttendanceExportButton />
-      </div>
+      <Can 
+        permission="attendance.view"
+        fallback={
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-primary/20">
+            <Typography variant="h4" className="text-muted-foreground mb-2">
+              Không có quyền truy cập
+            </Typography>
+            <Typography variant="small" className="text-muted-foreground/60">
+              Bạn không có quyền xem danh sách chấm công toàn nhân viên.
+            </Typography>
+          </div>
+        }
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <MonthNavigator />
+          <Can permission="attendance.export">
+            <AttendanceExportButton />
+          </Can>
+        </div>
 
-      <AttendanceManage />
+        <AttendanceManage />
+      </Can>
     </div>
   );
 }
