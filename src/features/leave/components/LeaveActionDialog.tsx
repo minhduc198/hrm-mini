@@ -214,36 +214,22 @@ export function LeaveActionDialog({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="space-y-1">
-                    <Typography
-                      variant="label"
-                      className="text-[11px] text-slate-500 font-bold tracking-tight"
+                <div className="space-y-1">
+                  <Typography
+                    variant="label"
+                    className="text-[11px] text-slate-500 font-bold tracking-tight"
+                  >
+                    Hình thức nghỉ
+                  </Typography>
+                  <div className="flex">
+                    <Badge
+                      variant="secondary"
+                      className="bg-slate-100 text-slate-700 font-semibold text-[11px] px-2 py-0"
                     >
-                      Hình thức nghỉ
-                    </Typography>
-                    <div className="flex">
-                      <Badge
-                        variant="secondary"
-                        className="bg-slate-100 text-slate-700 font-semibold text-[11px] px-2 py-0"
-                      >
-                        {scopeMap[request.request_scope]}
-                        {request.half_day_period === "morning" && " (Sáng)"}
-                        {request.half_day_period === "afternoon" && " (Chiều)"}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <div className="space-y-1 mt-6">
-                    <Typography
-                      variant="label"
-                      className="text-[11px] text-slate-500 font-bold tracking-tight"
-                    >
-                      Lý do nghỉ
-                    </Typography>
-                    <div className="text-[12px] text-slate-600 bg-slate-50/50 p-2 rounded-lg border border-slate-100 italic line-clamp-2">
-                      &quot;{request.reason}&quot;
-                    </div>
+                      {scopeMap[request.request_scope]}
+                      {request.half_day_period === "morning" && " (Sáng)"}
+                      {request.half_day_period === "afternoon" && " (Chiều)"}
+                    </Badge>
                   </div>
                 </div>
 
@@ -284,6 +270,18 @@ export function LeaveActionDialog({
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Typography
+                  variant="label"
+                  className="text-[11px] text-slate-500 font-bold tracking-tight"
+                >
+                  Lý do nghỉ
+                </Typography>
+                <div className="text-[12px] text-slate-600 bg-slate-50/50 p-3 rounded-lg border border-slate-100 italic max-h-[120px] overflow-y-auto whitespace-pre-wrap">
+                  &quot;{request.reason}&quot;
                 </div>
               </div>
             </>
