@@ -9,18 +9,33 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { 
-  CheckCircle2, 
-  XCircle, 
-  ChevronDown, 
-  UserPlus, 
+import {
+  CheckCircle2,
+  XCircle,
+  ChevronDown,
+  UserPlus,
   UserMinus,
   Loader2,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 import { ModuleAPIResponse, UserAPIResponse } from "../types/permission";
 import { Typography } from "@/components/ui/typography";
+
+interface PermissionDiff {
+  id: string;
+  name: string;
+  addedUsers: UserAPIResponse[];
+  removedUsers: UserAPIResponse[];
+}
+
+interface ModuleDiff {
+  id: string;
+  name: string;
+  permissions: PermissionDiff[];
+  addedCount: number;
+  removedCount: number;
+}
 
 interface PermissionSaveDialogProps {
   open: boolean;
@@ -40,7 +55,7 @@ export function PermissionSaveDialog({
   isLoading,
 }: PermissionSaveDialogProps) {
   const diffs = useMemo(() => {
-    const result: any[] = [];
+    const result: ModuleDiff[] = [];
     let totalAdded = 0;
     let totalRemoved = 0;
 
@@ -48,7 +63,7 @@ export function PermissionSaveDialog({
       const initialModule = initialModules.find((m) => m.id === module.id);
       if (!initialModule) return;
 
-      const moduleDiff: any = {
+      const moduleDiff: ModuleDiff = {
         id: module.id,
         name: module.name,
         permissions: [],
@@ -57,14 +72,16 @@ export function PermissionSaveDialog({
       };
 
       module.permissions.forEach((perm) => {
-        const initialPerm = initialModule.permissions.find((p) => p.id === perm.id);
+        const initialPerm = initialModule.permissions.find(
+          (p) => p.id === perm.id,
+        );
         if (!initialPerm) return;
 
         const addedUsers = perm.users.filter(
-          (u) => !initialPerm.users.some((iu) => iu.id === u.id)
+          (u) => !initialPerm.users.some((iu) => iu.id === u.id),
         );
         const removedUsers = initialPerm.users.filter(
-          (iu) => !perm.users.some((u) => u.id === iu.id)
+          (iu) => !perm.users.some((u) => u.id === iu.id),
         );
 
         if (addedUsers.length > 0 || removedUsers.length > 0) {
@@ -104,30 +121,42 @@ export function PermissionSaveDialog({
         <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
           {/* Summary Text */}
           <div className="text-center space-y-1">
-             <Typography variant="p" className="text-sm text-slate-600">
-                Bạn có <span className="font-bold text-primary">{totalChanges} thay đổi</span> quyền sẽ được áp dụng trên <span className="font-bold text-primary">{changedModulesCount} nhóm quyền</span>.
-             </Typography>
+            <Typography variant="p" className="text-sm text-slate-600">
+              Bạn có{" "}
+              <span className="font-bold text-primary">
+                {totalChanges} thay đổi
+              </span>{" "}
+              quyền sẽ được áp dụng trên{" "}
+              <span className="font-bold text-primary">
+                {changedModulesCount} nhóm quyền
+              </span>
+              .
+            </Typography>
           </div>
 
           {/* Stats Badges */}
           <div className="flex gap-4">
             <div className="flex-1 bg-emerald-50 border border-emerald-100 rounded-lg p-3 flex flex-col items-center justify-center">
-               <Typography className="text-xs font-medium text-emerald-600 uppercase tracking-wider mb-1">
-                  Thêm mới
-               </Typography>
-               <div className="flex items-center gap-2">
-                  <UserPlus className="w-4 h-4 text-emerald-600" />
-                  <span className="text-xl font-bold text-emerald-700">{diffs.totalAdded}</span>
-               </div>
+              <Typography className="text-xs font-medium text-emerald-600 uppercase tracking-wider mb-1">
+                Thêm mới
+              </Typography>
+              <div className="flex items-center gap-2">
+                <UserPlus className="w-4 h-4 text-emerald-600" />
+                <span className="text-xl font-bold text-emerald-700">
+                  {diffs.totalAdded}
+                </span>
+              </div>
             </div>
             <div className="flex-1 bg-rose-50 border border-rose-100 rounded-lg p-3 flex flex-col items-center justify-center">
-               <Typography className="text-xs font-medium text-rose-600 uppercase tracking-wider mb-1">
-                  Gỡ bỏ
-               </Typography>
-               <div className="flex items-center gap-2">
-                  <UserMinus className="w-4 h-4 text-rose-600" />
-                  <span className="text-xl font-bold text-rose-700">{diffs.totalRemoved}</span>
-               </div>
+              <Typography className="text-xs font-medium text-rose-600 uppercase tracking-wider mb-1">
+                Gỡ bỏ
+              </Typography>
+              <div className="flex items-center gap-2">
+                <UserMinus className="w-4 h-4 text-rose-600" />
+                <span className="text-xl font-bold text-rose-700">
+                  {diffs.totalRemoved}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -135,46 +164,62 @@ export function PermissionSaveDialog({
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-slate-500 mb-2">
               <AlertCircle className="w-4 h-4" />
-              <Typography className="text-xs font-medium uppercase tracking-wider">Chi tiết thay đổi</Typography>
+              <Typography className="text-xs font-medium uppercase tracking-wider">
+                Chi tiết thay đổi
+              </Typography>
             </div>
-            
+
             {diffs.modules.map((module) => (
-              <div key={module.id} className="border border-slate-100 rounded-xl overflow-hidden bg-slate-50/30">
+              <div
+                key={module.id}
+                className="border border-slate-100 rounded-xl overflow-hidden bg-slate-50/30"
+              >
                 <div className="bg-white px-4 py-3 border-b border-slate-50 flex items-center justify-between">
-                   <div className="flex items-center gap-2">
-                      <Typography className="text-sm font-bold text-slate-800">{module.name}</Typography>
-                      <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">
-                         {module.addedCount + module.removedCount} thay đổi
-                      </span>
-                   </div>
-                   <ChevronDown className="w-4 h-4 text-slate-400" />
+                  <div className="flex items-center gap-2">
+                    <Typography className="text-sm font-bold text-slate-800">
+                      {module.name}
+                    </Typography>
+                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">
+                      {module.addedCount + module.removedCount} thay đổi
+                    </span>
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400" />
                 </div>
-                
+
                 <div className="p-4 space-y-4">
-                  {module.permissions.map((perm: any) => (
+                  {module.permissions.map((perm: PermissionDiff) => (
                     <div key={perm.id} className="space-y-2">
-                       <Typography as="div" className="text-[13px] font-semibold text-slate-700 ml-1 flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                          {perm.name}
-                       </Typography>
-                       
-                       <div className="grid grid-cols-1 gap-2 ml-4">
-                          {perm.addedUsers.map((user: UserAPIResponse) => (
-                            <div key={user.id} className="flex items-center gap-2 text-[12px] text-emerald-600 bg-emerald-50/50 py-1.5 px-3 rounded-lg border border-emerald-100/50">
-                               <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                               <span className="font-medium">{user.name}</span>
-                               <span className="opacity-60">({user.email})</span>
-                            </div>
-                          ))}
-                          
-                          {perm.removedUsers.map((user: UserAPIResponse) => (
-                            <div key={user.id} className="flex items-center gap-2 text-[12px] text-rose-600 bg-rose-50/50 py-1.5 px-3 rounded-lg border border-rose-100/50">
-                               <XCircle className="w-3.5 h-3.5 shrink-0" />
-                               <span className="font-medium">{user.name}</span>
-                               <span className="opacity-60">({user.email})</span>
-                            </div>
-                          ))}
-                       </div>
+                      <Typography
+                        as="div"
+                        className="text-[13px] font-semibold text-slate-700 ml-1 flex items-center gap-2"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                        {perm.name}
+                      </Typography>
+
+                      <div className="grid grid-cols-1 gap-2 ml-4">
+                        {perm.addedUsers.map((user: UserAPIResponse) => (
+                          <div
+                            key={user.id}
+                            className="flex items-center gap-2 text-[12px] text-emerald-600 bg-emerald-50/50 py-1.5 px-3 rounded-lg border border-emerald-100/50"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            <span className="font-medium">{user.name}</span>
+                            <span className="opacity-60">({user.email})</span>
+                          </div>
+                        ))}
+
+                        {perm.removedUsers.map((user: UserAPIResponse) => (
+                          <div
+                            key={user.id}
+                            className="flex items-center gap-2 text-[12px] text-rose-600 bg-rose-50/50 py-1.5 px-3 rounded-lg border border-rose-100/50"
+                          >
+                            <XCircle className="w-3.5 h-3.5 shrink-0" />
+                            <span className="font-medium">{user.name}</span>
+                            <span className="opacity-60">({user.email})</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
