@@ -24,7 +24,7 @@ import { Infer } from "next/dist/compiled/superstruct";
 interface WorkScheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: import("../schemas").WorkScheduleFormValues) => void;
+  onSubmit: (values: any) => void;
   initialData?: RuleWorkSetting | null;
   isLoading?: boolean;
 }
@@ -134,7 +134,7 @@ export function WorkScheduleDialog({
                 <div className="flex items-center gap-2">
                   <Typography
                     variant="small"
-                    className="text-[11px] font-bold text-slate-400 uppercase tracking-widest"
+                    className="text-[11px] font-bold text-slate-600 uppercase"
                   >
                     Thông tin chung
                   </Typography>
@@ -153,7 +153,7 @@ export function WorkScheduleDialog({
                   <Clock size={14} className="text-slate-400" />
                   <Typography
                     variant="small"
-                    className="text-[11px] font-bold text-slate-400 uppercase tracking-widest"
+                    className="text-[11px] font-bold text-slate-600 uppercase"
                   >
                     Thời gian ca làm việc
                   </Typography>
@@ -193,7 +193,7 @@ export function WorkScheduleDialog({
                   <Calendar size={14} className="text-slate-400" />
                   <Typography
                     variant="small"
-                    className="text-[11px] font-bold text-slate-400 uppercase tracking-widest"
+                    className="text-[11px] font-bold text-slate-600 uppercase"
                   >
                     Chính sách làm việc thứ 7
                   </Typography>

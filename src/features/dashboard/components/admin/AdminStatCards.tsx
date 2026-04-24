@@ -3,13 +3,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { 
-  Users, 
-  UserCheck, 
-  UserMinus, 
-  Clock, 
-  Briefcase, 
-  AlertCircle 
+import {
+  Users,
+  UserCheck,
+  UserMinus,
+  Clock,
+  Briefcase,
+  AlertCircle,
 } from "lucide-react";
 import { TodayOverview } from "../../types";
 
@@ -60,16 +60,30 @@ export function AdminStatCards({ today }: AdminStatCardsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
       {cards.map((card, idx) => (
-        <Card key={idx} className="border-none shadow-sm bg-white rounded-2xl overflow-hidden group hover:shadow-md transition-all">
+        <Card
+          key={idx}
+          className="border-none shadow-sm bg-white rounded-2xl overflow-hidden group hover:shadow-md transition-all"
+        >
           <CardContent className="p-4 space-y-3">
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shadow-sm", card.bgColor)}>
+            <div
+              className={cn(
+                "w-10 h-10 rounded-xl flex items-center justify-center shadow-sm",
+                card.bgColor,
+              )}
+            >
               {card.icon}
             </div>
             <div>
-              <Typography variant="h4" className="text-2xl font-black text-slate-900">
+              <Typography
+                variant="h4"
+                className="text-2xl font-semibold text-slate-900"
+              >
                 {card.value}
               </Typography>
-              <Typography variant="tiny" className="text-slate-500 font-medium block mt-0.5">
+              <Typography
+                variant="tiny"
+                className="text-slate-500 font-medium block mt-0.5"
+              >
                 {card.label}
               </Typography>
             </div>
