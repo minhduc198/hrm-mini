@@ -4,6 +4,7 @@ import { attendanceKeys } from "../queryKeys/attendance";
 import { toast } from "sonner";
 import { UpdateAttendanceData } from "@/features/attendance/types/attendance";
 import { queryClient } from "@/lib/query-client";
+import { handleError } from "@/utils/error-handler";
 
 export function useUpdateAttendanceRecord() {
 
@@ -29,8 +30,7 @@ export function useUpdateAttendanceRecord() {
       toast.success("Cập nhật chấm công thành công");
     },
     onError: (error: unknown) => {
-      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || "Có lỗi xảy ra khi cập nhật";
-      toast.error(message as string);
+      handleError(error, "Có lỗi xảy ra khi cập nhật");
     },
   });
 }

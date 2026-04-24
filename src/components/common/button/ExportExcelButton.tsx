@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
 
 interface ExportExcelButtonProps<T> {
   columns: ExcelColumn<T>[];
@@ -126,8 +127,7 @@ export function ExportExcelButton<T>({
       await exportToExcel(data, suffix);
       toast.success(`Xuất ${data.length} bản ghi thành công`);
     } catch (error) {
-      console.error("Export error:", error);
-      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+      handleError(error, "Có lỗi xảy ra khi xuất dữ liệu");
     } finally {
       setIsExporting(false);
     }
