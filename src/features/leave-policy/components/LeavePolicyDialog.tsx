@@ -68,7 +68,7 @@ export function LeavePolicyDialog({
         form.reset({
           name: initialData.name,
           is_paid: initialData.is_paid === 1,
-          default_days: initialData.default_days,
+          default_days: Number(initialData.default_days),
           allow_half_day: initialData.allow_half_day === 1,
           allow_hourly: initialData.allow_hourly === 1,
         });

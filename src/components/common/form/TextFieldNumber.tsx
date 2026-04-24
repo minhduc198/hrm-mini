@@ -49,7 +49,7 @@ export function TextFieldNumber({
               value={value ?? ""}
               onChange={(e) => {
                 const val = e.target.value;
-                if (val === "" || /^[0-9\b]+$/.test(val)) {
+                if (val === "" || /^[0-9]*\.?[0-9]*$/.test(val)) {
                   onChange(val);
                 }
               }}

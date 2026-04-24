@@ -64,7 +64,7 @@ export function LeavePolicyTable({
             variant="small"
             className="text-[13px] font-medium tabular-nums text-slate-600"
           >
-            {row.original.default_days}
+            {Number(row.original.default_days)}
           </Typography>
         ),
       },
