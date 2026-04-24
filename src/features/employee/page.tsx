@@ -486,7 +486,13 @@ export default function EmployeeManagePage() {
         mode="add"
         open={addOpen}
         onOpenChange={setAddOpen}
-        onSubmit={handleAdd as (values: import("@/features/employee/schemas").AddEmployeeValues | import("@/features/employee/schemas").EditEmployeeValues) => void | Promise<void>}
+        onSubmit={
+          handleAdd as (
+            values:
+              | import("@/features/employee/schemas").AddEmployeeValues
+              | import("@/features/employee/schemas").EditEmployeeValues,
+          ) => void | Promise<void>
+        }
       />
       <EmployeeDialog
         mode="edit"
@@ -495,7 +501,10 @@ export default function EmployeeManagePage() {
         onOpenChange={(open) => !open && setEditTarget(null)}
         onSubmit={(values) => {
           if (editTarget) {
-            handleEdit(editTarget.id, values as import("@/features/employee/schemas").EditEmployeeValues);
+            handleEdit(
+              editTarget.id,
+              values as import("@/features/employee/schemas").EditEmployeeValues,
+            );
           }
         }}
       />

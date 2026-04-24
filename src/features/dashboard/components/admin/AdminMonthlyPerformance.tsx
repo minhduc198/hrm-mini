@@ -14,13 +14,17 @@ interface AdminMonthlyPerformanceProps {
   monthly?: MonthlyOverview;
 }
 
-export function AdminMonthlyPerformance({ monthly }: AdminMonthlyPerformanceProps) {
+export function AdminMonthlyPerformance({
+  monthly,
+}: AdminMonthlyPerformanceProps) {
   return (
     <Card className="lg:col-span-2 border-none shadow-sm bg-white overflow-hidden rounded-2xl">
       <CardHeader className="border-b border-slate-50">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-primary" />
-          <CardTitle className="text-lg font-bold">Hiệu suất trong tháng</CardTitle>
+          <CardTitle className="text-lg font-bold">
+            Hiệu suất trong tháng
+          </CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6">
@@ -28,9 +32,11 @@ export function AdminMonthlyPerformance({ monthly }: AdminMonthlyPerformanceProp
           {monthly && (
             <MonthlyMetric
               label="Tổng giờ làm"
-              value={monthly.total_working_hours >= 1 
-                ? Number(monthly.total_working_hours.toFixed(1))
-                : Math.round(monthly.total_working_hours * 60)}
+              value={
+                monthly.total_working_hours >= 1
+                  ? Number(monthly.total_working_hours.toFixed(1))
+                  : Math.round(monthly.total_working_hours * 60)
+              }
               unit={monthly.total_working_hours >= 1 ? "h" : "phút"}
               description="Toàn bộ công ty"
             />
@@ -56,7 +62,11 @@ export function AdminMonthlyPerformance({ monthly }: AdminMonthlyPerformanceProp
               label="Tổng đi muộn"
               value={Number(formatDuration(monthly.total_late_minutes).value)}
               unit={formatDuration(monthly.total_late_minutes).unit}
-              color={monthly.total_late_minutes > 60 ? "text-rose-600" : "text-amber-600"}
+              color={
+                monthly.total_late_minutes > 60
+                  ? "text-rose-600"
+                  : "text-amber-600"
+              }
               description="Cần cải thiện"
             />
           )}
@@ -107,7 +117,10 @@ function MonthlyMetric({
         {label}
       </Typography>
       <div className="flex items-baseline gap-1">
-        <Typography variant="h3" className={cn("text-3xl font-black", color)}>
+        <Typography
+          variant="h3"
+          className={cn("text-3xl font-semibold", color)}
+        >
           {value}
         </Typography>
         <Typography variant="label-sm" className="text-slate-400 font-bold">

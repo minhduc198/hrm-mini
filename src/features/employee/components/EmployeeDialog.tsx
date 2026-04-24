@@ -53,7 +53,11 @@ interface EmployeeDialogProps {
   employee?: Employee | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  onSubmit: (values: import("../schemas").AddEmployeeValues | import("../schemas").EditEmployeeValues) => void | Promise<void>;
+  onSubmit: (
+    values:
+      | import("../schemas").AddEmployeeValues
+      | import("../schemas").EditEmployeeValues,
+  ) => void | Promise<void>;
 }
 
 function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
@@ -73,6 +77,7 @@ function EmployeeInfoFields({ mode }: { mode: DialogMode }) {
           label="Email"
           disabled={mode === "edit"}
           placeholder="email@hrm.vn"
+          required
         />
         <TextFieldNumber
           name="phone"
@@ -144,7 +149,11 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {fields.map((field, index) => {
-              const leaveType = (field as unknown as { leave_type: import("../../leave-policy/types").LeaveType }).leave_type;
+              const leaveType = (
+                field as unknown as {
+                  leave_type: import("../../leave-policy/types").LeaveType;
+                }
+              ).leave_type;
               if (leaveType?.is_paid === 0) return null;
 
               return (

@@ -258,24 +258,35 @@ export function LeaveRequestDialog({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {requestScope === "hourly" || requestScope === "half_day" ? (
               <DatePickerInput
                 name="start_time"
-                label="Từ ngày"
+                label="Ngày"
                 required
                 disabled={(date) =>
                   date < new Date(new Date().setHours(0, 0, 0, 0))
                 }
               />
-              <DatePickerInput
-                name="end_time"
-                label="Đến ngày"
-                required
-                disabled={(date) =>
-                  date < new Date(new Date().setHours(0, 0, 0, 0))
-                }
-              />
-            </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                <DatePickerInput
+                  name="start_time"
+                  label="Từ ngày"
+                  required
+                  disabled={(date) =>
+                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                  }
+                />
+                <DatePickerInput
+                  name="end_time"
+                  label="Đến ngày"
+                  required
+                  disabled={(date) =>
+                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                  }
+                />
+              </div>
+            )}
 
             {requestScope === "hourly" && (
               <div className="grid grid-cols-2 gap-4">
