@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { AttendanceExportDialog } from "./attendance-export-dialog";
 import { AttendanceExportFormValues } from "../../schemas/export";
 import { exportAttendanceData } from "../../api/export-attendance";
-import { generateAttendanceExcel } from "../../utils/attendance-export-excel";
 import { format } from "date-fns";
 
 export function AttendanceExportButton() {
@@ -21,19 +20,25 @@ export function AttendanceExportButton() {
         description: "Hệ thống đang tải dữ liệu và khởi tạo file Excel."
       });
       
-      // Fetch raw JSON data instead of a Blob
-      const data = await exportAttendanceData(values);
+      // Receive the blob from backend
+      const blob = await exportAttendanceData(values);
       
-      if (!data || data.length === 0) {
+      if (!blob || blob.size === 0) {
         toast.error("Không có dữ liệu để xuất");
         return;
       }
-
-      // Generate Excel file on frontend
-      const timestamp = format(new Date(), "yyyyMMdd_HHmm");
-      await generateAttendanceExcel(data, `bao_cao_cham_cong_${timestamp}`);
       
-      toast.success(`Xuất ${data.length} bản ghi thành công!`);
+      // Download file directly
+      const timestamp = format(new Date(), "yyyyMMdd_HHmm");
+      const url = window.URL.createObjectURL(blob);
+      const link = document.body.appendChild(document.createElement("a"));
+      link.href = url;
+      link.download = `bao_cao_cham_cong_${timestamp}.xlsx`;
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success(`Xuất dữ liệu thành công!`);
       setIsOpen(false);
     } catch (error) {
       console.error("Export error:", error);
