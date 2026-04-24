@@ -17,7 +17,7 @@ export function useParam<T extends string = string>(key: string, defaultValue: s
         const currentQuery =
           typeof window !== "undefined"
             ? window.location.search
-            : searchParams.toString();
+            : "";
         pendingParams = new URLSearchParams(currentQuery);
       }
 
@@ -39,7 +39,7 @@ export function useParam<T extends string = string>(key: string, defaultValue: s
         });
       }
     },
-    [key, pathname, router, searchParams, defaultValue]
+    [key, pathname, router, defaultValue]
   );
 
   return [value, setValue] as const;
