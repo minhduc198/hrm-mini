@@ -52,6 +52,8 @@ export function LeaveRequestDialog({
       request_scope: "full_day",
       reason: "",
       is_paid: false,
+      start_time: new Date().toISOString(),
+      end_time: new Date().toISOString(),
     },
   });
 
@@ -113,12 +115,18 @@ export function LeaveRequestDialog({
     let startTime = values.start_time;
     let endTime = values.end_time;
 
-    if (isHourly) {
+    if (isHourly || isHalfDay) {
       const date = values.start_time
         ? format(new Date(values.start_time), "yyyy-MM-dd")
         : format(new Date(), "yyyy-MM-dd");
-      startTime = `${date} ${values.start_hour}`;
-      endTime = `${date} ${values.end_hour}`;
+      
+      if (isHourly) {
+        startTime = `${date} ${values.start_hour}`;
+        endTime = `${date} ${values.end_hour}`;
+      } else {
+        startTime = date;
+        endTime = date;
+      }
     } else {
       if (values.start_time) {
         startTime = format(new Date(values.start_time), "yyyy-MM-dd");
