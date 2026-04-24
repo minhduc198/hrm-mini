@@ -240,8 +240,8 @@ export function EmployeeTable({
                 variant="small"
                 className="text-[12px] font-semibold tabular-nums text-primary whitespace-nowrap"
               >
-                {annualLeave.balance - annualLeave.used_days} /{" "}
-                {annualLeave.balance}
+                {Number(annualLeave.balance - annualLeave.used_days)} /{" "}
+                {Number(annualLeave.balance)}
               </Typography>
             </div>
           );

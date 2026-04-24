@@ -231,7 +231,7 @@ export function LeaveRequestDialog({
                 options={(employeeData?.leave_balances || [])
                   .filter((b: LeaveBalance) => isPaidLeave(b.leave_type))
                   .map((b: LeaveBalance) => ({
-                    label: `${b.leave_type.name} (Còn ${b.remaining_days} ngày)`,
+                    label: `${b.leave_type.name} (Còn ${Number(b.remaining_days)} ngày)`,
                     value: String(b.leave_type.id),
                   }))}
               />
