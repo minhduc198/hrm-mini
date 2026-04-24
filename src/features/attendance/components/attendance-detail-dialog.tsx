@@ -141,7 +141,7 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
                     <div className="pt-1">
                       <Typography variant="tiny" className="text-muted uppercase font-bold tracking-tighter mb-1 opacity-70">Lý do nghỉ</Typography>
                       <Typography variant="p" className="text-[13px] text-tx-base leading-relaxed italic font-medium">
-                        "{leave.reason}"
+                        &quot;{leave.reason}&quot;
                       </Typography>
                     </div>
                   )}
