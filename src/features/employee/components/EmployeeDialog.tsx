@@ -11,7 +11,7 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarDays, Pencil, UserPlus } from "lucide-react";
+import { CalendarDays, Pencil, UserPlus, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
 import {
@@ -130,7 +130,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
             <CalendarDays size={14} className="text-primary" />
             <Typography
               variant="label"
-              className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider"
+              className="text-[12px] text-slate-500 font-semibold tracking-wider"
             >
               Danh sách hạn mức nghỉ phép
             </Typography>
@@ -177,7 +177,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                           <Typography
                             variant="small"
-                            className="text-[10px] text-emerald-600 font-medium uppercase tracking-widest leading-none"
+                            className="text-[10px] text-emerald-600 font-medium tracking-widest leading-none"
                           >
                             Năm {(field as unknown as { year: number }).year}
                           </Typography>
@@ -199,7 +199,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
                       </Typography>
                       <Typography
                         variant="small"
-                        className="text-[9px] text-slate-400 font-bold uppercase mt-1 tracking-tighter transition-colors"
+                        className="text-[11px] text-slate-400 font-bold mt-1 tracking-tighter transition-colors"
                       >
                         Ngày khả dụng
                       </Typography>
@@ -232,7 +232,7 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
           <div className="flex items-center gap-2 pb-2 border-b border-slate-100/60">
             <Typography
               variant="label"
-              className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider"
+              className="text-[12px] text-slate-500 font-semibold tracking-wider"
             >
               Thống kê chuyên cần
             </Typography>
@@ -242,13 +242,13 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
             <div className="p-4 rounded-xl border border-slate-200/60 bg-slate-50/30 flex flex-col items-center justify-center text-center space-y-1">
               <Typography
                 variant="h4"
-                className="text-2xl font-bold text-slate-700"
+                className="text-2xl font-medium text-slate-700"
               >
                 {employee.attendance_stats.unpaid_leave_days || 0}
               </Typography>
               <Typography
                 variant="small"
-                className="text-[10px] text-slate-500 font-bold uppercase tracking-tight"
+                className="text-[12px] text-slate-500 font-bold  tracking-tight"
               >
                 Nghỉ không lương
               </Typography>
@@ -256,13 +256,13 @@ function LeaveManagementContent({ employee }: { employee?: Employee | null }) {
             <div className="p-4 rounded-xl border border-red-100 bg-red-50/30 flex flex-col items-center justify-center text-center space-y-1">
               <Typography
                 variant="h4"
-                className="text-2xl font-bold text-red-600"
+                className="text-2xl font-medium text-red-500"
               >
                 {employee.attendance_stats.unexcused_absent_days || 0}
               </Typography>
               <Typography
                 variant="small"
-                className="text-[10px] text-red-500 font-bold uppercase tracking-tight"
+                className="text-[12px] text-red-500 font-bold  tracking-tight"
               >
                 Nghỉ không xin phép
               </Typography>
@@ -337,18 +337,26 @@ export function EmployeeDialog({
     }
   }, [open, employee, isAdd, form]);
 
-  const handleSubmit = (values: AddEmployeeValues | EditEmployeeValues) => {
-    onSubmit(values);
-    if (isAdd) {
-      form.reset();
+  const handleSubmit = async (
+    values: AddEmployeeValues | EditEmployeeValues,
+  ) => {
+    try {
+      await onSubmit(values);
+      if (isAdd) {
+        form.reset();
+      }
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Submission error:", error);
     }
-    onOpenChange(false);
   };
 
   const handleCancel = () => {
     form.reset();
     onOpenChange(false);
   };
+
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -362,7 +370,7 @@ export function EmployeeDialog({
             ) : employee ? (
               <div
                 className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-semibold shrink-0",
+                  "w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-semibold shrink-0",
                   AVATAR_COLORS[employee.id % AVATAR_COLORS.length],
                 )}
               >
@@ -405,7 +413,9 @@ export function EmployeeDialog({
 
         <FormProvider {...form}>
           <form
-            onSubmit={form.handleSubmit(handleSubmit)}
+            onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+              console.error("Employee Form Errors:", errors);
+            })}
             className="flex flex-col h-full overflow-hidden"
           >
             {isAdd ? (
@@ -457,6 +467,7 @@ export function EmployeeDialog({
                 variant="outline"
                 size="sm"
                 onClick={handleCancel}
+                disabled={isSubmitting}
               >
                 Hủy
               </Button>
@@ -464,19 +475,20 @@ export function EmployeeDialog({
                 type="submit"
                 size="sm"
                 className="gap-1.5"
-                disabled={!form.formState.isDirty}
+                disabled={!form.formState.isDirty || isSubmitting}
               >
-                {isAdd ? (
-                  <>
-                    <UserPlus size={13} />
-                    Tạo tài khoản
-                  </>
+                {isSubmitting ? (
+                  <Loader2 size={13} className="animate-spin" />
+                ) : isAdd ? (
+                  <UserPlus size={13} />
                 ) : (
-                  <>
-                    <Pencil size={13} />
-                    Lưu thay đổi
-                  </>
+                  <Pencil size={13} />
                 )}
+                {isSubmitting
+                  ? "Đang xử lý..."
+                  : isAdd
+                    ? "Tạo tài khoản"
+                    : "Lưu thay đổi"}
               </Button>
             </DialogFooter>
           </form>

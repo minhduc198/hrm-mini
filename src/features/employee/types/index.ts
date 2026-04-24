@@ -40,8 +40,8 @@ export type CreateEmployeePayload = {
   password?: string;
   password_confirmation?: string;
   role?: Role;
-  address?: string;
-  phone?: string;
+  address?: string | null;
+  phone?: string | null;
   is_active?: boolean;
   leave_balances?: Partial<LeaveBalance>[];
 };
@@ -52,8 +52,8 @@ export type UpdateEmployeePayload = {
   name?: string;
   email?: string;
   role?: Role;
-  address?: string;
-  phone?: string;
+  address?: string | null;
+  phone?: string | null;
   is_active?: boolean;
   leave_balances?: Partial<LeaveBalance>[];
 };

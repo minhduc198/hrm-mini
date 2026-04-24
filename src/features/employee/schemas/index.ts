@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 const leaveBalanceSchema = z.object({
-  id: z.number().optional(),
+  id: z.coerce.number().optional(),
   leave_type: z.object({
-    id: z.number(),
+    id: z.coerce.number(),
     name: z.string(),
     is_paid: z.number().default(1),
     allow_half_day: z.number().default(0),
@@ -13,28 +13,15 @@ const leaveBalanceSchema = z.object({
   balance: z.coerce.number().min(0, "Ngày phép không được âm"),
   used_days: z.coerce.number().min(0).default(0),
   pending_days: z.coerce.number().min(0).default(0),
-  remaining_days: z.number().min(0).optional(),
+  remaining_days: z.coerce.number().min(0).optional(),
 });
 
 export const addEmployeeSchema = z
   .object({
     name: z.string().min(2, "Họ tên phải có ít nhất 2 ký tự").max(100),
     email: z.string().email("Email không hợp lệ"),
-    phone: z
-      .string()
-      .optional()
-      .refine((val: string | undefined) => !val || /^[0-9]{10}$/.test(val), {
-        message: "Số điện thoại phải đúng 10 chữ số",
-      }),
-    address: z
-      .string()
-      .optional()
-      .refine((val: string | undefined) => !val || val.length >= 5, {
-        message: "Địa chỉ quá ngắn",
-      })
-      .refine((val: string | undefined) => !val || val.length <= 255, {
-        message: "Địa chỉ quá dài",
-      }),
+    phone: z.string().optional().nullable(),
+    address: z.string().optional().nullable(),
     password: z.string().min(6, "Tối thiểu 6 ký tự"),
     password_confirmation: z.string(),
   })
@@ -48,21 +35,8 @@ export type AddEmployeeValues = z.infer<typeof addEmployeeSchema>;
 export const editEmployeeSchema = z.object({
   name: z.string().min(2, "Họ tên phải có ít nhất 2 ký tự").max(100),
   email: z.string().email("Email không hợp lệ"),
-  phone: z
-    .string()
-    .optional()
-    .refine((val: string | undefined) => !val || /^[0-9]{10}$/.test(val), {
-      message: "Số điện thoại phải đúng 10 chữ số",
-    }),
-  address: z
-    .string()
-    .optional()
-    .refine((val: string | undefined) => !val || val.length >= 5, {
-      message: "Địa chỉ quá ngắn",
-    })
-    .refine((val: string | undefined) => !val || val.length <= 255, {
-      message: "Địa chỉ quá dài",
-    }),
+  phone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
   is_active: z.boolean(),
   leave_balances: z.array(leaveBalanceSchema).optional(),
 });
