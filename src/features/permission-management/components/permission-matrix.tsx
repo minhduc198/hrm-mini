@@ -7,6 +7,7 @@ import { Shield, Save, Loader2 } from "lucide-react";
 import { PermissionSaveDialog } from "./permission-save-dialog";
 import { ConfirmDialog } from "@/components/common/feedback/ConfirmDialog";
 import { PageHeader } from "@/components/common/layout/page-header";
+import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
 export function PermissionMatrix() {
@@ -62,10 +63,13 @@ export function PermissionMatrix() {
             onClick={handleSave}
             disabled={isSaving || !isDirty}
             className={cn(
-              "gap-2 transition-all min-w-[140px]",
-              isDirty 
-                ? "bg-primary hover:bg-primary-hover text-primary-fg shadow-md" 
-                : "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+              "gap-2 transition-all min-w-[140px] border shadow-sm",
+              isSaving && "opacity-80 cursor-wait",
+              !isSaving && (
+                isDirty 
+                  ? "bg-primary hover:bg-primary-hover text-white border-primary shadow-primary/20" 
+                  : "bg-primary/5 text-primary/30 border-primary/10 disabled:opacity-100 cursor-default shadow-none"
+              )
             )}
           >
             {isSaving ? (
@@ -73,7 +77,9 @@ export function PermissionMatrix() {
             ) : (
               <Save className="w-4 h-4" />
             )}
-            {isSaving ? "Đang lưu..." : isDirty ? "Lưu thay đổi" : "Đã lưu"}
+            <Typography variant="label" className="text-inherit">
+              {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+            </Typography>
           </Button>
         }
       />

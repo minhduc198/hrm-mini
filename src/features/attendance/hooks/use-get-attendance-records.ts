@@ -3,7 +3,7 @@ import { getAttendanceRecords } from "../api/get-attendance-records";
 import { attendanceKeys } from "../queryKeys/attendance";
 
 export function useGetAttendanceRecords(
-  calendar_day_id?: number, 
+  calendar_day_id?: number | string, 
   page: number = 1, 
   search: string = "",
   per_page: number = 15,

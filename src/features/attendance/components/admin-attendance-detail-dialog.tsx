@@ -32,7 +32,7 @@ export function AdminAttendanceDetailDialog({ day, open, onOpenChange }: Props) 
   const debouncedSearch = useDebounce(search, 300);
 
   const { data: response, isLoading, isFetching } = useGetAttendanceRecords(
-    open && day?.id ? Number(day.id) : undefined,
+    open ? (day?.id || day?.work_date) : undefined,
     page,
     debouncedSearch,
     perPage,
