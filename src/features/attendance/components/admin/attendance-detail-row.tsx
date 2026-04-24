@@ -37,6 +37,11 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
   const handleStartEdit = (field: "check_in" | "check_out" | "note", value: string | null) => {
     if (!canEdit) return;
     
+    if (!record.is_completed) {
+      toast.info("Chỉ có thể chỉnh sửa dữ liệu của các ngày đã hoàn thành (Hết ngày hoặc sang ngày hôm sau)");
+      return;
+    }
+
     if (isLeaveRestricted && (field === "check_in" || field === "check_out")) {
       toast.info("Không thể chỉnh sửa giờ cho nhân viên đã có đơn nghỉ phép được duyệt");
       return;
@@ -145,7 +150,7 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       <TableCell 
         className={cn(
           "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
-          (isLeaveRestricted || !canEdit) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          (isLeaveRestricted || !canEdit || !record.is_completed) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_in" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("check_in", record.check_in)}
@@ -197,7 +202,7 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       <TableCell 
         className={cn(
           "py-0 px-2 text-center border-l border-b border-line-subtle transition-all w-[110px] min-w-[110px] max-w-[110px] h-[64px] bg-white",
-          (isLeaveRestricted || !canEdit) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          (isLeaveRestricted || !canEdit || !record.is_completed) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "check_out" ? "bg-primary-tint/30" : ""
         )}
          onClick={() => handleStartEdit("check_out", record.check_out)}
@@ -321,7 +326,7 @@ export function AttendanceDetailRow({ record }: AttendanceDetailRowProps) {
       <TableCell 
         className={cn(
           "py-3 px-4 border-l border-b border-line-subtle transition-all bg-white w-[250px] min-w-[250px] max-w-[250px]",
-          !canEdit ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
+          (!canEdit || !record.is_completed) ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-transparent",
           editingCell === "note" ? "bg-primary-tint/30" : ""
         )}
         onClick={() => handleStartEdit("note", record.note)}
