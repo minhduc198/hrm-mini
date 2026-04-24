@@ -142,7 +142,9 @@ export function LeaveHistoryTable({
             >
               Tổng cộng:{" "}
               <span className="text-slate-900 font-bold">
-                {row.original.total_amount}{" "}
+                {row.original.amount_unit === "days"
+                  ? Number(row.original.total_amount)
+                  : Number(row.original.total_amount).toFixed(2)}{" "}
                 {row.original.amount_unit === "days" ? "ngày" : "giờ"}
               </span>
             </Typography>
