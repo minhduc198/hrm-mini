@@ -2,7 +2,7 @@ import api from "@/lib/axios";
 import { AttendanceRecordDetailResponse } from "../types/attendance";
 
 export const getAttendanceRecords = async (
-  calendar_day_id?: number,
+  calendar_day_id?: number | string,
   page: number = 1,
   search: string = "",
   per_page: number = 15,
@@ -11,11 +11,12 @@ export const getAttendanceRecords = async (
   is_completed?: boolean
 ): Promise<AttendanceRecordDetailResponse> => {
   const isNotCheckedIn = status === "not_checked_in";
-  
+  const isIdNumber = typeof calendar_day_id === 'number';
+
   const response = await api.get<AttendanceRecordDetailResponse>("/attendances", { 
     params: { 
-      calendar_day_id: isNotCheckedIn ? undefined : calendar_day_id, 
-      work_date: isNotCheckedIn ? calendar_day_id : undefined,
+      calendar_day_id: (isNotCheckedIn || !isIdNumber) ? undefined : calendar_day_id, 
+      work_date: (isNotCheckedIn || !isIdNumber) ? calendar_day_id : undefined,
       page, 
       search, 
       per_page,

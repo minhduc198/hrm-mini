@@ -25,8 +25,8 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[420px] p-0 gap-0 overflow-hidden rounded-[28px] border-none shadow-2xl bg-surface [&>button]:text-primary [&>button]:hover:bg-primary/10 [&>button]:transition-colors [&>button]:border-transparent [&>button]:ring-0">
-        <div className="bg-primary-tint p-6 pb-8 text-primary relative">
+      <DialogContent className="sm:max-w-[420px] p-0 gap-0 overflow-hidden rounded-[28px] border-none shadow-2xl bg-surface [&>button]:text-primary/40 [&>button]:hover:text-primary [&>button]:bg-transparent [&>button]:hover:bg-transparent [&>button]:border-none [&>button]:shadow-none [&>button]:ring-0 [&>button]:top-6 [&>button]:right-6 [&>button]:transition-colors max-h-[85vh] flex flex-col">
+        <div className="bg-primary-tint p-6 pb-8 text-primary relative shrink-0">
           <DialogHeader className="space-y-4 text-left">
             <div className="flex items-center gap-2 flex-wrap">
               <BadgeTag icon={Calendar} label={dayType.label} className="bg-white/60 backdrop-blur-md border-primary/10 text-primary shadow-sm" />
@@ -42,7 +42,9 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
                       ? "bg-danger-bg border-danger-bd text-danger"
                       : normalizedStatus === "leave"
                       ? "bg-purple-50 border-purple-200 text-purple-600"
-                      : "bg-success-bg border-success-bd text-success"
+                      : normalizedStatus === "on_time"
+                      ? "bg-success-bg border-success-bd text-success"
+                      : "bg-subtle border-line-subtle text-muted"
                   )} 
                 />
               )}
@@ -60,19 +62,93 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
           </DialogHeader>
         </div>
 
-        <div className="px-6 pb-8 pt-6 space-y-5 bg-surface">
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
+          <div className="px-6 pb-8 pt-6 space-y-5 bg-surface">
           <div className="grid grid-cols-2 gap-4">
             <TimeCard label="Giờ vào" value={formatTime(day.check_in)} icon={LogIn} iconClass="text-success" />
             <TimeCard label="Giờ ra" value={formatTime(day.check_out)} icon={LogOut} iconClass="text-primary" />
           </div>
           <div className="space-y-3">
-             <Typography variant="label-sm" className="px-1 text-muted uppercase tracking-widest">Hiệu suất ngày</Typography>
+             <div className="flex items-center justify-between px-1">
+               <Typography variant="label-sm" className="text-muted uppercase tracking-widest">Hiệu suất ngày</Typography>
+               {day.is_sufficient !== undefined && !!day.check_out && (
+                 <div className={cn(
+                   "flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider",
+                   day.is_sufficient 
+                     ? "bg-success-bg border-success-bd text-success" 
+                     : "bg-danger-bg border-danger-bd text-danger"
+                 )}>
+                   {day.is_sufficient ? "Đủ công" : "Thiếu công"}
+                 </div>
+               )}
+             </div>
              <div className="grid grid-cols-3 gap-3">
                 <StatItem label="Tổng giờ" value={formatDurationFromHours(day.total_hours)} />
-                <StatItem label="Đi muộn" value={isLate ? formatDurationFromMinutes(day.late_minutes) : "0 phút"} active={isLate} activeClass="bg-warning-bg border-warning-bd text-warning" />
-                <StatItem label="Về sớm" value={isEarly ? formatDurationFromMinutes(day.early_leave_minutes) : "0 phút"} active={isEarly} activeClass="bg-danger-bg border-danger-bd text-danger" />
+                <StatItem 
+                  label="Đi muộn" 
+                  value={isLate ? formatDurationFromMinutes(day.late_minutes) : "0 phút"} 
+                  active={isLate} 
+                  activeClass="bg-warning-bg border-warning-bd text-warning" 
+                />
+                <StatItem 
+                  label={(!!day.check_out && !day.is_sufficient && (day.missing_hours ?? 0) > 0) ? "Thiếu giờ" : "Về sớm"} 
+                  value={(!!day.check_out && !day.is_sufficient && (day.missing_hours ?? 0) > 0)
+                    ? formatDurationFromHours(day.missing_hours?.toString()) 
+                    : (isEarly ? formatDurationFromMinutes(day.early_leave_minutes) : "0 phút")
+                  } 
+                  active={isEarly || (!!day.check_out && !day.is_sufficient && (day.missing_hours ?? 0) > 0)} 
+                  activeClass="bg-danger-bg border-danger-bd text-danger" 
+                />
               </div>
           </div>
+
+          {/* Leave Requests Details */}
+          {day.leave_requests && day.leave_requests.length > 0 && (
+            <div className="space-y-3">
+              <Typography variant="label-sm" className="px-1 text-muted uppercase tracking-widest">Chi tiết nghỉ phép</Typography>
+              {day.leave_requests.map((leave) => (
+                <div key={leave.id} className="p-4 bg-surface rounded-2xl border border-line-subtle space-y-3 shadow-sm">
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                      <Typography variant="p" className="text-sm font-bold text-tx-base leading-none">
+                        {leave.leave_type.name}
+                      </Typography>
+                      <Typography variant="tiny" className="text-muted font-medium uppercase tracking-wider">
+                        {leave.request_scope === 'full_day' ? 'Nghỉ cả ngày' : 'Nghỉ buổi'} 
+                        {leave.total_amount && ` • ${leave.total_amount} ${leave.amount_unit === 'days' ? 'ngày' : 'giờ'}`}
+                      </Typography>
+                    </div>
+                    <div className={cn(
+                      "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase",
+                      leave.status === 'approved' ? "bg-success-bg text-success border border-success-bd" : "bg-warning-bg text-warning border border-warning-bd"
+                    )}>
+                      {leave.status === 'approved' ? "Đã duyệt" : leave.status}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4 py-2 border-y border-line-subtle/50">
+                    <div>
+                      <Typography variant="tiny" className="text-muted uppercase font-bold tracking-tighter mb-1 opacity-70">Bắt đầu</Typography>
+                      <Typography variant="p" className="text-[13px] font-bold text-tx-base">{formatTime(leave.start_time)}</Typography>
+                    </div>
+                    <div>
+                      <Typography variant="tiny" className="text-muted uppercase font-bold tracking-tighter mb-1 opacity-70">Kết thúc</Typography>
+                      <Typography variant="p" className="text-[13px] font-bold text-tx-base">{formatTime(leave.end_time)}</Typography>
+                    </div>
+                  </div>
+
+                  {leave.reason && (
+                    <div className="pt-1">
+                      <Typography variant="tiny" className="text-muted uppercase font-bold tracking-tighter mb-1 opacity-70">Lý do nghỉ</Typography>
+                      <Typography variant="p" className="text-[13px] text-tx-base leading-relaxed italic font-medium">
+                        "{leave.reason}"
+                      </Typography>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Note & OT */}
           {(parseFloat(day.ot_hours ?? "0") > 0 || day.holiday_name || day.note) && (
@@ -93,7 +169,8 @@ export function AttendanceDetailDialog({ day, open, onOpenChange }: Props) {
             </div>
           )}
         </div>
-      </DialogContent>
+      </div>
+    </DialogContent>
     </Dialog>
   );
 }

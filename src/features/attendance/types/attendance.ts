@@ -21,6 +21,9 @@ export interface AttendanceDayData {
     absent: number;
     leave: number;
   } | string;
+  leave_requests?: LeaveRequestBasic[];
+  missing_hours?: number;
+  is_sufficient?: boolean;
 }
 
 export interface WorkMonthBE {
@@ -69,6 +72,9 @@ export interface MyAttendanceRecord {
   is_completed: boolean;
   is_edited: boolean;
   note: string | null;
+  leave_requests?: LeaveRequestBasic[];
+  missing_hours?: number;
+  is_sufficient?: boolean;
 }
 
 export interface MyAttendanceResponse {
@@ -91,6 +97,9 @@ export interface LeaveRequestBasic {
   start_time: string;
   end_time: string;
   status: 'pending' | 'approved' | 'rejected' | string;
+  reason?: string;
+  total_amount?: string;
+  amount_unit?: string;
 }
 
 export interface AttendanceRecordDetail {

@@ -67,6 +67,9 @@ export function MyAttendanceManage() {
         note: personalRecord.note,
         is_completed: personalRecord.is_completed,
         is_edited: personalRecord.is_edited,
+        leave_requests: personalRecord.leave_requests,
+        missing_hours: personalRecord.missing_hours,
+        is_sufficient: personalRecord.is_sufficient,
       } : {
         status: undefined,
       }),

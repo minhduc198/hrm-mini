@@ -60,10 +60,17 @@ export function AttendanceManage() {
   // Merge summary into calendar data
   const calendarData = (monthData || []).map(day => {
     const summary = dailySummary[day.work_date];
+    
+    // Chỉ ghi đè status nếu summary có dữ liệu thực sự (khác 0)
+    // Nếu summary rỗng (do pagination hoặc filter), giữ nguyên status từ Backend (day.status)
+    const hasSummary = summary && Object.values(summary).some(val => val > 0);
+    
     return {
       ...day,
-      status: summary || undefined,
-      total_employees: summary ? Object.values(summary).reduce((a, b) => a + b, 0) : 0
+      status: hasSummary ? summary : day.status,
+      total_employees: hasSummary 
+        ? Object.values(summary).reduce((a, b) => a + b, 0) 
+        : (typeof day.status === 'object' ? Object.values(day.status).reduce((a, b) => (a as number) + (b as number), 0) : 0)
     };
   });
 
