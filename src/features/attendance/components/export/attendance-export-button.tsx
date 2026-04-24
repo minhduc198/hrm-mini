@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { handleError } from "@/utils/error-handler";
 import { AttendanceExportDialog } from "./attendance-export-dialog";
 import { AttendanceExportFormValues } from "../../schemas/export";
 import { exportAttendanceData } from "../../api/export-attendance";
@@ -41,8 +42,7 @@ export function AttendanceExportButton() {
       toast.success(`Xuất dữ liệu thành công!`);
       setIsOpen(false);
     } catch (error) {
-      console.error("Export error:", error);
-      toast.error("Có lỗi xảy ra khi xuất dữ liệu");
+      handleError(error, "Có lỗi xảy ra khi xuất dữ liệu");
     } finally {
       setIsLoading(false);
     }
