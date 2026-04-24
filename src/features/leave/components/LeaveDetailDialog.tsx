@@ -32,7 +32,7 @@ interface LeaveDetailDialogProps {
 const statusMap = {
   pending: { label: "Chờ duyệt", variant: "warning", icon: Clock },
   approved: { label: "Đã duyệt", variant: "success", icon: CheckCircle2 },
-  rejected: { label: "Từ chối", variant: "destructive", icon: XCircle },
+  rejected: { label: "Từ chốiii", variant: "destructive", icon: XCircle },
   cancelled: { label: "Đã hủy", variant: "secondary", icon: AlertCircle },
 };
 
@@ -77,7 +77,9 @@ export function LeaveDetailDialog({
                 Chi tiết đơn
               </Badge>
               <Badge
-                variant={status.variant as import("@/components/ui/badge").BadgeProps["variant"]}
+                variant={
+                  status.variant as import("@/components/ui/badge").BadgeProps["variant"]
+                }
                 className={cn(
                   "gap-1.5 font-bold shadow-sm",
                   status.variant === "warning" &&
@@ -186,7 +188,7 @@ export function LeaveDetailDialog({
                 "space-y-2 p-3 rounded-lg border",
                 request.status === "approved"
                   ? "bg-emerald-50/50 border-emerald-100"
-                  : "bg-rose-50/50 border-rose-100"
+                  : "bg-rose-50/50 border-rose-100",
               )}
             >
               <Typography
@@ -195,7 +197,7 @@ export function LeaveDetailDialog({
                   "text-[12px] font-semibold tracking-tight flex items-center gap-1.5",
                   request.status === "approved"
                     ? "text-emerald-600"
-                    : "text-rose-600"
+                    : "text-rose-600",
                 )}
               >
                 {request.status === "approved" ? (
@@ -210,7 +212,7 @@ export function LeaveDetailDialog({
                   "text-sm font-medium",
                   request.status === "approved"
                     ? "text-emerald-700"
-                    : "text-rose-700"
+                    : "text-rose-700",
                 )}
               >
                 {request.approver_note}

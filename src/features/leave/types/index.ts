@@ -3,7 +3,7 @@ import { LeaveType } from "../../leave-policy/types";
 export type RequestScope = "hourly" | "full_day" | "half_day";
 export type HalfDayPeriod = "morning" | "afternoon";
 export type AmountUnit = "hours" | "days";
-export type LeaveStatus = "pending" | "approved" | "rejected";
+export type LeaveStatus = "pending" | "approved" | "rejected" | "cancelled";
 
 export interface UserInfo {
   id: number;

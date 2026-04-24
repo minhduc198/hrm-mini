@@ -19,7 +19,8 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
   });
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateLeaveRequestPayload) => createLeaveRequest(payload),
+    mutationFn: (payload: CreateLeaveRequestPayload) =>
+      createLeaveRequest(payload),
     onSuccess: () => {
       toast.success("Tạo đơn xin nghỉ thành công");
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
@@ -33,7 +34,7 @@ export function useLeave(params?: { page?: number; per_page?: number }) {
   const cancelMutation = useMutation({
     mutationFn: (id: number) => cancelLeaveRequest(id),
     onSuccess: () => {
-      toast.success("Đã từ chối đơn xin nghỉ");
+      toast.success("Đã hủy đơn xin nghỉ");
       queryClient.invalidateQueries({ queryKey: leaveKeys.my() });
       queryClient.invalidateQueries({ queryKey: employeeKeys.detail("me") });
     },

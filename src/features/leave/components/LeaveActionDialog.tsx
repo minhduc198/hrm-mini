@@ -16,7 +16,7 @@ import { TextareaFieldInput } from "@/components/common/form/TextareaFieldInput"
 import { Typography } from "@/components/ui/typography";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, User, CheckCircle2, XCircle } from "lucide-react";
+import { Calendar, Clock, User, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { AVATAR_COLORS } from "@/features/employee/constants";
@@ -57,6 +57,7 @@ const statusMap = {
   pending: { label: "Chờ duyệt", variant: "warning", icon: Clock },
   approved: { label: "Đã duyệt", variant: "success", icon: CheckCircle2 },
   rejected: { label: "Từ chối", variant: "destructive", icon: XCircle },
+  cancelled: { label: "Đã hủy", variant: "secondary", icon: AlertCircle },
 };
 
 export function LeaveActionDialog({

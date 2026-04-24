@@ -17,6 +17,7 @@ import {
   Eye,
   Timer,
   XCircle,
+  AlertCircle,
 } from "lucide-react";
 import React from "react";
 import { LeaveRequest, LeaveStatus } from "../types";
@@ -52,6 +53,7 @@ const statusMap: Record<
   pending: { label: "Chờ duyệt", variant: "warning", icon: Clock },
   approved: { label: "Đã duyệt", variant: "success", icon: CheckCircle2 },
   rejected: { label: "Từ chối", variant: "destructive", icon: XCircle },
+  cancelled: { label: "Đã hủy", variant: "secondary", icon: AlertCircle },
 };
 
 const scopeMap: Record<string, string> = {
