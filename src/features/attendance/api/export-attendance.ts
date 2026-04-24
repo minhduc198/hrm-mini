@@ -1,9 +1,8 @@
 import api from "@/lib/axios";
 import { AttendanceExportFormValues } from "../schemas/export";
 import { format } from "date-fns";
-import { AttendanceRecordDetail } from "../types/attendance";
 
-export const exportAttendanceData = async (filters: AttendanceExportFormValues): Promise<AttendanceRecordDetail[]> => {
+export const exportAttendanceData = async (filters: AttendanceExportFormValues): Promise<Blob> => {
   const params = new URLSearchParams();
 
   if (filters.type === "month" && filters.month) {
@@ -23,14 +22,10 @@ export const exportAttendanceData = async (filters: AttendanceExportFormValues):
     params.append("is_edited", "1");
   }
 
-  // We use the normal index route but with filters and no pagination (or large per_page)
-  // to get the raw data for excel generation.
-  const response = await api.get<{ data: AttendanceRecordDetail[] }>("/attendances", {
-    params: {
-      ...Object.fromEntries(params.entries()),
-      per_page: 9999, // Get all records matching filters
-    }
+  const response = await api.get("/attendances/export", {
+    params: Object.fromEntries(params.entries()),
+    responseType: "blob",
   });
 
-  return response.data.data;
+  return response.data;
 };
