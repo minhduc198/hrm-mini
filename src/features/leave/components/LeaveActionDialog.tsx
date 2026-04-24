@@ -207,7 +207,9 @@ export function LeaveActionDialog({
                     Tổng cộng
                   </Typography>
                   <div className="text-sm font-bold text-slate-900">
-                    {request.total_amount}{" "}
+                    {request.amount_unit === "days"
+                      ? Number(request.total_amount)
+                      : Number(request.total_amount).toFixed(2)}{" "}
                     {request.amount_unit === "days" ? "ngày" : "giờ"}
                   </div>
                 </div>
