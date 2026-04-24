@@ -44,9 +44,7 @@ export default function AdminLeavePage() {
     start_date: startTime
       ? format(new Date(startTime), "yyyy-MM-dd")
       : undefined,
-    end_date: endTime
-      ? format(new Date(endTime), "yyyy-MM-dd")
-      : undefined,
+    end_date: endTime ? format(new Date(endTime), "yyyy-MM-dd") : undefined,
   };
 
   const {
@@ -236,8 +234,12 @@ export default function AdminLeavePage() {
             <Typography variant="h4" className="text-muted-foreground mb-2">
               Không có quyền truy cập
             </Typography>
-            <Typography variant="small" className="text-muted-foreground/60 text-center max-w-md">
-              Bạn không có quyền xem danh sách đơn xin nghỉ của toàn bộ nhân viên. Vui lòng liên hệ quản trị viên để được hỗ trợ.
+            <Typography
+              variant="small"
+              className="text-muted-foreground/60 text-center max-w-md"
+            >
+              Bạn không có quyền xem danh sách đơn xin nghỉ của toàn bộ nhân
+              viên. Vui lòng liên hệ quản trị viên để được hỗ trợ.
             </Typography>
           </div>
         }
@@ -264,6 +266,7 @@ export default function AdminLeavePage() {
                   { label: "Đang chờ duyệt", value: "pending" },
                   { label: "Đã phê duyệt", value: "approved" },
                   { label: "Từ chối", value: "rejected" },
+                  { label: "Đã hủy", value: "cancelled" },
                 ]}
                 placeholder="Trạng thái"
               />
